@@ -3,6 +3,9 @@ uuid = "0cb6e433-94bd-4e06-81c4-5e245636b76f"
 authors = ["Jarvist Moore Frost"]
 version = "1.0.0-DEV"
 
+[deps]
+ACEpotentials = "3b96b61c-0fcc-4693-95ed-1ef9f35fcc53"
+
 [compat]
 julia = "1.9"
 
