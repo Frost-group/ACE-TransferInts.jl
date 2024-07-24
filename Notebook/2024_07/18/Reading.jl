@@ -39,7 +39,7 @@ end
 
 # ╔═╡ 2436ae5d-f680-4322-8059-c1761688d4a5
 begin
-	#Rotation about x, y, z function
+	#Rotation about x, y, z-axis
 	function rot_x(θ)
 		return [[1.0, 0.0, 0.0] [0.0, cos(θ), sin(θ)] [0.0, -sin(θ), cos(θ)]]
 	end
@@ -113,63 +113,80 @@ end
 # ╔═╡ 7c414d0b-3018-4f6e-bf1d-b26023da2496
 write_extxyz("dimer_naphthalene.extxyz", [C₁₀H₈_1, C₁₀H₈_2])
 
-# ╔═╡ 764ecf20-7161-4145-82cf-27ba2e3554e0
-draw(C₁₀H₈_1)
-
 # ╔═╡ 9b698f5f-87bf-4352-8484-8b99f54cf485
 size(para)
 
 # ╔═╡ d42cc822-9014-4fdb-8444-a91ea66101c8
 function construct_dimer(namefile, para)
 	mol1 = read_extxyz(namefile)[1] 	#Read Molecular Structure from file.extxyz
-	ndata = 20 #size(para, 1) 			#Collect number of data from TranInt out.dat
+	ndata = size(para, 1) 			#Collect number of data from TranInt out.dat
 	natoms = size(mol1.M)[1] 			#Collect number of atoms in molecules
 	for jj in 1:ndata
 		#3
 		mol2 = read_extxyz(namefile)[1]
-		println("Dimer: "*string(jj))
-		
+		#println("Dimer: "*string(jj))
 		for ii in 1:natoms
-			
-		mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 							#Rotation + Translation
-		println(mol2.X[ii])
+			mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
+		#println(mol2.X[ii])
 		end
-		println("_________________________________________________________")
+		#println("_________________________________________________________")
 	end
 end
 
 # ╔═╡ a287cb82-e3cc-4c9b-9d1f-d98387076bd4
 construct_dimer("naphthalene.extxyz", para)
 
-# ╔═╡ 7b96a5c9-2aa0-4b8b-8564-4fb51ec48385
-para
+# ╔═╡ fb4258a0-b11f-44ba-85b9-e80ad5fe0f70
+49*97
 
-# ╔═╡ 756126d1-5bb3-4f4d-9918-deb13d9529eb
+# ╔═╡ 9293d1a6-4055-4fa6-aa75-af997a6ddcee
+J
+
+# ╔═╡ b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 begin
-	nn = 4753
-	scatter(para[1:nn,2], J[1:nn])
+	J_mat = zeros((49,Int(size(J,1)/49)))
+	logJ_mat = zeros((49,Int(size(J,1)/49)))
+	θ = zeros((Int(size(J,1)/49)))
+	ϕ = zeros((49))
 end
 
-# ╔═╡ f6d28174-fdc9-4cb4-a2ed-4437f136d529
-scatter(para[1:nn,2], logJ[1:nn])
-
-# ╔═╡ 417d0acc-b22e-454b-9a07-985c1c744c97
-scatter(para[1:nn,1], J[1:nn])
-
-# ╔═╡ 540113cf-46b0-45d2-adf5-c77b121d8a6f
-scatter(para[1:nn,1], logJ[1:nn])
-
-# ╔═╡ 7cb34433-389f-4f2c-8158-e414c07fa579
-scatter(para[1:nn,4], J[1:nn])
-
-# ╔═╡ cb3497f1-37bf-402a-9951-4a134c194b1a
-scatter(para[1:nn,4], logJ[1:nn])
-
-# ╔═╡ b8b26510-429c-4b1e-9476-40a464cdbb73
-1:size(J,1)
+# ╔═╡ 33feb269-3620-43f1-8d31-66e8b9472481
+begin
+	for bb in 1:Int(size(J,1)/49)
+		J_mat[:, bb] = J[49*(bb-1)+1: 49*bb]	
+		logJ_mat[:, bb] = logJ[49*(bb-1)+1: 49*bb]
+		θ[bb] = para[49*bb,1]
+	end
+	for aa in 1:49
+		ϕ[aa] = para[aa,2]
+	end
+end
 
 # ╔═╡ 1f58b44f-bae8-420a-857d-2a1a5fbea8bf
+heatmap(ϕ[1:49],
+	    θ[1:97], J_mat[:,:],
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel="feature coord. (n x d)",
+		ylabel="feature coord. (n x d)",
+		aspectratio=:equal,
+		size=(375, 750),
+	    title="PbTe_FC2 (Traning Data = " *string(199) *")" )
 
+# ╔═╡ a9877a72-8601-4c24-9a26-10d51e3b96b6
+heatmap(ϕ[1:49],
+	    θ[1:97], logJ_mat[:,:],
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel="feature coord. (n x d)",
+		ylabel="feature coord. (n x d)",
+		aspectratio=:equal,
+		size=(500, 750),
+	    title="PbTe_FC2 (Traning Data = " *string(199) *")" )
+
+# ╔═╡ c8ccbcdc-3d01-4006-8947-504d9a93a23c
+plot(θ, sin.(θ))
+
+# ╔═╡ f09afe0e-7439-4de1-920a-a7b7c4245dc3
+plot(θ, θ.^2)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2389,19 +2406,17 @@ version = "1.4.1+1"
 # ╠═fc659a58-c43e-4a74-8d09-98c270e8e3dd
 # ╠═e6de07e3-a451-4e31-a299-df122016ff76
 # ╠═7c414d0b-3018-4f6e-bf1d-b26023da2496
-# ╠═764ecf20-7161-4145-82cf-27ba2e3554e0
 # ╠═9b698f5f-87bf-4352-8484-8b99f54cf485
 # ╠═d42cc822-9014-4fdb-8444-a91ea66101c8
 # ╠═a287cb82-e3cc-4c9b-9d1f-d98387076bd4
-# ╠═7b96a5c9-2aa0-4b8b-8564-4fb51ec48385
+# ╠═fb4258a0-b11f-44ba-85b9-e80ad5fe0f70
+# ╠═9293d1a6-4055-4fa6-aa75-af997a6ddcee
+# ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
+# ╠═33feb269-3620-43f1-8d31-66e8b9472481
 # ╠═e55a98a6-924c-4bf8-a79c-c12e46532b0d
-# ╠═756126d1-5bb3-4f4d-9918-deb13d9529eb
-# ╠═f6d28174-fdc9-4cb4-a2ed-4437f136d529
-# ╠═417d0acc-b22e-454b-9a07-985c1c744c97
-# ╠═540113cf-46b0-45d2-adf5-c77b121d8a6f
-# ╠═7cb34433-389f-4f2c-8158-e414c07fa579
-# ╠═cb3497f1-37bf-402a-9951-4a134c194b1a
-# ╠═b8b26510-429c-4b1e-9476-40a464cdbb73
 # ╠═1f58b44f-bae8-420a-857d-2a1a5fbea8bf
+# ╠═a9877a72-8601-4c24-9a26-10d51e3b96b6
+# ╠═c8ccbcdc-3d01-4006-8947-504d9a93a23c
+# ╠═f09afe0e-7439-4de1-920a-a7b7c4245dc3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
