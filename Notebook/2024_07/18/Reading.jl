@@ -15,11 +15,14 @@ end
 begin
 	using JuLIP
 	using ACEpotentials
-	using ExtXYZ
+	#using ExtXYZ
 end
 
 # ╔═╡ e55a98a6-924c-4bf8-a79c-c12e46532b0d
-using Plots
+begin
+	using Plots
+	using LaTeXStrings
+end
 
 # ╔═╡ e7919cb0-09e4-4a5f-a0ce-4c5088ceb813
 #df_J = DataFrame(CSV.File("out.dat", delim=" "))
@@ -107,7 +110,7 @@ natoms = size(C₁₀H₈_1.M)[1]
 
 # ╔═╡ e6de07e3-a451-4e31-a299-df122016ff76
 for ii in 1:natoms
-	C₁₀H₈_2.X[ii] = rot_z(para[100,2])*rot_y(para[100,1]) * C₁₀H₈_1.X[ii] + para[100, 4:6]
+	C₁₀H₈_2.X[ii] = rot_y(2*pi/3) * C₁₀H₈_1.X[ii] + para[100, 4:6]
 end
 
 # ╔═╡ 7c414d0b-3018-4f6e-bf1d-b26023da2496
@@ -116,28 +119,46 @@ write_extxyz("dimer_naphthalene.extxyz", [C₁₀H₈_1, C₁₀H₈_2])
 # ╔═╡ 9b698f5f-87bf-4352-8484-8b99f54cf485
 size(para)
 
+# ╔═╡ 8378e320-63d0-4ad5-bc4b-31456d6df1fa
+begin
+	Set_Mol2 = Vector{Atoms{Float64}}([])
+	push!(Set_Mol2, C₁₀H₈_1)
+	push!(Set_Mol2, C₁₀H₈_2)
+end
+
+# ╔═╡ 4805340c-313d-4455-96fb-a157dae20f87
+typeof([C₁₀H₈_1, C₁₀H₈_2]) 
+
+# ╔═╡ 5d9edc3a-f2c9-4a82-9dd4-f89f5a10abdc
+typeof(Set_Mol2) 
+
+# ╔═╡ e4d3ba94-e610-494c-8340-3f79c4ef4b98
+write_extxyz("1.extxyz", Set_Mol2)
+
 # ╔═╡ d42cc822-9014-4fdb-8444-a91ea66101c8
-function construct_dimer(namefile, para)
+function construct_dimer(namefile, savefile, para, rot_ang_y)
 	mol1 = read_extxyz(namefile)[1] 	#Read Molecular Structure from file.extxyz
-	ndata = size(para, 1) 			#Collect number of data from TranInt out.dat
+	ndata = size(para, 1) 				#Collect number of data from TranInt out.dat
 	natoms = size(mol1.M)[1] 			#Collect number of atoms in molecules
+	Set_Mol2 = Vector{Atoms{Float64}}([])						#Set of 2nd Molecules
 	for jj in 1:ndata
-		#3
 		mol2 = read_extxyz(namefile)[1]
 		#println("Dimer: "*string(jj))
 		for ii in 1:natoms
-			mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
+			mol2.X[ii] = rot_y(rot_ang_y) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
+			#mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
 		#println(mol2.X[ii])
 		end
+		push!(Set_Mol2, mol2) 	
+		#println(Set_Mol2)
 		#println("_________________________________________________________")
 	end
+	#return Set_Mol2
+	write_extxyz(savefile, Set_Mol2)
 end
 
 # ╔═╡ a287cb82-e3cc-4c9b-9d1f-d98387076bd4
-construct_dimer("naphthalene.extxyz", para)
-
-# ╔═╡ fb4258a0-b11f-44ba-85b9-e80ad5fe0f70
-49*97
+construct_dimer("naphthalene.extxyz", "dimer_naphthalene.extxyz", para, 2*pi/3)
 
 # ╔═╡ 9293d1a6-4055-4fa6-aa75-af997a6ddcee
 J
@@ -166,11 +187,11 @@ end
 heatmap(ϕ[1:49],
 	    θ[1:97], J_mat[:,:],
 	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
-	    xlabel="feature coord. (n x d)",
-		ylabel="feature coord. (n x d)",
-		aspectratio=:equal,
-		size=(375, 750),
-	    title="PbTe_FC2 (Traning Data = " *string(199) *")" )
+	    xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
 
 # ╔═╡ a9877a72-8601-4c24-9a26-10d51e3b96b6
 heatmap(ϕ[1:49],
@@ -178,15 +199,9 @@ heatmap(ϕ[1:49],
 	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 	    xlabel="feature coord. (n x d)",
 		ylabel="feature coord. (n x d)",
-		aspectratio=:equal,
-		size=(500, 750),
+		#aspectratio=:equal,
+		size=(700, 700),
 	    title="PbTe_FC2 (Traning Data = " *string(199) *")" )
-
-# ╔═╡ c8ccbcdc-3d01-4006-8947-504d9a93a23c
-plot(θ, sin.(θ))
-
-# ╔═╡ f09afe0e-7439-4de1-920a-a7b7c4245dc3
-plot(θ, θ.^2)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -195,8 +210,8 @@ ACEpotentials = "3b96b61c-0fcc-4693-95ed-1ef9f35fcc53"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
-ExtXYZ = "352459e4-ddd7-4360-8937-99dcb397b478"
 JuLIP = "945c410c-986d-556a-acb1-167a618e0462"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
@@ -204,8 +219,8 @@ ACEpotentials = "~0.6.5"
 CSV = "~0.10.14"
 DataFrames = "~1.6.1"
 DelimitedFiles = "~1.9.1"
-ExtXYZ = "~0.1.14"
 JuLIP = "~0.14.8"
+LaTeXStrings = "~1.3.1"
 Plots = "~1.40.5"
 """
 
@@ -215,7 +230,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0-rc1"
 manifest_format = "2.0"
-project_hash = "e70e2ac3aae4e9449c165a5c01c3082c7c522d4d"
+project_hash = "a391ef61a4de50f978f60a708624b889b91a7179"
 
 [[deps.ACE1]]
 deps = ["ACEbase", "BenchmarkTools", "Combinatorics", "ForwardDiff", "InteractiveUtils", "Interpolations", "JuLIP", "LinearAlgebra", "NeighbourLists", "Parameters", "Pkg", "Printf", "QuadGK", "Random", "Reexport", "Roots", "SparseArrays", "StaticArrays", "Test"]
@@ -492,9 +507,9 @@ version = "0.7.5"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
-git-tree-sha1 = "4b270d6465eb21ae89b732182c20dc165f8bf9f2"
+git-tree-sha1 = "b5278586822443594ff615963b0c09755771b3e0"
 uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
-version = "3.25.0"
+version = "3.26.0"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -2407,16 +2422,17 @@ version = "1.4.1+1"
 # ╠═e6de07e3-a451-4e31-a299-df122016ff76
 # ╠═7c414d0b-3018-4f6e-bf1d-b26023da2496
 # ╠═9b698f5f-87bf-4352-8484-8b99f54cf485
+# ╠═8378e320-63d0-4ad5-bc4b-31456d6df1fa
+# ╠═4805340c-313d-4455-96fb-a157dae20f87
+# ╠═5d9edc3a-f2c9-4a82-9dd4-f89f5a10abdc
+# ╠═e4d3ba94-e610-494c-8340-3f79c4ef4b98
 # ╠═d42cc822-9014-4fdb-8444-a91ea66101c8
 # ╠═a287cb82-e3cc-4c9b-9d1f-d98387076bd4
-# ╠═fb4258a0-b11f-44ba-85b9-e80ad5fe0f70
 # ╠═9293d1a6-4055-4fa6-aa75-af997a6ddcee
 # ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 # ╠═33feb269-3620-43f1-8d31-66e8b9472481
 # ╠═e55a98a6-924c-4bf8-a79c-c12e46532b0d
 # ╠═1f58b44f-bae8-420a-857d-2a1a5fbea8bf
 # ╠═a9877a72-8601-4c24-9a26-10d51e3b96b6
-# ╠═c8ccbcdc-3d01-4006-8947-504d9a93a23c
-# ╠═f09afe0e-7439-4de1-920a-a7b7c4245dc3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
