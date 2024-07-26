@@ -54,31 +54,7 @@ begin
 	end
 end
 
-# ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
-para, J, logJ = read_J("out.dat")
-
-# ╔═╡ 16c5259b-eb37-4e9d-b925-b6d2a5ef5be5
-
-
-# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
-#C10 = read_frames("napthalene.xyz")
-
-# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
-#write_frames("naphthalene.extxyz", C10, append=true)
-
-# ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
-mol1 = read_extxyz("naphthalene.extxyz")[1]
-
-# ╔═╡ 3c7eeb80-fac3-4136-a5f5-df6236c08a93
-mol1.M
-
-# ╔═╡ d080bb49-e035-49b3-95cb-bb10211c5aa6
-mol1.X
-
-# ╔═╡ f7c0b8d0-6946-4dce-bbec-bdbc2bb539f7
-Set_Mol2 =  read_extxyz("dimer_naphthalene.extxyz")
-
-# ╔═╡ d42cc822-9014-4fdb-8444-a91ea66101c8
+# ╔═╡ 15c07f11-a3af-41b4-abeb-ddd110ce5c12
 function construct_dimer(namefile, savefile, para, rot_ang_y)
 	mol1 = read_extxyz(namefile)[1] 	#Read Molecular Structure from file.extxyz
 	ndata = size(para, 1) 				#Collect number of data from TranInt out.dat
@@ -100,8 +76,78 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 	write_extxyz(savefile, Set_Mol2)
 end
 
-# ╔═╡ 9293d1a6-4055-4fa6-aa75-af997a6ddcee
-J
+# ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
+para, J, logJ = read_J("out.dat")
+
+# ╔═╡ 61187086-ab9c-4aeb-8dc6-04227e862270
+#Find element
+function find_element(Molecule, Z)
+	return findall(x->x==Z, Molecule.Z)
+end
+
+# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
+#C10 = read_frames("napthalene.xyz")
+
+# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
+#write_frames("naphthalene.extxyz", C10, append=true)
+
+# ╔═╡ eeeddd5e-139e-4eae-8dd3-fc7ee961110b
+vec = zeros((3))
+
+# ╔═╡ 1f3f1281-6539-4bc7-8874-a952b5089767
+function Centre_Mass_bead(Molecule, share_C, All_C)
+	cm_Vec = []
+	for ii in 1:6
+		
+	end
+end
+
+# ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
+mol1 = read_extxyz("naphthalene.extxyz")[1]
+
+# ╔═╡ 3c7eeb80-fac3-4136-a5f5-df6236c08a93
+mol1.M
+
+# ╔═╡ e8ca11a1-6f9a-4de1-ac76-b52bf703d12a
+sum(mol1.X[1:6].*mol1.M[1:6])
+
+# ╔═╡ d080bb49-e035-49b3-95cb-bb10211c5aa6
+sum(mol1.X[1:6].*mol1.M[1:6]/sum(mol1.M[1:6]))
+
+# ╔═╡ 167ab7f3-9ce5-4b8c-9da7-725897b262e2
+sum(mol1.M)
+
+# ╔═╡ d7846676-2a02-498e-90b7-cfa5f25c78f1
+mol1.X[1]+vec 
+
+# ╔═╡ 2f51a339-a923-4f9a-a9b1-19b4348ce8ff
+begin
+	cm_Vec = []
+	num_C = find_element(mol1, 6)
+	for jj in 1:2
+		vec = zeros((3))
+		bead_mass = 0
+		for ii in 1:6
+			vec += mol1.X[num_C[ii]]*mol1.M[num_C[ii]]
+			bead_mass += mol1.M[num_C[ii]]
+		end
+	end
+end
+
+# ╔═╡ f7c0b8d0-6946-4dce-bbec-bdbc2bb539f7
+Set_Mol2 =  read_extxyz("dimer_naphthalene.extxyz")
+
+# ╔═╡ e50e019d-8140-48f1-a4dd-40e1e112478b
+begin
+	nn = 1
+	mol2 = Set_Mol2[nn]
+end
+
+# ╔═╡ a238c2e8-e75b-4484-8277-ccd04bf40a50
+
+
+# ╔═╡ 088ad824-ed48-45d8-8bea-849b42b5cdf7
+mol2.X
 
 # ╔═╡ b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 begin
@@ -2341,17 +2387,25 @@ version = "1.4.1+1"
 # ╠═738ee49a-d3b4-4ac7-9076-d96d900404f9
 # ╠═4b2668af-48ac-49ba-8dc8-f14ea08006c8
 # ╠═2436ae5d-f680-4322-8059-c1761688d4a5
+# ╠═15c07f11-a3af-41b4-abeb-ddd110ce5c12
 # ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
-# ╠═16c5259b-eb37-4e9d-b925-b6d2a5ef5be5
 # ╠═ab81d644-20d3-4617-b6cd-fb92849f334b
+# ╠═61187086-ab9c-4aeb-8dc6-04227e862270
 # ╠═83ece228-eae5-4805-beac-218c459cbbc8
 # ╠═6201194b-bafd-4fee-b353-85e6b880bc4f
 # ╠═3c7eeb80-fac3-4136-a5f5-df6236c08a93
+# ╠═e8ca11a1-6f9a-4de1-ac76-b52bf703d12a
 # ╠═d080bb49-e035-49b3-95cb-bb10211c5aa6
+# ╠═167ab7f3-9ce5-4b8c-9da7-725897b262e2
+# ╠═eeeddd5e-139e-4eae-8dd3-fc7ee961110b
+# ╠═d7846676-2a02-498e-90b7-cfa5f25c78f1
+# ╠═2f51a339-a923-4f9a-a9b1-19b4348ce8ff
+# ╠═1f3f1281-6539-4bc7-8874-a952b5089767
 # ╠═8892ca90-4b2e-404c-810c-73397a88b3b1
 # ╠═f7c0b8d0-6946-4dce-bbec-bdbc2bb539f7
-# ╠═d42cc822-9014-4fdb-8444-a91ea66101c8
-# ╠═9293d1a6-4055-4fa6-aa75-af997a6ddcee
+# ╠═e50e019d-8140-48f1-a4dd-40e1e112478b
+# ╠═a238c2e8-e75b-4484-8277-ccd04bf40a50
+# ╠═088ad824-ed48-45d8-8bea-849b42b5cdf7
 # ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 # ╠═33feb269-3620-43f1-8d31-66e8b9472481
 # ╠═e55a98a6-924c-4bf8-a79c-c12e46532b0d
