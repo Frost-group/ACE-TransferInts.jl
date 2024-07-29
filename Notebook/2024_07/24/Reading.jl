@@ -18,6 +18,9 @@ begin
 	#using ExtXYZ
 end
 
+# ╔═╡ ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
+using StaticArrays, LinearAlgebra
+
 # ╔═╡ e55a98a6-924c-4bf8-a79c-c12e46532b0d
 begin
 	using Plots
@@ -85,63 +88,109 @@ function find_element(Molecule, Z)
 	return findall(x->x==Z, Molecule.Z)
 end
 
+# ╔═╡ 9f36b8e9-2b50-4819-902d-8c14fc67bfed
+# ╠═╡ disabled = true
+#=╠═╡
+function collect_allC_ring(num_C, shared_C)
+	ring_C = zeros((2,6))
+	for jj in 1:2
+		for ii in 1:6
+			if
+		
+		end
+	end
+	return
+end
+  ╠═╡ =#
+
 # ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
 #C10 = read_frames("napthalene.xyz")
 
 # ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
 #write_frames("naphthalene.extxyz", C10, append=true)
 
-# ╔═╡ eeeddd5e-139e-4eae-8dd3-fc7ee961110b
-vec = zeros((3))
+# ╔═╡ c39b69ee-51d9-4df0-941d-f1d477c8a067
+
 
 # ╔═╡ 1f3f1281-6539-4bc7-8874-a952b5089767
-function Centre_Mass_bead(Molecule, share_C, All_C)
-	cm_Vec = []
-	for ii in 1:6
-		
-	end
-end
-
-# ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
-mol1 = read_extxyz("naphthalene.extxyz")[1]
-
-# ╔═╡ 3c7eeb80-fac3-4136-a5f5-df6236c08a93
-mol1.M
-
-# ╔═╡ e8ca11a1-6f9a-4de1-ac76-b52bf703d12a
-sum(mol1.X[1:6].*mol1.M[1:6])
-
-# ╔═╡ d080bb49-e035-49b3-95cb-bb10211c5aa6
-sum(mol1.X[1:6].*mol1.M[1:6]/sum(mol1.M[1:6]))
-
-# ╔═╡ 167ab7f3-9ce5-4b8c-9da7-725897b262e2
-sum(mol1.M)
-
-# ╔═╡ d7846676-2a02-498e-90b7-cfa5f25c78f1
-mol1.X[1]+vec 
-
-# ╔═╡ 2f51a339-a923-4f9a-a9b1-19b4348ce8ff
-begin
-	cm_Vec = []
-	num_C = find_element(mol1, 6)
+function Centroid_bead(Molecule, shared_C, num_C)
+	cent_Vec = [] 					#collect all bead centroids
+	
+	ring_C = zeros(Int64,(2,6))		#collect Carbon atoms (Shared + Unshared)
+	ring_C[1, 1:6] = num_C[1:6]
+	ring_C[2, 1:2] = shared_C
+	ring_C[2, 3:6] = num_C[7:10]
+	
 	for jj in 1:2
 		vec = zeros((3))
 		bead_mass = 0
 		for ii in 1:6
-			vec += mol1.X[num_C[ii]]*mol1.M[num_C[ii]]
-			bead_mass += mol1.M[num_C[ii]]
+			vec += Molecule.X[ring_C[jj, ii]]*Molecule.M[ring_C[jj, ii]]
+			bead_mass += Molecule.M[ring_C[jj, ii]]
 		end
+		#println(vec)
+		#println(bead_mass)
+		#println(vec/bead_mass)
+		#println(vec/78.11)
+		push!(cent_Vec, vec/bead_mass) #collect centroid positions with the CM of the beads
 	end
+	return cent_Vec
 end
 
-# ╔═╡ f7c0b8d0-6946-4dce-bbec-bdbc2bb539f7
-Set_Mol2 =  read_extxyz("dimer_naphthalene.extxyz")
+# ╔═╡ 8b6804f2-0d25-4cf8-b4da-2f3e638399a6
+const JVec = SVector{3}
 
-# ╔═╡ e50e019d-8140-48f1-a4dd-40e1e112478b
+# ╔═╡ 919a4e3f-a121-4504-aa96-01967b967c6b
+
+
+# ╔═╡ 2d935524-f013-4ad5-b6d8-de6f394fc713
+
+
+# ╔═╡ 32ac6e32-50a4-4d43-9464-60f2ecb60c43
+
+
+# ╔═╡ b1dfd94d-94c9-450a-bb38-36e098a7162a
+
+
+# ╔═╡ 591c8375-9601-41aa-a540-b6b323b05ccc
+
+
+# ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
 begin
-	nn = 1
+	mol1 = read_extxyz("naphthalene.extxyz")[1]
+	Set_Mol2 =  read_extxyz("dimer_naphthalene.extxyz")
+	nn = 400
 	mol2 = Set_Mol2[nn]
 end
+
+# ╔═╡ 817d7fc2-d928-4bf4-9059-dfd09e12a2ca
+begin
+	num_C = find_element(mol1, 6)
+	shared_C = [3, 4];
+end;
+
+# ╔═╡ 0015d7e0-3fe7-4605-bdc9-2d47e32533d1
+begin
+	ring_C = zeros(Int64,(2,6))
+	ring_C[1, 1:6] = num_C[1:6]
+	ring_C[2, 1:2] = shared_C
+	ring_C[2, 3:6] = num_C[7:10]
+end;
+
+# ╔═╡ b0d0efb5-9570-4d80-8fc7-d1849bbfa1f2
+ring_C
+
+# ╔═╡ ca265187-c7f9-42d6-bf73-360011477509
+x1 = Centroid_bead(mol1, shared_C, num_C)
+
+# ╔═╡ 9d3d33f4-d1c5-4360-8f53-29d900ca5b5e
+norm(x1[1,:]-x1[2,:])
+
+# ╔═╡ 587ab7d6-588a-4375-8f69-1e00333c0efc
+x2 = Centroid_bead(mol2, shared_C, num_C)
+
+# ╔═╡ 1c674758-faaa-4017-9f8c-833253ae6778
+norm(x2[1,:]-x2[2,:])
 
 # ╔═╡ a238c2e8-e75b-4484-8277-ccd04bf40a50
 
@@ -198,7 +247,9 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 JuLIP = "945c410c-986d-556a-acb1-167a618e0462"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 ACEpotentials = "~0.6.5"
@@ -208,6 +259,7 @@ DelimitedFiles = "~1.9.1"
 JuLIP = "~0.14.8"
 LaTeXStrings = "~1.3.1"
 Plots = "~1.40.5"
+StaticArrays = "~1.9.7"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -216,7 +268,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0-rc1"
 manifest_format = "2.0"
-project_hash = "a391ef61a4de50f978f60a708624b889b91a7179"
+project_hash = "bca96b501870b34c5a84ca901cfb1418b6dae9aa"
 
 [[deps.ACE1]]
 deps = ["ACEbase", "BenchmarkTools", "Combinatorics", "ForwardDiff", "InteractiveUtils", "Interpolations", "JuLIP", "LinearAlgebra", "NeighbourLists", "Parameters", "Pkg", "Printf", "QuadGK", "Random", "Reexport", "Roots", "SparseArrays", "StaticArrays", "Test"]
@@ -2391,19 +2443,26 @@ version = "1.4.1+1"
 # ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
 # ╠═ab81d644-20d3-4617-b6cd-fb92849f334b
 # ╠═61187086-ab9c-4aeb-8dc6-04227e862270
+# ╠═817d7fc2-d928-4bf4-9059-dfd09e12a2ca
+# ╠═9f36b8e9-2b50-4819-902d-8c14fc67bfed
+# ╠═0015d7e0-3fe7-4605-bdc9-2d47e32533d1
+# ╠═b0d0efb5-9570-4d80-8fc7-d1849bbfa1f2
 # ╠═83ece228-eae5-4805-beac-218c459cbbc8
 # ╠═6201194b-bafd-4fee-b353-85e6b880bc4f
-# ╠═3c7eeb80-fac3-4136-a5f5-df6236c08a93
-# ╠═e8ca11a1-6f9a-4de1-ac76-b52bf703d12a
-# ╠═d080bb49-e035-49b3-95cb-bb10211c5aa6
-# ╠═167ab7f3-9ce5-4b8c-9da7-725897b262e2
-# ╠═eeeddd5e-139e-4eae-8dd3-fc7ee961110b
-# ╠═d7846676-2a02-498e-90b7-cfa5f25c78f1
-# ╠═2f51a339-a923-4f9a-a9b1-19b4348ce8ff
+# ╠═c39b69ee-51d9-4df0-941d-f1d477c8a067
 # ╠═1f3f1281-6539-4bc7-8874-a952b5089767
+# ╠═ca265187-c7f9-42d6-bf73-360011477509
+# ╠═587ab7d6-588a-4375-8f69-1e00333c0efc
+# ╠═ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
+# ╠═8b6804f2-0d25-4cf8-b4da-2f3e638399a6
+# ╠═1c674758-faaa-4017-9f8c-833253ae6778
+# ╠═9d3d33f4-d1c5-4360-8f53-29d900ca5b5e
+# ╠═919a4e3f-a121-4504-aa96-01967b967c6b
+# ╠═2d935524-f013-4ad5-b6d8-de6f394fc713
+# ╠═32ac6e32-50a4-4d43-9464-60f2ecb60c43
+# ╠═b1dfd94d-94c9-450a-bb38-36e098a7162a
+# ╠═591c8375-9601-41aa-a540-b6b323b05ccc
 # ╠═8892ca90-4b2e-404c-810c-73397a88b3b1
-# ╠═f7c0b8d0-6946-4dce-bbec-bdbc2bb539f7
-# ╠═e50e019d-8140-48f1-a4dd-40e1e112478b
 # ╠═a238c2e8-e75b-4484-8277-ccd04bf40a50
 # ╠═088ad824-ed48-45d8-8bea-849b42b5cdf7
 # ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
