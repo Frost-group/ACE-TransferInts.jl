@@ -20,38 +20,122 @@ end
 
 # ╔═╡ bc9c626e-b968-491c-b8e0-c87f63e69147
 begin
-	using SpecialFunctions
+	using LegendrePolynomials
 	using Plots
 end
 
-# ╔═╡ a6112713-a4bb-4f47-bf2d-3695d230833c
-# Define the spherical harmonics function Y_l^m(θ, φ)
-function spherical_harmonic(ℓ, m, θ, φ)
-    normalization = √((2ℓ+1)/(4π) * factorial(ℓ-m)/factorial(ℓ+m))
-    legendre = SpecialFunctions.assoc_legendreP(ℓ, m, cos(θ))
-    exp_part = exp(im * m * φ)
-    return normalization * legendre * exp_part
+# ╔═╡ 529b3c39-7bf8-40ad-9557-1287dd966022
+begin
+	#using GLMakie
+	using LaTeXStrings
 end
 
-# Generate a grid of θ and φ values
-θ = range(0, π, length=100)
-φ = range(0, 2π, length=100)
-θ_grid, φ_grid = [θ for φ in φ], [φ for θ in θ]'
+# ╔═╡ 44cf4b2f-926d-4a6b-8709-e9b945d1be59
+function spherical_harmonic(ℓ, m, θ, φ)
+	    normalization = √((2ℓ+1)/(4π) * factorial(ℓ-m)/factorial(ℓ+m))
+	    legendre = Plm(cos(θ), ℓ, m)
+	    exp_part = exp(im * m * φ)
+	    return (-1)^m * normalization * legendre * exp_part
+	end
 
-# Compute the spherical harmonics for a specific ℓ and m
-ℓ = 3  # Degree
-m = 2  # Order
+# ╔═╡ fc982c1e-888e-4422-bfe6-9a2f5f2a6a8b
+begin
+	# Generate a grid of θ and φ values
+		θ = range(0, π, length=100)
+		φ = range(0, 2π, length=100)
+		#θ1_grid, φ1_grid = [θ for φ in φ], [φ for θ in θ]'
+		#θ_grid = [θ for _ in φ]  # Duplicate θ for each φ
+		#φ_grid = [φ for _ in θ]' # Duplicate φ for each θ and transpose
+		
+		# Compute the spherical harmonics for a specific ℓ and m
+		ℓ = 2  # Degree
+		m = 2  # Order
+end
 
-Y_lm = [spherical_harmonic(ℓ, m, θ, φ) for θ in θ_grid, φ in φ_grid]
+# ╔═╡ 53b5c8bb-b981-4a8b-b60f-fa7beed96c7d
 
-# Convert to Cartesian coordinates for plotting
-x = [abs(Y_lm) .* sin.(θ_grid) .* cos.(φ_grid) for Y_lm in Y_lm]
-y = [abs(Y_lm) .* sin.(θ_grid) .* sin.(φ_grid) for Y_lm in Y_lm]
-z = [abs(Y_lm) .* cos.(θ_grid) for Y_lm in Y_lm]
 
-# Plot the spherical harmonics
-plot3d(x, y, z, linetype=:surface, title="Spherical Harmonic Y_$ℓ^$m(θ, φ)",
-       xlabel="x", ylabel="y", zlabel="z", color=:viridis)
+# ╔═╡ a6112713-a4bb-4f47-bf2d-3695d230833c
+begin
+	#Y_lm = [spherical_harmonic(ℓ, m, θ, φ) for θ in θ_grid, φ in φ_grid]
+	Y_lm = zeros(ComplexF64, (length(θ),length(φ)))
+
+	for ii in 1:length(θ)
+		for jj in 1:length(φ)
+			Y_lm[ii, jj] = spherical_harmonic(ℓ, m, θ[ii], φ[jj])
+			#Y_lm[ii, jj] = spherical_harmonic(ℓ, m, θ_grid[ii][jj], φ_grid[ii][jj])
+		end
+	end
+
+	
+	# Convert to Cartesian coordinates for plotting
+	x = zeros((length(θ),length(φ)))
+	y = zeros((length(θ),length(φ)))
+	z = zeros((length(θ),length(φ)))
+
+	x_re = zeros((length(θ),length(φ)))
+	y_re = zeros((length(θ),length(φ)))
+	z_re = zeros((length(θ),length(φ)))
+	
+	x_im = zeros((length(θ),length(φ)))
+	y_im = zeros((length(θ),length(φ)))
+	z_im = zeros((length(θ),length(φ)))
+	
+	for ii in 1:length(θ)
+		for jj in 1:length(φ)
+			x[ii, jj] = sin.(θ[ii]).* cos.(φ[jj])
+			y[ii, jj] = sin.(θ[ii]).* sin.(φ[jj])
+			z[ii, jj] = cos.(θ[ii])
+			
+			x_re[ii, jj] = real(Y_lm[ii,jj]) .* sin.(θ[ii]) .* cos.(φ[jj])
+			y_re[ii, jj]  = real(Y_lm[ii,jj]) .* sin.(θ[jj]) .* sin.(φ[jj])
+			z_re[ii, jj]  = real(Y_lm[ii,jj]) .* cos.(θ[ii])
+			
+			x_im[ii, jj] = imag(Y_lm[ii,jj]) .* sin.(θ[ii]) .* cos.(φ[jj])
+			y_im[ii, jj]  = imag(Y_lm[ii,jj]) .* sin.(θ[jj]) .* sin.(φ[jj])
+			z_im[ii, jj]  = imag(Y_lm[ii,jj]) .* cos.(θ[ii])
+		end
+	end
+end
+
+# ╔═╡ 4ef55e25-ab44-44ff-8928-53e8c9b7045f
+
+
+# ╔═╡ cf5e5dff-ea28-4002-be90-94f65f6ce9a2
+plotly()
+
+# ╔═╡ e20f18d1-eab1-47a9-afa9-7e36b3819080
+plot(φ, θ,
+	real(Y_lm),
+	st=:surface,
+	xlabel= L"$\phi$",
+	ylabel=L"$\theta$",
+	zlabel=L"\mathfrak{Re}(Y_{l}^{m})",
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ fc1a939f-6526-4890-9580-bd268bc2167b
+plot(θ, φ,
+	imag(Y_lm),
+	st=:surface,
+	ylabel= L"$\phi$",
+	xlabel=L"$\theta$",
+	zlabel=L"\mathfrak{Im}Y_{l}^{m}",
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ 14886386-621a-4e05-b234-eeb1dfb848f3
+surface(x_re, y_re, z_re,
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ a5e0d11c-b93f-4da1-8600-a7f72ff8fbcf
+surface(x_im, y_im, z_im,
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ ee8edc2b-de7c-4dfb-833e-7148eb7d1110
+surface(x, y, z,
+	c=cgrad(["#064635","#519259", "#96BB7C","white", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ 855359d3-3d85-4a21-bb0c-4ff369aea99d
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -61,8 +145,9 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 JuLIP = "945c410c-986d-556a-acb1-167a618e0462"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LegendrePolynomials = "3db4a2ba-fc88-11e8-3e01-49c72059a882"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
 ACEpotentials = "~0.6.7"
@@ -70,8 +155,9 @@ CSV = "~0.10.14"
 DataFrames = "~1.6.1"
 DelimitedFiles = "~1.9.1"
 JuLIP = "~0.14.8"
+LaTeXStrings = "~1.3.1"
+LegendrePolynomials = "~0.4.4"
 Plots = "~1.40.5"
-SpecialFunctions = "~2.4.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -80,7 +166,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0-rc1"
 manifest_format = "2.0"
-project_hash = "8367b7e9fda26adf76c7648068ce6679720a30c5"
+project_hash = "2e72983ea30b4be3c6a1567f33b4e1fc432f4622"
 
 [[deps.ACE1]]
 deps = ["ACEbase", "BenchmarkTools", "Combinatorics", "ForwardDiff", "InteractiveUtils", "Interpolations", "JuLIP", "LinearAlgebra", "NeighbourLists", "Parameters", "Pkg", "Printf", "QuadGK", "Random", "Reexport", "Roots", "SparseArrays", "StaticArrays", "Test"]
@@ -995,6 +1081,12 @@ version = "0.1.17"
 deps = ["Artifacts", "Pkg"]
 uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
 version = "1.11.0"
+
+[[deps.LegendrePolynomials]]
+deps = ["OffsetArrays", "SpecialFunctions"]
+git-tree-sha1 = "78e5288b179f2ae90ccbaa1799e9b0cb82ef5e04"
+uuid = "3db4a2ba-fc88-11e8-3e01-49c72059a882"
+version = "0.4.4"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -2441,6 +2533,18 @@ version = "1.4.1+1"
 # ╠═61988b8a-4dc8-11ef-1116-515b436a98b4
 # ╠═b8fb730e-624e-483b-8aae-3b30201b5c63
 # ╠═bc9c626e-b968-491c-b8e0-c87f63e69147
+# ╠═44cf4b2f-926d-4a6b-8709-e9b945d1be59
+# ╠═fc982c1e-888e-4422-bfe6-9a2f5f2a6a8b
+# ╠═53b5c8bb-b981-4a8b-b60f-fa7beed96c7d
 # ╠═a6112713-a4bb-4f47-bf2d-3695d230833c
+# ╠═4ef55e25-ab44-44ff-8928-53e8c9b7045f
+# ╠═529b3c39-7bf8-40ad-9557-1287dd966022
+# ╠═cf5e5dff-ea28-4002-be90-94f65f6ce9a2
+# ╠═e20f18d1-eab1-47a9-afa9-7e36b3819080
+# ╠═fc1a939f-6526-4890-9580-bd268bc2167b
+# ╠═14886386-621a-4e05-b234-eeb1dfb848f3
+# ╠═a5e0d11c-b93f-4da1-8600-a7f72ff8fbcf
+# ╠═ee8edc2b-de7c-4dfb-833e-7148eb7d1110
+# ╠═855359d3-3d85-4a21-bb0c-4ff369aea99d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

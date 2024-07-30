@@ -238,6 +238,28 @@ heatmap(ϕ[1:49],
 		size=(700, 700),
 	    title="PbTe_FC2 (Traning Data = " *string(199) *")" )
 
+# ╔═╡ 9e546e9c-a521-4b88-b8ad-7ed0ecd49966
+begin
+	θ_grid = [θ for _ in ϕ]  # Duplicate θ for each φ
+	ϕ_grid = [ϕ for _ in θ]'  # Duplicate φ for each θ and transpose
+end
+
+# ╔═╡ 42212782-5b70-4364-b2bb-a75ee65e00c5
+plot(θ,ϕ,
+	J_mat,
+	st=:surface,
+	xlabel= L"$\phi$",
+	ylabel=L"$\theta$",
+	zlabel=L"J",
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ ad03089d-4b66-4f93-814e-b379e16da537
+plot(θ,ϕ,logJ_mat,st=:surface,
+	xlabel= L"$\phi$",
+	ylabel=L"$\theta$",
+	zlabel=L"log(J)",
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2470,5 +2492,8 @@ version = "1.4.1+1"
 # ╠═e55a98a6-924c-4bf8-a79c-c12e46532b0d
 # ╠═1f58b44f-bae8-420a-857d-2a1a5fbea8bf
 # ╠═a9877a72-8601-4c24-9a26-10d51e3b96b6
+# ╠═9e546e9c-a521-4b88-b8ad-7ed0ecd49966
+# ╠═42212782-5b70-4364-b2bb-a75ee65e00c5
+# ╠═ad03089d-4b66-4f93-814e-b379e16da537
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
