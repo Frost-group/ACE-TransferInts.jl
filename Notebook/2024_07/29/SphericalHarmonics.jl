@@ -48,8 +48,8 @@ begin
 		#φ_grid = [φ for _ in θ]' # Duplicate φ for each θ and transpose
 		
 		# Compute the spherical harmonics for a specific ℓ and m
-		ℓ = 2  # Degree
-		m = 2  # Order
+		ℓ = 1  # Degree
+		m = -1  # Order
 end
 
 # ╔═╡ 53b5c8bb-b981-4a8b-b60f-fa7beed96c7d
@@ -80,26 +80,35 @@ begin
 	x_im = zeros((length(θ),length(φ)))
 	y_im = zeros((length(θ),length(φ)))
 	z_im = zeros((length(θ),length(φ)))
+
+	x_ab = zeros((length(θ),length(φ)))
+	y_ab = zeros((length(θ),length(φ)))
+	z_ab = zeros((length(θ),length(φ)))
+	
 	
 	for ii in 1:length(θ)
 		for jj in 1:length(φ)
-			x[ii, jj] = sin.(θ[ii]).* cos.(φ[jj])
-			y[ii, jj] = sin.(θ[ii]).* sin.(φ[jj])
+			x[ii, jj] = sin.(θ[ii]).* sin.(φ[jj])
+			y[ii, jj] = sin.(θ[ii]).* cos.(φ[jj])
 			z[ii, jj] = cos.(θ[ii])
 			
-			x_re[ii, jj] = real(Y_lm[ii,jj]) .* sin.(θ[ii]) .* cos.(φ[jj])
-			y_re[ii, jj]  = real(Y_lm[ii,jj]) .* sin.(θ[jj]) .* sin.(φ[jj])
+			x_re[ii, jj] = real(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
+			y_re[ii, jj]  = real(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
 			z_re[ii, jj]  = real(Y_lm[ii,jj]) .* cos.(θ[ii])
 			
-			x_im[ii, jj] = imag(Y_lm[ii,jj]) .* sin.(θ[ii]) .* cos.(φ[jj])
-			y_im[ii, jj]  = imag(Y_lm[ii,jj]) .* sin.(θ[jj]) .* sin.(φ[jj])
+			x_im[ii, jj] = imag(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
+			y_im[ii, jj]  = imag(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
 			z_im[ii, jj]  = imag(Y_lm[ii,jj]) .* cos.(θ[ii])
+
+			x_ab[ii, jj] = abs.(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
+			y_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
+			z_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* cos.(θ[ii])
 		end
 	end
 end
 
 # ╔═╡ 4ef55e25-ab44-44ff-8928-53e8c9b7045f
-
+abs.(Y_lm)
 
 # ╔═╡ cf5e5dff-ea28-4002-be90-94f65f6ce9a2
 plotly()
@@ -135,7 +144,8 @@ surface(x, y, z,
 	c=cgrad(["#064635","#519259", "#96BB7C","white", "#F0BB62", "#FAD586","#F4EEA9"]))
 
 # ╔═╡ 855359d3-3d85-4a21-bb0c-4ff369aea99d
-
+surface(x_ab, y_ab, z_ab,
+	c=cgrad(["#064635","#519259", "#96BB7C","white", "#F0BB62", "#FAD586","#F4EEA9"]))
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
