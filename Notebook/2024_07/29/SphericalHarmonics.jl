@@ -48,7 +48,7 @@ begin
 		#φ_grid = [φ for _ in θ]' # Duplicate φ for each θ and transpose
 		
 		# Compute the spherical harmonics for a specific ℓ and m
-		ℓ = 1  # Degree
+		ℓ = 2 # Degree
 		m = 1
   # Order
 end
@@ -93,23 +93,47 @@ begin
 			y[ii, jj] = sin.(θ[ii]).* cos.(φ[jj])
 			z[ii, jj] = cos.(θ[ii])
 			
-			x_re[ii, jj] = real(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
-			y_re[ii, jj]  = real(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
-			z_re[ii, jj]  = real(Y_lm[ii,jj]) .* cos.(θ[ii])
+			x_re[ii, jj] = real(Y_lm[ii,jj]) .* x[ii, jj]
+			y_re[ii, jj]  = real(Y_lm[ii,jj]) .* y[ii, jj]
+			z_re[ii, jj]  = real(Y_lm[ii,jj]) .* z[ii, jj]
 			
-			x_im[ii, jj] = imag(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
-			y_im[ii, jj]  = imag(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
-			z_im[ii, jj]  = imag(Y_lm[ii,jj]) .* cos.(θ[ii])
+			x_im[ii, jj] = imag(Y_lm[ii,jj]) .* x[ii, jj]
+			y_im[ii, jj]  = imag(Y_lm[ii,jj]) .* y[ii, jj]
+			z_im[ii, jj]  = imag(Y_lm[ii,jj]) .* z[ii, jj]
 
-			x_ab[ii, jj] = abs.(Y_lm[ii,jj]) .* sin.(θ[ii]) .* sin.(φ[jj])
-			y_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* sin.(θ[jj]) .* cos.(φ[jj])
-			z_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* cos.(θ[ii])
+			x_ab[ii, jj] = abs.(Y_lm[ii,jj]) .* x[ii, jj]
+			y_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* y[ii, jj]
+			z_ab[ii, jj]  = abs.(Y_lm[ii,jj]) .* z[ii, jj]
 		end
 	end
 end
 
-# ╔═╡ 4ef55e25-ab44-44ff-8928-53e8c9b7045f
-abs.(Y_lm)
+# ╔═╡ add053c4-7608-4a0f-908b-6c2d3abacbf8
+heatmap(θ[:], φ[:], (real.(Y_lm[:,:]).^2+imag.(Y_lm[:,:]).^2),
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
+
+# ╔═╡ 49c04bd0-56ac-493b-b7cc-de2cc40fbcd8
+heatmap(θ[:], φ[:], real.(Y_lm[:,:]).^2,
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
+
+# ╔═╡ 09d73520-d256-4adf-bb23-d66cbb7bfb22
+heatmap(θ[:], φ[:], imag.(Y_lm[:,:]).^2,
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
 
 # ╔═╡ cf5e5dff-ea28-4002-be90-94f65f6ce9a2
 plotly()
@@ -2566,8 +2590,10 @@ version = "1.4.1+1"
 # ╠═fc982c1e-888e-4422-bfe6-9a2f5f2a6a8b
 # ╠═53b5c8bb-b981-4a8b-b60f-fa7beed96c7d
 # ╠═a6112713-a4bb-4f47-bf2d-3695d230833c
-# ╠═4ef55e25-ab44-44ff-8928-53e8c9b7045f
 # ╠═529b3c39-7bf8-40ad-9557-1287dd966022
+# ╠═add053c4-7608-4a0f-908b-6c2d3abacbf8
+# ╠═49c04bd0-56ac-493b-b7cc-de2cc40fbcd8
+# ╠═09d73520-d256-4adf-bb23-d66cbb7bfb22
 # ╠═cf5e5dff-ea28-4002-be90-94f65f6ce9a2
 # ╠═e20f18d1-eab1-47a9-afa9-7e36b3819080
 # ╠═fc1a939f-6526-4890-9580-bd268bc2167b
