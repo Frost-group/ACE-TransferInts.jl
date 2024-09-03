@@ -91,10 +91,24 @@ degree less than or equal to the given maximum degree
 sizeY(l_maxDegree) = (l_maxDegree + 1) * (l_maxDegree + 1)
 
 # ╔═╡ 6d8eed00-0d3d-416e-966e-709904431696
-sizeP(3)
+begin
+	"""
+		index_p(l,m)
+	
+	Return the index into a flat array of Associated Legendre Polynomials ``P_l^m``
+	for the given indices ``(l,m)``.
+	``P_l^m`` are stored in l-major order i.e. [P(0,0), [P(1,0), P(1,1), P(2,0), ...]
+	"""
+	# Base.@pure index_p(l,m) = m + div(l*(l+1), 2) + 1
+	@inline index_p(l::Int,m::Int) = m + div(l*(l+1), 2) + 1
+	index_p(l::Integer, m::Integer) = index_y(Int(l), Int(m))
+end
 
 # ╔═╡ 7285bc53-0a12-4184-b11c-bb76e7fb6412
 sizeY(3)
+
+# ╔═╡ d0240955-4cc2-48f0-b266-6f281a0e0fde
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1361,5 +1375,6 @@ version = "17.4.0+2"
 # ╠═d04d476f-7476-4b40-a438-4cb099155bbe
 # ╠═6d8eed00-0d3d-416e-966e-709904431696
 # ╠═7285bc53-0a12-4184-b11c-bb76e7fb6412
+# ╠═d0240955-4cc2-48f0-b266-6f281a0e0fde
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

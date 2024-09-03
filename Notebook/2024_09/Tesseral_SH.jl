@@ -45,11 +45,14 @@ end
 # ╔═╡ b98fc2bf-c1c6-4ccc-a094-7bcbdb3b8336
 x = [sin(θ) * sin(ϕ) for θ in θ, ϕ in ϕ]
 
-# ╔═╡ a684a3c8-5521-44de-a9c1-848d7783f383
+# ╔═╡ f149ac3d-c011-4b3d-8d4f-95b88b03ae8b
 y = [sin(θ) * cos(ϕ) for θ in θ, ϕ in ϕ]
 
-# ╔═╡ ea99081d-a9bb-4f80-9eed-437d625545d7
+# ╔═╡ 84c6e16a-cf2b-4f10-b113-8e7164899b0f
 z = [cos(θ) for θ in θ, ϕ in ϕ]
+
+# ╔═╡ d507a13b-1712-4fd3-99c8-7f1ba5e17e76
+m = Observable(1)
 
 # ╔═╡ 77327ff7-a8b5-4878-8394-8121a9179f85
 l = Observable(4)
@@ -59,9 +62,6 @@ Paintokk = cgrad(["#064635", "#519259", "#96BB7C", "#F0BB62", "#FAD586", "#F4EEA
 
 # Register the color scheme in the ColorSchemes package with the name "Paintokk"
 
-# ╔═╡ d507a13b-1712-4fd3-99c8-7f1ba5e17e76
-m = Observable(1)
-
 # ╔═╡ 2dcf5fc9-9782-4bc6-bbf4-c65e066a975b
 cs1 = ColorScheme([colorant"#064635", colorant"#519259", colorant"#96BB7C", colorant"#F0BB62", colorant"#FAD586", colorant"#F4EEA9"], "Paintokk")
 
@@ -70,47 +70,131 @@ cmap = "Hiroshige"
 
 # ╔═╡ 17c3c4c3-4e00-4baa-88e1-0ca343c5f9b9
 with_theme(theme_dark()) do
-    fig = Figure(size = (1200, 800))
-    menu = Menu(fig, options = ["Paintokk", "Hiroshige", "Spectral_11", "diverging_bkr_55_10_c35_n256",
-        "diverging_cwm_80_100_c22_n256", "diverging_gkr_60_10_c40_n256",
-        "diverging_linear_bjr_30_55_c53_n256",
-        "diverging_protanopic_deuteranopic_bwy_60_95_c32_n256"])
-    Ygrid = lift(l, m) do l, m
-        [Y(θ, ϕ, l, m) for θ in θ, ϕ in ϕ]
-    end
-    Ylm = @lift(abs.($Ygrid))
-    Ygrid2 = @lift(vec($Ygrid))
-	Ylm_real = @lift(real.($Ygrid))
-	Ylm_imag = @lift(imag.($Ygrid))
+           fig = Figure(size = (1200, 800))
+           menu = Menu(fig, options = ["Paintokk", "Hiroshige", "Spectral_11", "diverging_bkr_55_10_c35_n256",
+               "diverging_cwm_80_100_c22_n256", "diverging_gkr_60_10_c40_n256",
+               "diverging_linear_bjr_30_55_c53_n256",
+               "diverging_protanopic_deuteranopic_bwy_60_95_c32_n256"])
+           Ygrid = lift(l, m) do l, m
+               [Y(θ, ϕ, l, m) for θ in θ, ϕ in ϕ]
+           end
+           Ylm = @lift(abs.($Ygrid))
+           Ygrid2 = @lift(vec($Ygrid))
+               Ylm_real = @lift(real.($Ygrid))
+               Ylm_imag = @lift(imag.($Ygrid))
 
-	ax1 = Axis3(fig[1, 1], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
-	ax2 = Axis3(fig[1, 2], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
-	ax3 = Axis3(fig[2, 1], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
-	ax4 = Axis3(fig[2, 2], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
-	
-	pltobj1 = surface!(ax1, x, y, z; color = Ygrid, colormap = Paintokk , shading = NoShading)
-	pltobj2 = surface!(ax2, @lift($Ylm .* x), @lift($Ylm .* y), @lift($Ylm .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
-	pltobj3 = surface!(ax3, @lift($Ylm_real .* x), @lift($Ylm_real .* y), @lift($Ylm_real .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
-    limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
-	pltobj4 = surface!(ax4, @lift($Ylm_imag .* x), @lift($Ylm_imag .* y), @lift($Ylm_imag .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
-    limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
-    
-	cbar = Colorbar(fig[1, 3], pltobj1, label = "Yₗₘ(θ,ϕ)", width = 20, tickalign = 1, tickwidth = 1)
-	
-	fig[0, 1:2] = GLMakie.Label(fig, @lift("Tesseral Spherical Harmonics l = $($l), m = $($m)"), fontsize = 20)
-    fig[1, 0] = vgrid!(
-        GLMakie.Label(fig, "Colormap", width = nothing),
-        menu; tellheight = false, width = 150)
-    on(menu.selection) do s
-        pltobj1.colormap = s
-        pltobj2.colormap = s
-		pltobj3.colormap = s
-        pltobj4.colormap = s
+               ax1 = Axis3(fig[1, 1], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+               ax2 = Axis3(fig[1, 2], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+               ax3 = Axis3(fig[2, 1], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+               ax4 = Axis3(fig[2, 2], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+               
+               pltobj1 = surface!(ax1, x, y, z; color = Ygrid, colormap = Paintokk , shading = NoShading)
+               pltobj2 = surface!(ax2, @lift($Ylm .* x), @lift($Ylm .* y), @lift($Ylm .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
+               pltobj3 = surface!(ax3, @lift($Ylm_real .* x), @lift($Ylm_real .* y), @lift($Ylm_real .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
+           limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
+               pltobj4 = surface!(ax4, @lift($Ylm_imag .* x), @lift($Ylm_imag .* y), @lift($Ylm_imag .* z), color = Ygrid, colormap = Paintokk , shading = NoShading)
+           limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
+           
+               cbar = Colorbar(fig[1, 3], pltobj1, label = "Yₗₘ(θ,ϕ)", width = 20, tickalign = 1, tickwidth = 1)
+               
+               fig[0, 1:2] = GLMakie.Label(fig, @lift("Tesseral Spherical Harmonics l = $($l), m = $($m)"), fontsize = 20)
+           fig[1, 0] = vgrid!(
+               GLMakie.Label(fig, "Colormap", width = nothing),
+               menu; tellheight = false, width = 150)
+           on(menu.selection) do s
+               pltobj1.colormap = s
+               pltobj2.colormap = s
+                       pltobj3.colormap = s
+               pltobj4.colormap = s
+           end
+           sl = Slider(fig[end+1, 1:2], range = 1:30, startvalue = 6)
+           sl2 = Slider(fig[end+1, 1:2], range = @lift(-$(sl.value):1:$(sl.value)))
+           connect!(l, sl.value)
+           connect!(m, sl2.value)
+           tight_ticklabel_spacing!(cbar)
+           #display(fig)
+           fig
+       end
+
+# ╔═╡ f4e18ae8-6497-4e82-a68d-e71acff0d228
+begin
+	l1 = Observable(4)
+	l2 = Observable(4)
+	m1 = Observable(1)
+	m2 = Observable(1)
+	l3 = Observable(4)
+	m3 = Observable(1)
+end
+
+# ╔═╡ dbac31ed-4b48-4d7d-8960-65f4e70fb0c2
+with_theme(theme_dark()) do
+           fig = Figure(size = ( 2560, 1440))
+           menu = Menu(fig, options = ["Paintokk", "Hiroshige", "Spectral_11", "diverging_bkr_55_10_c35_n256",
+               "diverging_cwm_80_100_c22_n256", "diverging_gkr_60_10_c40_n256",
+               "diverging_linear_bjr_30_55_c53_n256",
+               "diverging_protanopic_deuteranopic_bwy_60_95_c32_n256"])
+    Ygrid1 = lift(l1, m1) do l1, m1
+               [Y(θ, ϕ, l1, m1) for θ in θ, ϕ in ϕ]
     end
-    sl = Slider(fig[end+1, 1:2], range = 1:30, startvalue = 6)
-    sl2 = Slider(fig[end+1, 1:2], range = @lift(-$(sl.value):1:$(sl.value)))
-    connect!(l, sl.value)
-    connect!(m, sl2.value)
+
+	Ygrid2 = lift(l2, m2) do l2, m2
+               [Y(θ, ϕ, l2, m2) for θ in θ, ϕ in ϕ]
+    end
+
+	Ygrid3 = lift(l1, m1, l2, m2) do l1, m1, l2, m2
+               [Y(θ, ϕ, l1, m1) .* Y(θ, ϕ, l2, m2) for θ in θ, ϕ in ϕ]
+    end
+
+    Ylm1 = @lift(abs.($Ygrid1))
+	Ylm2 = @lift(abs.($Ygrid2))
+	Ylm3 = @lift(abs.($Ygrid3))
+	
+    Ygrid11 = @lift(vec($Ygrid1))
+	
+
+    ax1 = Axis3(fig[1, 1:2], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+	
+    ax2 = Axis3(fig[1, 3:4], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+	
+    ax3 = Axis3(fig[2, 1:4], aspect = :data, perspectiveness = 0.5, elevation = π / 8, azimuth = 2.225π)
+               
+
+	pltobj1 = surface!(ax1, @lift($Ylm1 .* x), @lift($Ylm1 .* y), @lift($Ylm1 .* z), color = Ygrid1, colormap = Paintokk , shading = NoShading)
+	
+	pltobj2 = surface!(ax2, @lift($Ylm2 .* x), @lift($Ylm2 .* y), @lift($Ylm2 .* z), color = Ygrid2, colormap = Paintokk , shading = NoShading)
+	
+	pltobj3 = surface!(ax3, @lift($Ylm3 .* x), @lift($Ylm3 .* y), @lift($Ylm3 .* z), color = Ygrid3, colormap = Paintokk , shading = NoShading)
+    
+	limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
+               
+           
+    cbar = Colorbar(fig[1:3, 5], pltobj1, label = "Yₗₘ(θ,ϕ)", width = 20, tickalign = 1, tickwidth = 1)
+               
+    fig[0, 1:2] = GLMakie.Label(fig, @lift("Yₗₘ(l₁ = $($l1), m₁ = $($m1))"), fontsize = 30)
+	fig[0, 3:4] = GLMakie.Label(fig, @lift("Yₗₘ(l₂ = $($l2), m₂ = $($m2))"), fontsize = 30)
+	fig[3, 1:4] = GLMakie.Label(fig, @lift("Y(l₁m₁l₂m₂)($($l1), $($m1), $($l2), $($m2))"), fontsize = 30)
+	
+	
+    fig[1, 0] = vgrid!(GLMakie.Label(fig, "Colormap", width = nothing),
+               menu; tellheight = false, width = 150)
+           on(menu.selection) do s
+            pltobj1.colormap = s
+            pltobj2.colormap = s
+            pltobj3.colormap = s
+           end
+	
+    sl1 = Slider(fig[end+1, 0:4], range = 0:5, startvalue = 1)
+    sm1 = Slider(fig[end+1, 0:4], range = @lift(-$(sl1.value):1:$(sl1.value)))
+
+	sl2 = Slider(fig[end+1, 0:4], range = 0:5, startvalue = 3)
+    sm2 = Slider(fig[end+1, 0:4], range = @lift(-$(sl2.value):1:$(sl2.value)))
+           
+	connect!(l1, sl1.value)
+    connect!(m1, sm1.value)
+	
+	connect!(l2, sl2.value)
+    connect!(m2, sm2.value)
+	
     tight_ticklabel_spacing!(cbar)
     #display(fig)
     fig
@@ -2092,15 +2176,17 @@ version = "1.4.1+1"
 # ╠═14359661-b0a7-48b8-a27e-46631444ee6d
 # ╠═7d9f6a7d-eac6-4f13-9e41-4cf3f097cafb
 # ╠═b98fc2bf-c1c6-4ccc-a094-7bcbdb3b8336
-# ╠═a684a3c8-5521-44de-a9c1-848d7783f383
-# ╠═ea99081d-a9bb-4f80-9eed-437d625545d7
+# ╠═f149ac3d-c011-4b3d-8d4f-95b88b03ae8b
+# ╠═84c6e16a-cf2b-4f10-b113-8e7164899b0f
+# ╠═d507a13b-1712-4fd3-99c8-7f1ba5e17e76
 # ╠═77327ff7-a8b5-4878-8394-8121a9179f85
 # ╠═9618ec59-391a-4914-a8bc-a06e5e66bb78
 # ╠═f06ec0eb-4df0-40eb-aa5d-d856675ad392
-# ╠═d507a13b-1712-4fd3-99c8-7f1ba5e17e76
 # ╠═47f5b48e-ac1e-4354-9838-690eb9a62174
 # ╠═2dcf5fc9-9782-4bc6-bbf4-c65e066a975b
 # ╠═6bf83ab3-270e-4501-b3bb-136c39e30608
 # ╠═17c3c4c3-4e00-4baa-88e1-0ca343c5f9b9
+# ╠═f4e18ae8-6497-4e82-a68d-e71acff0d228
+# ╠═dbac31ed-4b48-4d7d-8960-65f4e70fb0c2
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
