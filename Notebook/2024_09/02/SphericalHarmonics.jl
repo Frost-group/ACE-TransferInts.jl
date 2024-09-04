@@ -90,6 +90,20 @@ degree less than or equal to the given maximum degree
 """
 sizeY(l_maxDegree) = (l_maxDegree + 1) * (l_maxDegree + 1)
 
+# ╔═╡ d0240955-4cc2-48f0-b266-6f281a0e0fde
+begin
+	"""
+		index_y(l,m)
+	
+	Return the index into a flat array of real spherical harmonics ``Y_{l,m}``
+	for the given indices ``(l,m)``.
+	``Y_{l,m}`` are stored in l-major order i.e.
+	[Y(0,0), [Y(1,-1), Y(1,0), Y(1,1), Y(2,-2), ...]
+	"""
+	Base.@pure index_y(l::Int, m::Int) = m + l + (l*l) + 1
+	index_y(l::Integer, m::Integer) = index_y(Int(l), Int(m))
+end
+
 # ╔═╡ 6d8eed00-0d3d-416e-966e-709904431696
 begin
 	"""
@@ -104,11 +118,55 @@ begin
 	index_p(l::Integer, m::Integer) = index_y(Int(l), Int(m))
 end
 
-# ╔═╡ 7285bc53-0a12-4184-b11c-bb76e7fb6412
-sizeY(3)
+# ╔═╡ b8ab9027-251b-4732-8722-96f989654e5c
+# # i = m + l + l^2 + 1
+# # m = i - l - l^2 - 1
+# _li2m(l, i) = i - l - l^2 - 1
 
-# ╔═╡ d0240955-4cc2-48f0-b266-6f281a0e0fde
+# --------------------------------------------------------
+#     Associated Legendre Polynomials
+#     TODO: rewrite within general interface?
+#           - alloc_B, alloc_dB, alloc_temp, ...
+# --------------------------------------------------------
 
+# ╔═╡ d19aef37-15dd-4356-851e-4bb9f8ff876a
+begin
+	"""
+	`ALPCoefficients` : an auxiliary datastructure for
+	evaluating the associated lagrange functions
+	used for the spherical harmonics
+	"""
+	struct ALPCoefficients{T}
+		A::Vector{T}
+		B::Vector{T}
+	end
+	
+	ALPCoefficients(maxDegree::Integer, T::Type=Float64) =
+		ALPCoefficients( Vector{T}(undef, sizeP(maxDegree)),
+							  Vector{T}(undef, sizeP(maxDegree)) )
+	
+	"""
+		compute_coefficients(L)
+	
+	Precompute coefficients ``a_l^m`` and ``b_l^m`` for all l <= L, m <= l
+	"""
+	function compute_coefficients(L::Integer, T::Type=Float64)
+		coeff = ALPCoefficients(L, T)
+		for l in 2:L
+			ls = l*l
+			lm1s = (l-1) * (l-1)
+			for m in 0:(l-2)
+				ms = m * m
+				coeff.A[index_p(l, m)] = sqrt((4 * ls - 1.0) / (ls - ms))
+				coeff.B[index_p(l, m)] = -sqrt((lm1s - ms) / (4 * lm1s - 1.0))
+			end
+		end
+		return coeff
+	end
+end
+
+# ╔═╡ 4cdcee5b-de93-4ba7-a9b1-f9ab993574ac
+compute_coefficients(3)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1374,7 +1432,9 @@ version = "17.4.0+2"
 # ╠═d590fde6-ebbc-43d1-a833-bb978b1ed672
 # ╠═d04d476f-7476-4b40-a438-4cb099155bbe
 # ╠═6d8eed00-0d3d-416e-966e-709904431696
-# ╠═7285bc53-0a12-4184-b11c-bb76e7fb6412
 # ╠═d0240955-4cc2-48f0-b266-6f281a0e0fde
+# ╠═b8ab9027-251b-4732-8722-96f989654e5c
+# ╠═d19aef37-15dd-4356-851e-4bb9f8ff876a
+# ╠═4cdcee5b-de93-4ba7-a9b1-f9ab993574ac
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

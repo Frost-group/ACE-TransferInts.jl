@@ -164,9 +164,10 @@ with_theme(theme_dark()) do
 	pltobj2 = surface!(ax2, @lift($Ylm2 .* x), @lift($Ylm2 .* y), @lift($Ylm2 .* z), color = Ygrid2, colormap = Paintokk , shading = NoShading)
 	
 	pltobj3 = surface!(ax3, @lift($Ylm3 .* x), @lift($Ylm3 .* y), @lift($Ylm3 .* z), color = Ygrid3, colormap = Paintokk , shading = NoShading)
-    
+
+	limits!(ax1, -0.5, 0.5, -0.5, 0.5, -1, 1)
 	limits!(ax2, -0.5, 0.5, -0.5, 0.5, -1, 1)
-               
+    limits!(ax3, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5)          
            
     cbar = Colorbar(fig[1:3, 5], pltobj1, label = "Yₗₘ(θ,ϕ)", width = 20, tickalign = 1, tickwidth = 1)
                

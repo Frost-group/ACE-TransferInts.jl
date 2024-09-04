@@ -15,7 +15,9 @@ end
 begin
 	using JuLIP
 	using ACEpotentials
-	#using ExtXYZ
+	using AtomsBase
+	
+	using Unitful#using ExtXYZ
 end
 
 # ╔═╡ ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
@@ -82,6 +84,15 @@ end
 # ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
 para, J, logJ = read_J("out.dat")
 
+# ╔═╡ 82233ffe-210f-40cb-bff9-9c15eb5d9408
+
+
+# ╔═╡ 8320aaf3-927b-45c0-a2ba-e65f1edc896c
+
+
+# ╔═╡ d27879ca-7136-458f-8e26-f186f129fcde
+
+
 # ╔═╡ 61187086-ab9c-4aeb-8dc6-04227e862270
 #Find element
 function find_element(Molecule, Z)
@@ -141,18 +152,11 @@ end
 const JVec = SVector{3}
 
 # ╔═╡ 919a4e3f-a121-4504-aa96-01967b967c6b
+function bead
 
-
-# ╔═╡ 2d935524-f013-4ad5-b6d8-de6f394fc713
-
-
-# ╔═╡ 32ac6e32-50a4-4d43-9464-60f2ecb60c43
-
+end
 
 # ╔═╡ b1dfd94d-94c9-450a-bb38-36e098a7162a
-
-
-# ╔═╡ 591c8375-9601-41aa-a540-b6b323b05ccc
 
 
 # ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
@@ -183,17 +187,14 @@ ring_C
 # ╔═╡ ca265187-c7f9-42d6-bf73-360011477509
 x1 = Centroid_bead(mol1, shared_C, num_C)
 
-# ╔═╡ 9d3d33f4-d1c5-4360-8f53-29d900ca5b5e
-norm(x1[1,:]-x1[2,:])
-
 # ╔═╡ 587ab7d6-588a-4375-8f69-1e00333c0efc
 x2 = Centroid_bead(mol2, shared_C, num_C)
 
-# ╔═╡ 1c674758-faaa-4017-9f8c-833253ae6778
-norm(x2[1,:]-x2[2,:])
+# ╔═╡ 4e999ef1-ebdb-4b3b-9693-2d1f85b1d0ef
+position1 = append!(x1,x2)
 
-# ╔═╡ a238c2e8-e75b-4484-8277-ccd04bf40a50
-
+# ╔═╡ 591c8375-9601-41aa-a540-b6b323b05ccc
+sum(mol1.M)/2
 
 # ╔═╡ 088ad824-ed48-45d8-8bea-849b42b5cdf7
 mol2.X
@@ -264,6 +265,7 @@ plot(θ,ϕ,logJ_mat,st=:surface,
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 ACEpotentials = "3b96b61c-0fcc-4693-95ed-1ef9f35fcc53"
+AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
@@ -272,9 +274,11 @@ LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 ACEpotentials = "~0.6.7"
+AtomsBase = "~0.3.5"
 CSV = "~0.10.14"
 DataFrames = "~1.6.1"
 DelimitedFiles = "~1.9.1"
@@ -282,6 +286,7 @@ JuLIP = "~0.14.8"
 LaTeXStrings = "~1.3.1"
 Plots = "~1.40.5"
 StaticArrays = "~1.9.7"
+Unitful = "~1.21.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -290,7 +295,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0-rc1"
 manifest_format = "2.0"
-project_hash = "ac816744cea25a7278bfd95fa7adb8bb0961378b"
+project_hash = "2482da4a6a533813e4d8a090cd530173d463ca32"
 
 [[deps.ACE1]]
 deps = ["ACEbase", "BenchmarkTools", "Combinatorics", "ForwardDiff", "InteractiveUtils", "Interpolations", "JuLIP", "LinearAlgebra", "NeighbourLists", "Parameters", "Pkg", "Printf", "QuadGK", "Random", "Reexport", "Roots", "SparseArrays", "StaticArrays", "Test"]
@@ -2690,6 +2695,10 @@ version = "1.4.1+1"
 # ╠═15c07f11-a3af-41b4-abeb-ddd110ce5c12
 # ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
 # ╠═ab81d644-20d3-4617-b6cd-fb92849f334b
+# ╠═4e999ef1-ebdb-4b3b-9693-2d1f85b1d0ef
+# ╠═82233ffe-210f-40cb-bff9-9c15eb5d9408
+# ╠═8320aaf3-927b-45c0-a2ba-e65f1edc896c
+# ╠═d27879ca-7136-458f-8e26-f186f129fcde
 # ╠═61187086-ab9c-4aeb-8dc6-04227e862270
 # ╠═817d7fc2-d928-4bf4-9059-dfd09e12a2ca
 # ╠═9f36b8e9-2b50-4819-902d-8c14fc67bfed
@@ -2703,15 +2712,10 @@ version = "1.4.1+1"
 # ╠═587ab7d6-588a-4375-8f69-1e00333c0efc
 # ╠═ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
 # ╠═8b6804f2-0d25-4cf8-b4da-2f3e638399a6
-# ╠═1c674758-faaa-4017-9f8c-833253ae6778
-# ╠═9d3d33f4-d1c5-4360-8f53-29d900ca5b5e
 # ╠═919a4e3f-a121-4504-aa96-01967b967c6b
-# ╠═2d935524-f013-4ad5-b6d8-de6f394fc713
-# ╠═32ac6e32-50a4-4d43-9464-60f2ecb60c43
 # ╠═b1dfd94d-94c9-450a-bb38-36e098a7162a
 # ╠═591c8375-9601-41aa-a540-b6b323b05ccc
 # ╠═8892ca90-4b2e-404c-810c-73397a88b3b1
-# ╠═a238c2e8-e75b-4484-8277-ccd04bf40a50
 # ╠═088ad824-ed48-45d8-8bea-849b42b5cdf7
 # ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 # ╠═33feb269-3620-43f1-8d31-66e8b9472481
