@@ -11,17 +11,13 @@ begin
 	using DelimitedFiles
 end
 
-# ╔═╡ ab81d644-20d3-4617-b6cd-fb92849f334b
+# ╔═╡ f73e55fb-a4b9-4e12-acbe-4606091e5977
 begin
 	using JuLIP
 	using ACEpotentials
 	using AtomsBase
-	
-	using Unitful#using ExtXYZ
+	using Unitful,  StaticArrays, LinearAlgebra #ExtXYZ
 end
-
-# ╔═╡ ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
-using StaticArrays, LinearAlgebra
 
 # ╔═╡ e55a98a6-924c-4bf8-a79c-c12e46532b0d
 begin
@@ -44,6 +40,9 @@ function read_J(namefile)
 	para, J, logJ = data_J[:, 1:6], data_J[:, 7], data_J[:, 8]
 	return para, J, logJ
 end
+
+# ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
+para, J, logJ = read_J("out.dat")
 
 # ╔═╡ 2436ae5d-f680-4322-8059-c1761688d4a5
 begin
@@ -81,49 +80,7 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 	write_extxyz(savefile, Set_Mol2)
 end
 
-# ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
-para, J, logJ = read_J("out.dat")
-
-# ╔═╡ 82233ffe-210f-40cb-bff9-9c15eb5d9408
-
-
-# ╔═╡ 8320aaf3-927b-45c0-a2ba-e65f1edc896c
-
-
-# ╔═╡ d27879ca-7136-458f-8e26-f186f129fcde
-
-
-# ╔═╡ 61187086-ab9c-4aeb-8dc6-04227e862270
-#Find element
-function find_element(Molecule, Z)
-	return findall(x->x==Z, Molecule.Z)
-end
-
-# ╔═╡ 9f36b8e9-2b50-4819-902d-8c14fc67bfed
-# ╠═╡ disabled = true
-#=╠═╡
-function collect_allC_ring(num_C, shared_C)
-	ring_C = zeros((2,6))
-	for jj in 1:2
-		for ii in 1:6
-			if
-		
-		end
-	end
-	return
-end
-  ╠═╡ =#
-
-# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
-#C10 = read_frames("napthalene.xyz")
-
-# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
-#write_frames("naphthalene.extxyz", C10, append=true)
-
-# ╔═╡ c39b69ee-51d9-4df0-941d-f1d477c8a067
-
-
-# ╔═╡ 1f3f1281-6539-4bc7-8874-a952b5089767
+# ╔═╡ 75c9a533-e778-4d18-8f9e-3cbcd85ea51e
 function Centroid_bead(Molecule, shared_C, num_C)
 	cent_Vec = [] 					#collect all bead centroids
 	
@@ -148,22 +105,111 @@ function Centroid_bead(Molecule, shared_C, num_C)
 	return cent_Vec
 end
 
+# ╔═╡ 402ebd5f-ac9e-42cd-aa97-5f9cb4063a77
+function construct_all_dimer(namefile1, namefile2, savefile)
+	mol1 = read_extxyz(namefile1)[1] 			#Read Molecular Structure from 													file.extxyz
+	Set_Mol2 =  read_extxyz(namefile2)	
+	Set_dimer = Vector{Atoms{Float64}}([])		#Set of dimer Molecules
+	
+	for nn in 1:length(Set_Mol2)
+		mol2 = Set_Mol2[nn]
+		#println("Dimer: "*string(jj))
+		dimer = Atoms(X = vcat(mol1.X, mol2.X),
+			M = vcat(mol1.M, mol2.M),
+			Z = vcat(mol1.Z, mol2.Z),
+			cell = mol1.cell*4,
+			pbc = fill(false, 3)
+		)
+		
+		push!(Set_dimer, dimer) 	
+		#println(Set_Mol2)
+		#println("_________________________________________________________")
+	end
+	#return Set_Mol2
+	write_extxyz(savefile, Set_dimer)
+end
+
+# ╔═╡ 5f679abd-3f28-4a45-af92-2b011730609f
+construct_all_dimer("naphthalene.extxyz", 
+	"dimer_naphthalene.extxyz", 
+	"Large_dimers.extxyz"
+)
+
+# ╔═╡ 61187086-ab9c-4aeb-8dc6-04227e862270
+#Find element
+function find_element(Molecule, Z)
+	return findall(x->x==Z, Molecule.Z)
+end
+
+# ╔═╡ 481b59ed-75af-4c39-8027-0f3cab07c842
+
+
+# ╔═╡ 71bcb580-667d-41a8-9e4c-aa28f478d0a0
+function construct_all_bead(namefile1, namefile2, savefile, shared_C, num_C)
+	
+	mol1 = read_extxyz(namefile1)[1] 							#first mole
+	Set_Mol2 =  read_extxyz(namefile2)							#set of second mole
+	
+	x1 = Centroid_bead(mol1, shared_C, num_C)				#Centroid first
+	bead_mass = fill(sum(mol1.M)/2, 4)						#Set bead mass
+	
+	Large_date = Vector{Atoms{Float64}}([])					#write in extxyz
+
+	types = fill(0, 4)
+	
+	for nn in 1:length(Set_Mol2)
+		mol2 = Set_Mol2[nn]
+		x2_n = Centroid_bead(mol2, shared_C, num_C)
+
+		Dimer = Atoms(X = vcat(x1, x2_n),
+			M = bead_mass,
+			Z = types,
+			cell = mol1.cell*4,
+			pbc = fill(false, 3)			
+		)
+		push!(Large_date, Dimer)
+	end
+	write_extxyz(savefile, Large_date)
+end
+
+# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
+#C10 = read_frames("napthalene.xyz")
+
+# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
+#write_frames("naphthalene.extxyz", C10, append=true)
+
+# ╔═╡ c39b69ee-51d9-4df0-941d-f1d477c8a067
+
+
 # ╔═╡ 8b6804f2-0d25-4cf8-b4da-2f3e638399a6
 const JVec = SVector{3}
 
-# ╔═╡ 919a4e3f-a121-4504-aa96-01967b967c6b
-function bead
+# ╔═╡ 9f18e8b6-0895-48b0-aac3-6582c4cedf7f
+dimer = read_extxyz("dimer_1.extxyz")[1]
 
-end
+# ╔═╡ 4040e619-2263-4c8a-82cb-ed55db52b31b
+set_data!(dimer, "energy", J[1])
 
-# ╔═╡ b1dfd94d-94c9-450a-bb38-36e098a7162a
+# ╔═╡ ac39080b-8c9a-48ff-bbcb-788ce33afd56
+get_data(dimer, "energy")
 
+# ╔═╡ 52f77033-82c7-40cb-86c1-41084d0f54c6
+dimer.data
+
+# ╔═╡ 95441b11-6af6-461e-a8a0-4b3c7179f6bd
+write_extxyz("dimer_energy.extxyz", dimer)
+
+# ╔═╡ e6ad8888-4c0a-41e5-94dd-dba4a81e5c24
+dimer2 = read_extxyz("dimer_energy.extxyz")[1]
+
+# ╔═╡ e61f8c78-6c68-4af0-a76b-371f59e67c3b
+dimer2.data
 
 # ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
 begin
 	mol1 = read_extxyz("naphthalene.extxyz")[1]
 	Set_Mol2 =  read_extxyz("dimer_naphthalene.extxyz")
-	nn = 400
+	nn = 410
 	mol2 = Set_Mol2[nn]
 end
 
@@ -171,18 +217,20 @@ end
 begin
 	num_C = find_element(mol1, 6)
 	shared_C = [3, 4];
-end;
-
-# ╔═╡ 0015d7e0-3fe7-4605-bdc9-2d47e32533d1
-begin
 	ring_C = zeros(Int64,(2,6))
 	ring_C[1, 1:6] = num_C[1:6]
 	ring_C[2, 1:2] = shared_C
 	ring_C[2, 3:6] = num_C[7:10]
+	ring_C
 end;
 
-# ╔═╡ b0d0efb5-9570-4d80-8fc7-d1849bbfa1f2
-ring_C
+# ╔═╡ d3602f4b-d99e-430f-8dd6-a3c129411543
+construct_all_bead("naphthalene.extxyz", 
+	"dimer_naphthalene.extxyz", 
+	"Large_bead.extxyz", 
+	shared_C, 
+	num_C
+)
 
 # ╔═╡ ca265187-c7f9-42d6-bf73-360011477509
 x1 = Centroid_bead(mol1, shared_C, num_C)
@@ -190,25 +238,12 @@ x1 = Centroid_bead(mol1, shared_C, num_C)
 # ╔═╡ 587ab7d6-588a-4375-8f69-1e00333c0efc
 x2 = Centroid_bead(mol2, shared_C, num_C)
 
-# ╔═╡ 4e999ef1-ebdb-4b3b-9693-2d1f85b1d0ef
-position1 = append!(x1,x2)
-
-# ╔═╡ 591c8375-9601-41aa-a540-b6b323b05ccc
-sum(mol1.M)/2
-
-# ╔═╡ 088ad824-ed48-45d8-8bea-849b42b5cdf7
-mol2.X
-
 # ╔═╡ b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
 begin
 	J_mat = zeros((49,Int(size(J,1)/49)))
 	logJ_mat = zeros((49,Int(size(J,1)/49)))
 	θ = zeros((Int(size(J,1)/49)))
 	ϕ = zeros((49))
-end
-
-# ╔═╡ 33feb269-3620-43f1-8d31-66e8b9472481
-begin
 	for bb in 1:Int(size(J,1)/49)
 		J_mat[:, bb] = J[49*(bb-1)+1: 49*bb]	
 		logJ_mat[:, bb] = logJ[49*(bb-1)+1: 49*bb]
@@ -218,6 +253,9 @@ begin
 		ϕ[aa] = para[aa,2]
 	end
 end
+
+# ╔═╡ 01d98519-2a1d-4034-b619-24f942ed38af
+
 
 # ╔═╡ 1f58b44f-bae8-420a-857d-2a1a5fbea8bf
 heatmap(ϕ[1:49],
@@ -275,18 +313,6 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
-
-[compat]
-ACEpotentials = "~0.6.7"
-AtomsBase = "~0.3.5"
-CSV = "~0.10.14"
-DataFrames = "~1.6.1"
-DelimitedFiles = "~1.9.1"
-JuLIP = "~0.14.8"
-LaTeXStrings = "~1.3.1"
-Plots = "~1.40.5"
-StaticArrays = "~1.9.7"
-Unitful = "~1.21.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -295,7 +321,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.0-rc1"
 manifest_format = "2.0"
-project_hash = "2482da4a6a533813e4d8a090cd530173d463ca32"
+project_hash = "8ed65524bbf2a27e085b158956e9552689abfef6"
 
 [[deps.ACE1]]
 deps = ["ACEbase", "BenchmarkTools", "Combinatorics", "ForwardDiff", "InteractiveUtils", "Interpolations", "JuLIP", "LinearAlgebra", "NeighbourLists", "Parameters", "Pkg", "Printf", "QuadGK", "Random", "Reexport", "Roots", "SparseArrays", "StaticArrays", "Test"]
@@ -1758,9 +1784,9 @@ version = "1.11.0"
 
 [[deps.ProgressMeter]]
 deps = ["Distributed", "Printf"]
-git-tree-sha1 = "80686d28ecb3ee7fb3ac5371cacaa0d673eb0d4a"
+git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
 uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.10.1"
+version = "1.10.2"
 
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
@@ -1788,9 +1814,15 @@ version = "6.7.1+1"
 
 [[deps.QuadGK]]
 deps = ["DataStructures", "LinearAlgebra"]
-git-tree-sha1 = "9b23c31e76e333e6fb4c1595ae6afa74966a729e"
+git-tree-sha1 = "1d587203cf851a51bf1ea31ad7ff89eff8d625ea"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
-version = "2.9.4"
+version = "2.11.0"
+
+    [deps.QuadGK.extensions]
+    QuadGKEnzymeExt = "Enzyme"
+
+    [deps.QuadGK.weakdeps]
+    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
@@ -2064,10 +2096,10 @@ uuid = "aedffcd0-7271-4cad-89d0-dc628f76c6d3"
 version = "0.8.10"
 
 [[deps.StaticArrayInterface]]
-deps = ["ArrayInterface", "Compat", "IfElse", "LinearAlgebra", "PrecompileTools", "Requires", "SparseArrays", "Static", "SuiteSparse"]
-git-tree-sha1 = "8963e5a083c837531298fc41599182a759a87a6d"
+deps = ["ArrayInterface", "Compat", "IfElse", "LinearAlgebra", "PrecompileTools", "Static"]
+git-tree-sha1 = "96381d50f1ce85f2663584c8e886a6ca97e60554"
 uuid = "0d7ed370-da01-4f52-bd93-41d350b8b718"
-version = "1.5.1"
+version = "1.8.0"
 weakdeps = ["OffsetArrays", "StaticArrays"]
 
     [deps.StaticArrayInterface.extensions]
@@ -2690,35 +2722,35 @@ version = "1.4.1+1"
 # ╠═4c6fc2f8-44f8-11ef-30b4-6118ceefb650
 # ╠═e7919cb0-09e4-4a5f-a0ce-4c5088ceb813
 # ╠═738ee49a-d3b4-4ac7-9076-d96d900404f9
+# ╠═f73e55fb-a4b9-4e12-acbe-4606091e5977
 # ╠═4b2668af-48ac-49ba-8dc8-f14ea08006c8
+# ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
 # ╠═2436ae5d-f680-4322-8059-c1761688d4a5
 # ╠═15c07f11-a3af-41b4-abeb-ddd110ce5c12
-# ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
-# ╠═ab81d644-20d3-4617-b6cd-fb92849f334b
-# ╠═4e999ef1-ebdb-4b3b-9693-2d1f85b1d0ef
-# ╠═82233ffe-210f-40cb-bff9-9c15eb5d9408
-# ╠═8320aaf3-927b-45c0-a2ba-e65f1edc896c
-# ╠═d27879ca-7136-458f-8e26-f186f129fcde
+# ╠═75c9a533-e778-4d18-8f9e-3cbcd85ea51e
+# ╠═402ebd5f-ac9e-42cd-aa97-5f9cb4063a77
+# ╠═5f679abd-3f28-4a45-af92-2b011730609f
 # ╠═61187086-ab9c-4aeb-8dc6-04227e862270
+# ╠═481b59ed-75af-4c39-8027-0f3cab07c842
 # ╠═817d7fc2-d928-4bf4-9059-dfd09e12a2ca
-# ╠═9f36b8e9-2b50-4819-902d-8c14fc67bfed
-# ╠═0015d7e0-3fe7-4605-bdc9-2d47e32533d1
-# ╠═b0d0efb5-9570-4d80-8fc7-d1849bbfa1f2
+# ╠═71bcb580-667d-41a8-9e4c-aa28f478d0a0
+# ╠═d3602f4b-d99e-430f-8dd6-a3c129411543
 # ╠═83ece228-eae5-4805-beac-218c459cbbc8
 # ╠═6201194b-bafd-4fee-b353-85e6b880bc4f
 # ╠═c39b69ee-51d9-4df0-941d-f1d477c8a067
-# ╠═1f3f1281-6539-4bc7-8874-a952b5089767
 # ╠═ca265187-c7f9-42d6-bf73-360011477509
 # ╠═587ab7d6-588a-4375-8f69-1e00333c0efc
-# ╠═ae2a999b-a9e0-4c32-b3f9-c45cb38d56cf
 # ╠═8b6804f2-0d25-4cf8-b4da-2f3e638399a6
-# ╠═919a4e3f-a121-4504-aa96-01967b967c6b
-# ╠═b1dfd94d-94c9-450a-bb38-36e098a7162a
-# ╠═591c8375-9601-41aa-a540-b6b323b05ccc
+# ╠═9f18e8b6-0895-48b0-aac3-6582c4cedf7f
+# ╠═4040e619-2263-4c8a-82cb-ed55db52b31b
+# ╠═ac39080b-8c9a-48ff-bbcb-788ce33afd56
+# ╠═52f77033-82c7-40cb-86c1-41084d0f54c6
+# ╠═95441b11-6af6-461e-a8a0-4b3c7179f6bd
+# ╠═e6ad8888-4c0a-41e5-94dd-dba4a81e5c24
+# ╠═e61f8c78-6c68-4af0-a76b-371f59e67c3b
 # ╠═8892ca90-4b2e-404c-810c-73397a88b3b1
-# ╠═088ad824-ed48-45d8-8bea-849b42b5cdf7
 # ╠═b932c8f9-d29a-4dc8-8bd9-9a4335f2bb54
-# ╠═33feb269-3620-43f1-8d31-66e8b9472481
+# ╠═01d98519-2a1d-4034-b619-24f942ed38af
 # ╠═e55a98a6-924c-4bf8-a79c-c12e46532b0d
 # ╠═1f58b44f-bae8-420a-857d-2a1a5fbea8bf
 # ╠═a9877a72-8601-4c24-9a26-10d51e3b96b6
