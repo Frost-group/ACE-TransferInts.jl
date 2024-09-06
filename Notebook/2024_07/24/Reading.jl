@@ -59,7 +59,7 @@ begin
 end
 
 # ╔═╡ 15c07f11-a3af-41b4-abeb-ddd110ce5c12
-function construct_dimer(namefile, savefile, para, rot_ang_y)
+function construct_dimer(namefile, savefile, para, rot_ang_y, J)
 	mol1 = read_extxyz(namefile)[1] 	#Read Molecular Structure from file.extxyz
 	ndata = size(para, 1) 				#Collect number of data from TranInt out.dat
 	natoms = size(mol1.M)[1] 			#Collect number of atoms in molecules
@@ -71,6 +71,7 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 			mol2.X[ii] = rot_y(rot_ang_y) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
 			#mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
 		#println(mol2.X[ii])
+			set_data!(mol2, "energy", J[ii])
 		end
 		push!(Set_Mol2, mol2) 	
 		#println(Set_Mol2)
@@ -79,6 +80,9 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 	#return Set_Mol2
 	write_extxyz(savefile, Set_Mol2)
 end
+
+# ╔═╡ 75980160-a13b-49f0-b631-84554e959779
+construct_dimer("naphthalene.extxyz", "dimer_naphthalene.extxyz", para, 2*pi/3, J)
 
 # ╔═╡ 75c9a533-e778-4d18-8f9e-3cbcd85ea51e
 function Centroid_bead(Molecule, shared_C, num_C)
@@ -121,6 +125,10 @@ function construct_all_dimer(namefile1, namefile2, savefile)
 			pbc = fill(false, 3)
 		)
 		
+		set_data!(dimer, "energy", 
+			get_data(mol2, "energy")
+		)
+		
 		push!(Set_dimer, dimer) 	
 		#println(Set_Mol2)
 		#println("_________________________________________________________")
@@ -143,6 +151,21 @@ end
 
 # ╔═╡ 481b59ed-75af-4c39-8027-0f3cab07c842
 
+
+# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
+#C10 = read_frames("napthalene.xyz")
+
+# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
+#write_frames("naphthalene.extxyz", C10, append=true)
+
+# ╔═╡ c39b69ee-51d9-4df0-941d-f1d477c8a067
+
+
+# ╔═╡ 8b6804f2-0d25-4cf8-b4da-2f3e638399a6
+const JVec = SVector{3}
+
+# ╔═╡ 9f18e8b6-0895-48b0-aac3-6582c4cedf7f
+dimer = read_extxyz("dimer_1.extxyz")[1]
 
 # ╔═╡ 71bcb580-667d-41a8-9e4c-aa28f478d0a0
 function construct_all_bead(namefile1, namefile2, savefile, shared_C, num_C)
@@ -167,25 +190,15 @@ function construct_all_bead(namefile1, namefile2, savefile, shared_C, num_C)
 			cell = mol1.cell*4,
 			pbc = fill(false, 3)			
 		)
+
+		set_data!(dimer, "energy", 
+			get_data(mol2, "energy")
+		)
+		
 		push!(Large_date, Dimer)
 	end
 	write_extxyz(savefile, Large_date)
 end
-
-# ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
-#C10 = read_frames("napthalene.xyz")
-
-# ╔═╡ 6201194b-bafd-4fee-b353-85e6b880bc4f
-#write_frames("naphthalene.extxyz", C10, append=true)
-
-# ╔═╡ c39b69ee-51d9-4df0-941d-f1d477c8a067
-
-
-# ╔═╡ 8b6804f2-0d25-4cf8-b4da-2f3e638399a6
-const JVec = SVector{3}
-
-# ╔═╡ 9f18e8b6-0895-48b0-aac3-6582c4cedf7f
-dimer = read_extxyz("dimer_1.extxyz")[1]
 
 # ╔═╡ 4040e619-2263-4c8a-82cb-ed55db52b31b
 set_data!(dimer, "energy", J[1])
@@ -2727,6 +2740,7 @@ version = "1.4.1+1"
 # ╠═6fec2a43-14fa-42be-bfb0-9530de667a83
 # ╠═2436ae5d-f680-4322-8059-c1761688d4a5
 # ╠═15c07f11-a3af-41b4-abeb-ddd110ce5c12
+# ╠═75980160-a13b-49f0-b631-84554e959779
 # ╠═75c9a533-e778-4d18-8f9e-3cbcd85ea51e
 # ╠═402ebd5f-ac9e-42cd-aa97-5f9cb4063a77
 # ╠═5f679abd-3f28-4a45-af92-2b011730609f
