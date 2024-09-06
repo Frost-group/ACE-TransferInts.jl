@@ -31,6 +31,20 @@ Pkg.status()
 # ╔═╡ eea2c9b4-94bd-4947-a4c3-54023c90e6d9
 bead_tiny_dataset = read_extxyz("train_bead.extxyz")
 
+# ╔═╡ fb701de3-ddd4-4d43-8aac-cdb58e7c3a32
+begin
+	r_cut = 20.0
+	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
+	plt_rdf_1 = histogram(rdf_tiny[(:X, :X)], bins=150, label = "rdf",
+		                      title="Si_tiny_dataset", titlefontsize=10,
+		                      xlabel = L"r[\AA]", ylabel = "RDF", yticks = [],
+		                      xlims=(1.5,40), size=(400,200), left_margin = 2Plots.mm)
+		vline!(rnn(:X)*[1.0, 1.633, 1.915, 2.3, 2.5], label = "r1, r2, ...", lw=5, color = "black")
+end
+
+# ╔═╡ 899acd5f-ebde-4e34-804d-3d805274e10e
+rdf_tiny
+
 # ╔═╡ d54bfe21-dc89-41e6-8fa2-f1f1138ef006
 bead_dataset = read_extxyz("test_bead.extxyz")
 
@@ -40,7 +54,7 @@ begin
 		                 order = 3,
 		                 totaldegree = 4,
 		                 rcut = 13.5,
-		                 Eref = [:Si => 0.0125]
+		                 Eref = [:Si => 0]
 						 )
 		@show length(model.basis);
 end
@@ -59,6 +73,8 @@ acefit!(model, bead_tiny_dataset; solver=solver, data_keys...);
 # ╠═018914e2-b683-4ce1-b38d-c0a3f1a418b0
 # ╠═953fd3da-8994-4c78-baa9-f1588ad3e5bd
 # ╠═eea2c9b4-94bd-4947-a4c3-54023c90e6d9
+# ╠═899acd5f-ebde-4e34-804d-3d805274e10e
+# ╠═fb701de3-ddd4-4d43-8aac-cdb58e7c3a32
 # ╠═d54bfe21-dc89-41e6-8fa2-f1f1138ef006
 # ╠═74b64aa9-80f6-4493-869f-b1bddb9c808b
 # ╠═94ee83f4-262f-4476-b7a7-340ee806e874

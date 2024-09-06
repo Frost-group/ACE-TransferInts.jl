@@ -163,7 +163,8 @@ function construct_all_bead(namefile1, namefile2, savefile, shared_C, num_C)
 	
 	Large_data = Vector{Atoms{Float64}}([])					#write in extxyz
 
-	types = fill(0, 4)
+	#types = fill(0, 4)
+	types = fill(6, 4)
 	
 	for nn in 1:length(Set_Mol2)
 		mol2 = Set_Mol2[nn]
