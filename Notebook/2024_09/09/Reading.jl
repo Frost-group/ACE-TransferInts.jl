@@ -232,7 +232,7 @@ function train_test(all_structure_file, num_train, train_file, test_file)
 			append!(trian_in, ind)
 		end
 	end
-	
+	println(length(trian_in))
 	train_index = Int.(trian_in)
 	test_index = setdiff(collect(1:length(s_dim)), train_index)
 	
@@ -253,10 +253,10 @@ function train_test(all_structure_file, num_train, train_file, test_file)
 end
 
 # ╔═╡ 44c8d640-9972-46c6-a8cf-4a37a5cf7f06
-train_test("Large_bead.extxyz", 300, "train_bead.extxyz", "test_bead.extxyz")
+train_test("Large_bead.extxyz", 900, "train_bead.extxyz", "test_bead.extxyz")
 
 # ╔═╡ 5b4a759b-5ebf-4337-a7e6-c76a715298bf
-train_test("2nd_Large_bead.extxyz", 300, "2nd_train_bead.extxyz", "2nd_test_bead.extxyz")
+train_test("2nd_Large_bead.extxyz", 300, "2nd_zzztrain_bead.extxyz", "2nd_zzztest_bead.extxyz")
 
 # ╔═╡ 83ece228-eae5-4805-beac-218c459cbbc8
 #C10 = read_frames("napthalene.xyz")
@@ -277,6 +277,9 @@ begin
 	nn = 410
 	mol2 = Set_Mol2[nn]
 end
+
+# ╔═╡ b27a88c6-61e5-4711-9990-91a7af893762
+Set_Mol2[11].X
 
 # ╔═╡ 817d7fc2-d928-4bf4-9059-dfd09e12a2ca
 begin
@@ -2841,6 +2844,7 @@ version = "1.4.1+1"
 # ╠═75c9a533-e778-4d18-8f9e-3cbcd85ea51e
 # ╠═402ebd5f-ac9e-42cd-aa97-5f9cb4063a77
 # ╠═5f679abd-3f28-4a45-af92-2b011730609f
+# ╠═b27a88c6-61e5-4711-9990-91a7af893762
 # ╠═61187086-ab9c-4aeb-8dc6-04227e862270
 # ╠═817d7fc2-d928-4bf4-9059-dfd09e12a2ca
 # ╠═71bcb580-667d-41a8-9e4c-aa28f478d0a0

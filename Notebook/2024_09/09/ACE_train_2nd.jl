@@ -33,14 +33,26 @@ bead_dataset = read_extxyz("Naphthalene/2nd_test_bead.extxyz")
 
 # ╔═╡ 6abe9b78-2d15-471f-a64a-3aa3529b3d54
 begin
-	r_cut = 5.0
+	r_cut = 20.0
 	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = histogram(rdf_tiny[(:Si, :Si)], bins=150, label = "rdf",
-		                      title="Bead_tiny_dataset", titlefontsize=10,
-		                      xlabel = L"r[\AA]", ylabel = "RDF", yticks = [],
-		                      xlims=(2.4,2.5), ylims=(0.0, 5), size=(400,200), left_margin = 2Plots.mm)
-		#vline!(rnn(:Ge)*[1.0, 1.633, 1.915, 2.3, 2.5], label = "r1, r2, ...", lw=5, color = "black")
-	plot!(plt_rdf_1, size=(600,400))
+	plt_rdf_1 = histogram(rdf_tiny[(:Si, :Si)], 
+		bins=150, label = "rdf",
+		title="Bead_tiny_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,5,10], xlims=(1.5,20), ylims=(0.0, 10),
+		size=(400,200), left_margin = 2Plots.mm)
+	vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
+	
+	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
+	plt_rdf_2 = histogram(rdf[(:Si, :Si)],
+		bins=150, label = "rdf",
+		title="Bead_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
+		size=(400,200), left_margin = 2Plots.mm)
+	vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
+	
+	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
 end
 
 # ╔═╡ 512b58a3-10f6-4409-89e1-e721789eaf71
