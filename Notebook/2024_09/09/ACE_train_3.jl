@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.45
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -16,14 +16,25 @@ begin
 	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
 end;
 
-# ╔═╡ dc8aa70d-47ad-40e6-857f-b1b90f10c559
+# ╔═╡ 623495a8-df2a-423c-ae0e-46cf73ce8522
 begin
 	Pkg.activate(".")
-		Pkg.Registry.add("General")  # only needed when installing Julia for the first time
-		Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
-		Pkg.add("ACEpotentials")
-		using ACEpotentials
+	Pkg.Registry.add("General")  # only needed when installing Julia for the first time
+	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
+	Pkg.add("ACEpotentials")
 end
+
+# ╔═╡ b8f884c6-88f6-4e7a-8519-871f0529c93a
+begin
+	pkg"activate pathtoproject"
+	Pkg.instantiate()
+end
+
+# ╔═╡ 79cf027a-82d0-46a4-a400-862731b0716f
+using ACEpotentials
+
+# ╔═╡ 84ec872f-59de-4ca7-8255-faeae0fa5800
+
 
 # ╔═╡ d36203a1-a897-4806-a964-629cd275bba6
 bead_tiny_dataset = read_extxyz("train_d_Car.extxyz")
@@ -164,7 +175,10 @@ assess_model(model1, bead_tiny_dataset)
 
 # ╔═╡ Cell order:
 # ╠═a4ac8dbe-6f7a-11ef-3b9e-3d92a7a83913
-# ╠═dc8aa70d-47ad-40e6-857f-b1b90f10c559
+# ╠═623495a8-df2a-423c-ae0e-46cf73ce8522
+# ╠═b8f884c6-88f6-4e7a-8519-871f0529c93a
+# ╠═79cf027a-82d0-46a4-a400-862731b0716f
+# ╠═84ec872f-59de-4ca7-8255-faeae0fa5800
 # ╠═d36203a1-a897-4806-a964-629cd275bba6
 # ╠═d81f1cc1-1086-42fb-b4df-bf1beb4459c0
 # ╠═5e4ed684-8c9c-4c26-ac3c-8fa8be88fa23

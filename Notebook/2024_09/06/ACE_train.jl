@@ -1,20 +1,8 @@
 ### A Pluto.jl notebook ###
-# v0.19.45
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
-
-# ╔═╡ e212233e-6c4c-11ef-115e-476408bfabc1
-begin
-	# add and load general packages used in this notebook.
-	using Pkg
-	Pkg.activate(".")
-	Pkg.add("LaTeXStrings")
-	Pkg.add("MultivariateStats")
-	Pkg.add("Plots")
-	Pkg.add("Suppressor")
-	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
-end;
 
 # ╔═╡ 018914e2-b683-4ce1-b38d-c0a3f1a418b0
 begin
@@ -73,7 +61,26 @@ data_keys = (energy_key = "energy")
 # ╔═╡ 76290b18-7c23-43d0-a567-e1e7b47fde60
 acefit!(model, bead_tiny_dataset; solver=solver, data_keys...);
 
+# ╔═╡ fb5ea987-bd4b-4b33-9db5-747376d7b8f8
+begin
+	using Pkg
+	Pkg.instantiate()
+end
+
+# ╔═╡ e212233e-6c4c-11ef-115e-476408bfabc1
+begin
+	# add and load general packages used in this notebook.
+	using Pkg
+	Pkg.activate(".")
+	Pkg.add("LaTeXStrings")
+	Pkg.add("MultivariateStats")
+	Pkg.add("Plots")
+	Pkg.add("Suppressor")
+	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
+end;
+
 # ╔═╡ Cell order:
+# ╠═fb5ea987-bd4b-4b33-9db5-747376d7b8f8
 # ╠═e212233e-6c4c-11ef-115e-476408bfabc1
 # ╠═018914e2-b683-4ce1-b38d-c0a3f1a418b0
 # ╠═953fd3da-8994-4c78-baa9-f1588ad3e5bd
