@@ -1,5 +1,9 @@
 ### A Pluto.jl notebook ###
+<<<<<<< Updated upstream
 # v0.19.46
+=======
+# v0.19.43
+>>>>>>> Stashed changes
 
 using Markdown
 using InteractiveUtils
@@ -50,7 +54,7 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,5,10], xlims=(0,20), ylims=(0.0, 100),
+		yticks = [0,50,100], xlims=(0,20), ylims=(0.0, 100),
 		size=(400,200), left_margin = 2Plots.mm)
 	vline!(rnn(:C)*[1.0, 5.55, 7.1, 8.7], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -59,11 +63,12 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,50,100], xlims=(0,20), ylims=(0.0, 250),
+		yticks = [0,125,250], xlims=(0,20), ylims=(0.0, 250),
 		size=(400,200), left_margin = 2Plots.mm)
 	vline!(rnn(:C)*[1.0, 5.55, 7.1, 8.7], label = "r1, r2, ...", lw=2, color = "black")
 	
 	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
+	savefig("RDF_Carbon.png") 
 end
 
 # ╔═╡ cfe6ac36-76ab-4950-8c72-c9bb5f50021a
@@ -167,7 +172,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color=2)
-
+savefig("fitting_Carbon.png") 
 end;
 
 # ╔═╡ 84d449ab-d4eb-4999-9122-a642e344eb57

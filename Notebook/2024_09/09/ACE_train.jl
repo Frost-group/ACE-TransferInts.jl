@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.45
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -29,10 +29,10 @@ end
 Pkg.status()
 
 # ╔═╡ eea2c9b4-94bd-4947-a4c3-54023c90e6d9
-bead_tiny_dataset = read_extxyz("Naphthalene/train_bead.extxyz")
+bead_tiny_dataset = read_extxyz("train_bead.extxyz")
 
 # ╔═╡ d54bfe21-dc89-41e6-8fa2-f1f1138ef006
-bead_dataset = read_extxyz("Naphthalene/test_bead.extxyz")
+bead_dataset = read_extxyz("test_bead.extxyz")
 
 # ╔═╡ fb701de3-ddd4-4d43-8aac-cdb58e7c3a32
 begin
@@ -56,6 +56,7 @@ begin
 	vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
 	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
+	#savefig("RDF_bead.png") 
 end
 
 # ╔═╡ 899acd5f-ebde-4e34-804d-3d805274e10e
@@ -84,32 +85,25 @@ end
 
 # ╔═╡ c697733c-a0ee-45b2-824d-d092ec81a00e
 begin
+	p = 1
+	q = 2
 	model1 = acemodel(elements = [:Si,],
-	                 order = 3,
-	                 totaldegree = 5, 
-	                 rcut = 30.0,
-	                 Eref = [:Si => 0.0])
+	        order = 3,
+	        totaldegree = 9, 
+			r0 = 0.1,
+	        rcut = 30.0,
+			pair_transform = (:agnesi, p, q),
+			pair_envelope = (:r, 1) 
+	        #Eref = [:Si => 0.0]
+	)
 	@show length(model1.basis);
 end
-
-# ╔═╡ a7ebe5f9-624f-4dc2-bb41-86cc6c56365a
-begin
-	model = acemodel(elements = [:C,],
-	                 order = 3,
-	                 totaldegree = 3,
-	                 rcut = 13.0,
-	                 Eref = [:C => 0.0])
-	@show length(model1.basis);
-end
-
-# ╔═╡ b497ddf4-9b01-43f7-9b71-c32a42b1c09e
-model1
 
 # ╔═╡ 94ee83f4-262f-4476-b7a7-340ee806e874
 #solver = ACEfit.QR(lambda = 1e-6)
-#solver = ACEfit.LSQR(damp = 1e-6, atol = 1e-6)
+solver = ACEfit.LSQR(damp = 1e-6, atol = 1e-6)
 #solver = ACEfit.RRQR(rtol = 1e-6)
-solver = ACEfit.BLR(committee_size=250, factorization=:svd)
+#solver = ACEfit.BLR(committee_size=300, factorization=:svd)
 
 # ╔═╡ a6e36e28-404e-4e97-b205-9aeb89117bef
 data_keys1 = (energy_key = "energy", force_key = "force")
@@ -178,7 +172,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color=2)
-
+#savefig("fitting_Bead.png") 
 end;
 
 # ╔═╡ 4bc28c08-a51f-475a-8d7c-a06ee96992f0
@@ -194,8 +188,6 @@ assess_model(model1, bead_tiny_dataset)
 # ╠═fb701de3-ddd4-4d43-8aac-cdb58e7c3a32
 # ╠═d69886e4-daf3-493a-b1b0-f99b9130d2a1
 # ╠═c697733c-a0ee-45b2-824d-d092ec81a00e
-# ╠═a7ebe5f9-624f-4dc2-bb41-86cc6c56365a
-# ╠═b497ddf4-9b01-43f7-9b71-c32a42b1c09e
 # ╠═94ee83f4-262f-4476-b7a7-340ee806e874
 # ╠═a6e36e28-404e-4e97-b205-9aeb89117bef
 # ╠═76290b18-7c23-43d0-a567-e1e7b47fde60
