@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.19.45
 
 using Markdown
 using InteractiveUtils
@@ -42,7 +42,7 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
+		yticks = [0,25,50], xlims=(1.5,20), ylims=(0.0, 50),
 		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -56,7 +56,7 @@ begin
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
 	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
-	 #savefig("RDF_bead.png") 
+	savefig("RDF_bead.png") 
 end
 
 # ╔═╡ 899acd5f-ebde-4e34-804d-3d805274e10e
@@ -70,17 +70,18 @@ begin
 	plt_adf_1 = stephist(adf_tiny, bins=50, label = "adf", yticks = [0,50,100], c = 3,
 	                    title = "Bead_tiny_dataset", titlefontsize = 10,
 	                    xlabel = L"\theta", ylabel = "ADF",
-	                    xlims = (0, π), ylims=(0.0, 500), size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5)
-	vline!([ eq_angle,], label = "109.5˚", lw=5, color = "black")
+	                    xlims = (0, π), ylims=(0.0, 100), size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5)
+	#vline!([ eq_angle,], label = "109.5˚", lw=5, color = "black")
 	
 	adf = ACEpotentials.get_adf(bead_dataset, r_cut_adf);
-	plt_adf_2 =stephist(adf, bins=50, label = "adf", yticks = [0,250,500], c = 3,
+	plt_adf_2 =stephist(adf, bins=50, label = "adf", yticks = [0,150,300], c = 3,
 	                    title = "Bead_dataset", titlefontsize = 10,
 	                    xlabel = L"\theta", ylabel = "ADF",
-	                    xlims = (0, π), ylims=(0.0, 500), size=(400,200), left_margin = 2Plots.mm , fill=true, fillalpha=0.5)
-	vline!([ eq_angle,], label = "109.5˚", lw=5, color = "black")
+	                    xlims = (0, π), ylims=(0.0, 300), size=(400,200), left_margin = 2Plots.mm , fill=true, fillalpha=0.5)
+	#vline!([ eq_angle,], label = "109.5˚", lw=5, color = "black")
 	
 	plot(plt_adf_1, plt_adf_2, layout=(2,1), size=(600,400))
+	savefig("ADF_bead.png") 
 end
 
 # ╔═╡ c697733c-a0ee-45b2-824d-d092ec81a00e
@@ -89,7 +90,7 @@ begin
 	q = 30
 	model1 = acemodel(elements = [:Si,],
 	        order = 4,
-	        totaldegree = 30, 
+	        totaldegree = 10, 
 			r0 = 12.0,
 	        rcut = 14.5,
 			#transform = (:agnesi, p, q),
@@ -193,7 +194,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("bad_fitting_Bead_814.png") 
+#savefig("bad_fitting_Bead_814.png") 
 end;
 
 # ╔═╡ 4bc28c08-a51f-475a-8d7c-a06ee96992f0
@@ -248,9 +249,6 @@ end
 # ╔═╡ 583556d9-cdbf-4acd-83d3-baa853e09724
 New_energy = add_uncertainty(bead_energies)
 
-# ╔═╡ 3ca71a48-ec6e-4925-9d2b-b97debcd9f4b
-
-
 # ╔═╡ b452788e-8a24-42e9-bfaa-6c53e21d9696
 begin
 	plot([0.,0.03], [0.,0.03]; lc=:black, label="")
@@ -267,21 +265,8 @@ begin
 	             aspect_ratio = :equal, color="#F0BB62")
 end
 
-# ╔═╡ c0ca7de7-7850-4e7b-841f-672639a821b2
-begin
-	plot([0.,0.03], [0.,0.03]; lc=:black, label="")
-	rmse = sqrt(sum((New_energy - bead_energies).^2)/length(bead_dataset))
-    mae = sum(abs.(New_energy - bead_energies))/length(bead_dataset)
-	scatter!(bead_energies, New_energy;
-	             label="full dataset",
-	             title = @sprintf("Structures Used In Training:  %i out of %i\n", length(bead_tiny_dataset), length(bead_dataset)) * @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 
-					1000*rmse, 1000*mae),
-	             titlefontsize = 8,
-	             yerror = model_std,
-	             xlabel="Energy [eV/atom]", xlims=(0.,0.040),
-	             ylabel="Model Energy [eV/atom]", ylims=(0.,0.025),
-	             aspect_ratio = :equal, color="#F0BB62")
-end
+# ╔═╡ 3ca71a48-ec6e-4925-9d2b-b97debcd9f4b
+
 
 # ╔═╡ Cell order:
 # ╠═e212233e-6c4c-11ef-115e-476408bfabc1
@@ -307,5 +292,4 @@ end
 # ╠═c929d03b-5050-4c00-9e49-c2a1bec25560
 # ╠═b79630fb-8e7c-4c9e-94c5-18c5cd75a799
 # ╠═583556d9-cdbf-4acd-83d3-baa853e09724
-# ╠═c0ca7de7-7850-4e7b-841f-672639a821b2
 # ╠═3ca71a48-ec6e-4925-9d2b-b97debcd9f4b

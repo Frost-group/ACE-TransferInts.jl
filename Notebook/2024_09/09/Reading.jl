@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.19.45
 
 using Markdown
 using InteractiveUtils
@@ -410,6 +410,15 @@ plot(θ,ϕ,logJ_mat,st=:surface,
 	ylabel=L"$\theta$",
 	zlabel=L"log(J)",
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+# ╔═╡ 10e8e776-5f35-4e63-8038-a83cdf72e565
+data = DataFrame(θ = repeat(θ, inner = length(ϕ)),
+                 φ = repeat(ϕ, outer = length(θ)),
+				J = vec(J_mat)
+)
+
+# ╔═╡ 052d6c33-f848-4805-a92e-f1123dcaf85e
+CSV.write("TI_theta_phi.csv", data)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2897,5 +2906,7 @@ version = "1.4.1+1"
 # ╠═9e546e9c-a521-4b88-b8ad-7ed0ecd49966
 # ╠═42212782-5b70-4364-b2bb-a75ee65e00c5
 # ╠═ad03089d-4b66-4f93-814e-b379e16da537
+# ╠═10e8e776-5f35-4e63-8038-a83cdf72e565
+# ╠═052d6c33-f848-4805-a92e-f1123dcaf85e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
