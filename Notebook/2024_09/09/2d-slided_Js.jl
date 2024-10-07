@@ -26,6 +26,8 @@ for bb in 1:Int(size(J,1)/49)
 	θ[bb] = para[49*bb,1] #running from -π to π
 end
 
+log(J_mat[1,1])
+logJ_mat[1,1]
 for aa in 1:49
 	ϕ[aa] = para[aa,2] #running from 0 to π
 end
@@ -34,7 +36,7 @@ using Plots
 using LaTeXStrings
 
 heatmap(ϕ[1:49],
-	θ[1:97], J_mat[:,:],
+	θ[1:97], sqrt.(J_mat[:,:]),
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 	xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
@@ -44,7 +46,7 @@ heatmap(ϕ[1:49],
 
 
 plot(θ,ϕ,
-    logJ_mat,
+    sqrt.(J_mat),
     st=:surface,
     xlabel= L"$\phi$",
     ylabel=L"$\theta$",
@@ -60,7 +62,7 @@ begin
 	plt1 = plot()
 	for n = 1:4
 		θ_j = round(θ[θ_i[n]], digits = 2)	
-		plot!(ϕ, logJ_mat[:,θ_i[n]], lw = 2, c = Color[n]
+		plot!(ϕ, sqrt.(J_mat[:,θ_i[n]]), lw = 2, c = Color[n]
 			, label = L"\theta ="*" $θ_j"
 			, xlabel = L"\phi", ylabel = L"log(J)"
 		)
@@ -69,16 +71,15 @@ begin
 	plt2 = plot()
 	for m = 1:3
 		ϕ_j = round(ϕ[ϕ_i[m]], digits = 2)	
-		plot!(θ, logJ_mat[ϕ_i[m],:], lw = 2, c = Color[2*m-1]
+		plot!(θ, sqrt.(J_mat[ϕ_i[m],:]), lw = 2, c = Color[2*m-1]
 				, label = L"\theta ="*" $ϕ_j"
 				, xlabel = L"\theta", ylabel = L"log(J)"
 		)
 	end
 	plt2
 	plot!(plt1, plt2, layout=(2,1), size=(900,700))
-	savefig("1d-sliced_logJ.png")
+	#savefig("1d-sliced_logJ.png")
 end
-
 
 plot(θ,ϕ,
     logJ_mat,
@@ -87,3 +88,5 @@ plot(θ,ϕ,
     ylabel=L"$\theta$",
     zlabel=L"J",
     c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+
+sq_J_mat = sqrt.(J_mat[:,:])
