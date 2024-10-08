@@ -9,13 +9,16 @@ Pkg.add("Plots")
 Pkg.add("Suppressor")
 Pkg.add("ExtXYZ")
 Pkg.add("JuLIP")
-
+Pkg.add("Plots")
+Pkg.add("LaTeXStrings")
 
 using CSV
 using DataFrames
 using DelimitedFiles
 using JuLIP
 using ACEpotentials
+using Plots
+using LaTeXStrings
 using Plots
 using LaTeXStrings
 
@@ -61,7 +64,13 @@ end
 
 construct_dimer("naphthalene.extxyz", "dimer_naphthalene.extxyz", para, 2*pi/3, J);
 
-function construct_all_dimer(namefile1, namefile2, savefile)
+
+function trans_log(E)
+	return log(0.01+E)
+end
+
+
+function construct_all_dimer_tran(namefile1, namefile2, savefile)
 	mol1 = read_extxyz(namefile1)[1] 			#Read Molecular Structure from 													file.extxyz
 	Set_Mol2 =  read_extxyz(namefile2)	
 	Set_dimer = Vector{Atoms{Float64}}([])		#Set of dimer Molecules
@@ -77,7 +86,7 @@ function construct_all_dimer(namefile1, namefile2, savefile)
 		)
 		
 		set_data!(dimer, "energy", 
-			get_data(mol2, "energy")
+			trans_log(get_data(mol2, "energy"))
 		)
 		
 		push!(Set_dimer, dimer) 	
@@ -90,7 +99,7 @@ end
 
 construct_all_dimer("naphthalene.extxyz", 
 	"dimer_naphthalene.extxyz", 
-	"Large_dimers.extxyz"
+	"Large_dimers_log.extxyz"
 )
 
 function construct_all_dimer(namefile1, namefile2, savefile)
@@ -126,6 +135,7 @@ construct_all_dimer("naphthalene.extxyz",
 	"All_CH_dimers.extxyz"
 )
 
+
 function train_test(all_structure_file, num_train, train_file, test_file)
 	s_dim =  read_extxyz(all_structure_file)
 	
@@ -158,5 +168,60 @@ function train_test(all_structure_file, num_train, train_file, test_file)
 	write_extxyz(test_file, test_dat)
 	
 end
-train_test("all_CH_dimers.extxyz", 900, "train_all.extxyz", "test_all.extxyz")
 
+train_test("all_CH_dimers.extxyz", 900, "train_all.extxyz", "test_all.extxyz")
+train_test("Large_dimers_log.extxyz", 900, "train_all_log.extxyz", "test_all_log.extxyz")
+
+begin
+	J_mat = zeros((49,Int(size(J,1)/49)))
+	logJ_mat = zeros((49,Int(size(J,1)/49)))
+	θ = zeros((Int(size(J,1)/49)))
+	ϕ = zeros((49))
+	for bb in 1:Int(size(J,1)/49)
+		J_mat[:, bb] = J[49*(bb-1)+1: 49*bb]	
+		logJ_mat[:, bb] = logJ[49*(bb-1)+1: 49*bb]
+		θ[bb] = para[49*bb,1]
+	end
+	for aa in 1:49
+		ϕ[aa] = para[aa,2]
+	end
+end
+
+
+heatmap(ϕ[1:49],
+	    θ[1:97], -sqrt.(J_mat[:,:]),
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel= L"$\phi$",
+		xticks=([0,pi/4,pi/2,3*pi/4,pi],["0",L"$\pi/4$",L"$\pi/2$",L"$3\pi/4$",L"$\pi$"]),
+		ylabel=L"$\theta$",
+		yticks=([0,pi/4,pi/2,3*pi/4,pi,-pi/4,-pi/2,-3*pi/4,-pi],["0",L"$\pi/4$",L"$\pi/2$",L"$3\pi/4$",L"$\pi$",L"$-\pi/4$",L"$-\pi/2$",L"$-3\pi/4$",L"$-\pi$"]),
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
+
+heatmap(ϕ[1:49],
+	    θ[1:97], sqrt.(J_mat[:,:]),
+	    c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	    xlabel= L"$\phi$",
+		xticks=([0,pi/4,pi/2,3*pi/4,pi],["0",L"$\pi/4$",L"$\pi/2$",L"$3\pi/4$",L"$\pi$"]),
+		ylabel=L"$\theta$",
+		yticks=([0,pi/4,pi/2,3*pi/4,pi,-pi/4,-pi/2,-3*pi/4,-pi],["0",L"$\pi/4$",L"$\pi/2$",L"$3\pi/4$",L"$\pi$",L"$-\pi/4$",L"$-\pi/2$",L"$-3\pi/4$",L"$-\pi$"]),
+		#aspectratio=:equal,
+		size=(700, 700),
+	    title="Transfer Integrals" )
+
+sqrt.(J_mat[:,:])
+
+
+begin
+plot(θ,ϕ,
+	log.(0.01.+J_mat[:,:]),
+	st=:surface,
+	xlabel= L"$\phi$",
+	ylabel=L"$\theta$",
+	yticks=([0,pi/2,pi],["0",L"$\pi/2$",L"$\pi$"]),
+	xticks=([0,pi/2,pi,-pi/2,-pi],["0",L"$\pi/2$",L"$\pi$",L"$-\pi/2$",L"$-\pi$"]),
+	zlabel=L"J",
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]))
+savefig("log(J)")
+end
