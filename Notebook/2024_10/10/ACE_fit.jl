@@ -85,7 +85,7 @@ begin
 	q = 30
 	model1 = acemodel(elements = [:C,:H],
 	        order = 4,
-	        totaldegree = 10, 
+	        totaldegree = 15, 
 			r0 = 12.0,
 	        rcut = 14.5,
 			#transform = (:agnesi, p, q),
@@ -131,7 +131,7 @@ end
 
 function assess_model(model, train_dataset)
 
-    plot([0.,0.0025], [0.,0.0025]; lc=:black, label="")
+    plot([-0.05,0.05], [-0.05,0.05]; lc=:black, label="")
 
     model_energies = []
     model_std = []
@@ -153,14 +153,14 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(0.,0.0035),
-             ylabel="Model Energy [eV/atom]", ylims=(0.,0.0025),
+             xlabel="Energy [eV/atom]", xlims=(-0.015,0.015),
+             ylabel="Model Energy [eV/atom]", ylims=(-0.01,0.01),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("bad_fitting_Bead_814.png") 
+savefig("better_fitting_Bead_820.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
