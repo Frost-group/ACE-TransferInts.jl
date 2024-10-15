@@ -687,67 +687,96 @@ end
 anim2 = @animate for ii in 1:97
     plot!(scatter(ϕ, J_mat[:,ii], ylims = (-0.5,0.5)),
 	xlabel= L"$\phi$", ylabel=L"J",
-	xticks=([0, π, π/2], ["0", "π", "π/2"]),
+	xticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
 	title=L"J " * L"$(\theta = $" *string(round(θ[ii], digits=2)) * L")", legend = false)
     annotations = [(ϕ[i], J[i+(ii-1)*49], text(string(i), :left, 12)) for i in 1:length(ϕ)]
     annotate!(annotations)
 end
-
-gif(anim2, "anim2.gif", fps = 30)
+gif(anim2, "anim2.gif", fps = 20)
 
 
 anim3 = @animate for ii in 1:49
     plot!(scatter(θ, J_mat[ii, :], ylims = (-0.5,0.5)),
 	xlabel= L"$\theta$", ylabel=L"J",
-	xticks=([0, -π, π, -π/2, π/2], ["0", "-π", "π", "-π/2", "π/2"]),
+	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	title=L"J " * L"$(\phi = $" *string(round(ϕ[ii], digits=2)) *L")", legend = false)
     annotations = [(θ[i], J_mat[ii, i], text(string(i), :left, 12)) for i in 1:length(θ)]
     annotate!(annotations)
 end
 
-gif(anim3, "anim3.gif", fps = 60)
+gif(anim3, "anim3.gif", fps = 20)
 
 
+anim4 = @animate for ii in 1:97
+    plot!(scatter(ϕ, J²_mat[:,ii], ylims = (-0.01,0.25)),
+	xlabel= L"$\phi$", ylabel=L"J^2",
+	xticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+	title=L"J^2 " * L"$(\theta = $" *string(round(θ[ii], digits=2)) * L")", legend = false)
+    annotations = [(ϕ[i], J²[i+(ii-1)*49], text(string(i), :left, 12)) for i in 1:length(ϕ)]
+    annotate!(annotations)
+end
+gif(anim4, "anim4.gif", fps = 30)
 
+anim5 = @animate for ii in 1:49
+    plot!(scatter(θ, J²_mat[ii, :], ylims = (-0.01,0.25)),
+	xlabel= L"$\theta$", ylabel=L"J^2",
+	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
+	title=L"J^2 " * L"$(\phi = $" *string(round(ϕ[ii], digits=2)) *L")", legend = false)
+    annotations = [(θ[i], J²_mat[ii, i], text(string(i), :left, 12)) for i in 1:length(θ)]
+    annotate!(annotations)
+end
+gif(anim5, "anim5.gif", fps = 30)
+
+begin
 plot(θ, ϕ,
 	J_mat,
 	st=:surface,
 	xlabel= L"$\phi$", ylabel=L"$\theta$", zlabel=L"J",
-	yticks=([0, π, π/2], ["0", "π", "π/2"]),
-	xticks=([0, -π, π, -π/2, π/2], ["0", "-π", "π", "-π/2", "π/2"]),
+	yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
 	)
+savefig("J_surface.png")
+end
 
-
+begin
 heatmap(ϕ[1:49],
 	θ[1:97], J_mat[:,:],
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 	xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
-	xticks=([0, π, π/2], ["0", "π", "π/2"]),
-	yticks=([0, -π, π, -π/2, π/2], ["0", "-π", "π", "-π/2", "π/2"]),
+	xticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+	yticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	#aspectratio=:equal,
 	size=(700, 700),
 	title="Transfer Integrals" )
+	savefig("J_heatmap.png")
+end
 
+begin
 plot(θ,ϕ,
 	J²_mat,
 	st=:surface,
 	xlabel= L"$\phi$", ylabel=L"$\theta$", zlabel=L"J",
-	yticks=([0, π, π/2], ["0", "π", "π/2"]),
-	xticks=([0, -π, π, -π/2, π/2], ["0", "-π", "π", "-π/2", "π/2"]),
+	yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
 	)
+	savefig("J^2_surface.png")
+end
 
+begin
 heatmap(ϕ[1:49],
 	θ[1:97], J²_mat[:,:],
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 	xlabel= L"$\phi$", ylabel=L"$\theta$",
-	xticks=([0, π, π/2], ["0", "π", "π/2"]),
-	yticks=([0, -π, π, -π/2, π/2], ["0", "-π", "π", "-π/2", "π/2"]),
+	xticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+	yticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	#aspectratio=:equal,
 	size=(700, 700),
-	title="Transfer Integrals" )
+	title="Squared Transfer Integrals" )
+	savefig("J^2_heatmap.png")
+end
 
 begin
 	function rot_x(θ)
@@ -793,11 +822,6 @@ begin
 	mol1 = read_extxyz("naphthalene.extxyz")[1]
 	num_C = find_element(mol1, 6)
 	shared_C = [3, 4];
-	ring_C = zeros(Int64,(2,6))
-	ring_C[1, 1:6] = num_C[1:6]
-	ring_C[2, 1:2] = shared_C
-	ring_C[2, 3:6] = num_C[7:10]
-	ring_C
 end;
 
 function Centroid_bead(Molecule, shared_C, num_C)
@@ -932,8 +956,8 @@ function train_test(all_structure_file, num_train, train_file, test_file)
 	
 end
 
-train_test("all_CH_dimers.extxyz", 900, "train_all.extxyz", "test_all.extxyz")
-train_test("Large_bead.extxyz", 900, "train_bead.extxyz", "test_bead.extxyz")
+train_test("all_CH_dimers.extxyz", 2000, "train_all.extxyz", "test_all.extxyz")
+train_test("Large_bead.extxyz", 2000, "train_bead.extxyz", "test_bead.extxyz")
 
 function construct_Carbon(oldfile, newfile, J)
 	Set_Mol2 =  read_extxyz(oldfile)	
@@ -953,7 +977,88 @@ function construct_Carbon(oldfile, newfile, J)
 	write_extxyz(newfile, Set_dimer)
 end
 
-construct_Carbon("Large_dimers_carbon.extxyz",
-"dimers_carbon.extxyz", 
-J)
+begin
+	Dimer_full = read_extxyz("dimer_naphthalene.extxyz")
+	    
+	mol = Dimer_full[1]
+	index = findall(x -> x == 6, mol.Z)
+	num = length(index)
+	    
+	if num == 0
+	    println("Warning: No atoms found with atomic number $Z.")
+	    return
+	end
+	    
+	Mass = fill(mol.M[1], num)
+	Z_atomic = fill(mol.Z[1], num)
+	cell = mol.cell
+	    
+	Large_data = Vector{Atoms{Float64}}([])
+end
 
+begin
+	for jj in 1:length(Dimer_full)
+		mol1 = Dimer_full[jj]
+        X1 = [] 
+		
+        for ii in index
+            append!(X1, mol1.X[ii])
+        end
+	dimer = Atoms(X = X1,
+	                M = Mass,
+	                Z = Z_atomic,
+	                cell = cell,
+	                pbc = fill(false, 3))
+
+	set_data!(dimer, "energy", 
+			get_data(mol1, "energy")
+		)
+		
+	push!(Large_data, dimer)
+	end
+end
+write_extxyz("Large_dimers_carbon.extxyz", Large_data)
+
+function construct_all_carbon(namefile1, namefile2, savefile)
+	mol1 = read_extxyz(namefile1)[1]
+	Set_Mol2 =  read_extxyz(namefile2)	
+	Set_dimer = Vector{Atoms{Float64}}([])
+
+	X1 = [] 
+    for ii in index
+        append!(X1, mol1.X[ii])
+    end
+
+	mol = Atoms(X = X1,
+				M = Mass,
+				Z = Z_atomic,
+				cell = cell,
+				pbc = fill(false, 3))
+
+	for nn in 1:length(Set_Mol2)
+		mol2 = Set_Mol2[nn]
+		#println("Dimer: "*string(jj))
+		dimer = Atoms(X = vcat(mol2.X, mol.X),
+			M = vcat(mol2.M, mol.M),
+			Z = vcat(mol2.Z, mol.Z),
+			cell = mol.cell*100,
+			pbc = fill(false, 3)
+		)
+		
+		set_data!(dimer, "energy", 
+			get_data(mol2, "energy")
+		)
+		
+		push!(Set_dimer, dimer) 	
+		#println(Set_Mol2)
+		#println("_________________________________________________________")
+	end
+	#return Set_Mol2
+	write_extxyz(savefile, Set_dimer)
+end
+construct_all_carbon("naphthalene.extxyz", 
+		"Large_dimers_carbon.extxyz",
+		"dimers_carbon.extxyz"
+		)
+
+train_test("dimers_carbon.extxyz", 2000, "train_carbon.extxyz", "test_carbon.extxyz")
