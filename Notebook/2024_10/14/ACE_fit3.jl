@@ -85,7 +85,7 @@ begin
 	                push!(energies, atoms.data[key].data/length(atoms))
 	            end
 	        end
-	    end
+	    end 
 	    return energies
 	end;
 
@@ -94,7 +94,6 @@ begin
 	
 	GC.gc()
 end
-
 
 function assess_model(model, train_dataset)
 
@@ -127,7 +126,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-#savefig("bad_fitting_Bead_822.png") 
+savefig("fitting_Bead_1632.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

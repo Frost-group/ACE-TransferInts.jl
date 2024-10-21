@@ -127,7 +127,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-#savefig("bad_fitting_Bead_822.png") 
+savefig("fitting_Bead_1829.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
