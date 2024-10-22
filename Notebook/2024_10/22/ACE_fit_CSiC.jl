@@ -18,49 +18,38 @@ begin
 end
 
 begin
-	bead_tiny_dataset = read_extxyz("train_all.extxyz")
-	bead_dataset = read_extxyz("test_all.extxyz")
+	bead_tiny_dataset = read_extxyz("train_carbon_CSiC.extxyz")
+	bead_dataset = read_extxyz("test_carbon_CSiC.extxyz")
 end
-
-bead_tiny_dataset
 
 begin
 	r_cut = 20.0
 	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = stephist(rdf_tiny[(:C, :H)], 
-	bins=150, label = "rdf",
-	title="C-H", titlefontsize=10,
-	xlabel = L"r[\AA]", ylabel = "RDF",
-	yticks = [0,25], xlims=(0,20), ylims=(0.0, 25),
-	size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
+	plt_rdf_1 = stephist(rdf_tiny[(:C, :C)], 
+		bins=150, label = "rdf",
+		title="Bead_tiny_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,25,50], xlims=(1.5,20), ylims=(0.0, 50),
+		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
-    plt_rdf_2 = stephist(rdf_tiny[(:H, :H)], 
-    bins=150, label = "rdf",
-    title="H-H", titlefontsize=10,
-    xlabel = L"r[\AA]", ylabel = "RDF",
-    yticks = [0,25,50,75,100], xlims=(0,20), ylims=(0.0, 100),
-    size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-    #vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-
-    plt_rdf_3 = stephist(rdf_tiny[(:C, :C)], 
-    bins=150, label = "rdf",
-    title="C-C", titlefontsize=10,
-    xlabel = L"r[\AA]", ylabel = "RDF",
-    yticks = [0,25,50,75], xlims=(0,20), ylims=(0.0, 75),
-    size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-    #vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-
+	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
+	plt_rdf_2 = stephist(rdf[(:C, :C)],
+		bins=150, label = "rdf",
+		title="Bead_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
+		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
+	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
-	plot!(plt_rdf_1, plt_rdf_2, plt_rdf_3, layout=(3,1), size=(600,400))
-	savefig("RDF_FULL.png") 
-end;
-
+	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
+	savefig("RDF_bead.png") 
+end
 
 begin
 	p = 11
 	q = 30
-	model1 = acemodel(elements = [:C,:H],
+	model1 = acemodel(elements = [:C, :Si],
 	        order = 4,
 	        totaldegree = 15, 
 			r0 = 12.0,
@@ -69,10 +58,11 @@ begin
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
 			#envelope = (:x, 2, 2),
-	        Eref = [:C => 0.0, :H => 0.0]
+	        Eref = [:C => 0.0, :Si => 0.0]
 	)
 	@show length(model1.basis);
 end
+
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
 solver = ACEfit.BLR(committee_size=500, factorization=:svd)
@@ -95,7 +85,7 @@ begin
 	                push!(energies, atoms.data[key].data/length(atoms))
 	            end
 	        end
-	    end
+	    end 
 	    return energies
 	end;
 
@@ -105,10 +95,9 @@ begin
 	GC.gc()
 end
 
-
 function assess_model(model, train_dataset)
 
-    plot([-0.05,0.05], [-0.05,0.05]; lc=:black, label="")
+    plot([-0.5,0.5], [-0.5,0.5]; lc=:black, label="")
 
     model_energies = []
     model_std = []
@@ -130,14 +119,14 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-0.015,0.015),
-             ylabel="Model Energy [eV/atom]", ylims=(-0.01,0.01),
+             xlabel="Energy [eV/atom]", xlims=(-0.025,0.025),
+             ylabel="Model Energy [eV/atom]", ylims=(-0.02,0.02),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("Fitting_Full_1651.png") 
+	savefig("fitting_carbon_900_CSiC.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

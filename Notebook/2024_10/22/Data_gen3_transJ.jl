@@ -695,7 +695,7 @@ begin
 		xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 		c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
 		)
-	savefig("Jlog_surface.png")
+	#savefig("Jlog_surface.png")
 end
 
 begin
@@ -709,7 +709,7 @@ begin
 		#aspectratio=:equal,
 		size=(700, 700),
 		title="Transfer Integrals" )
-		savefig("Jlog_heatmap.png")
+	#savefig("Jlog_heatmap.png")
 end
 
 anim11 = @animate for ii in 1:97
@@ -763,7 +763,7 @@ plot(θ, ϕ,
 	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
 	)
-savefig("J_surface.png")
+#savefig("J_surface.png")
 end
 
 begin
@@ -777,7 +777,7 @@ heatmap(ϕ[1:49],
 	#aspectratio=:equal,
 	size=(700, 700),
 	title="Transfer Integrals" )
-	savefig("J_heatmap.png")
+	#savefig("J_heatmap.png")
 end
 
 begin
@@ -789,7 +789,7 @@ plot(θ,ϕ,
 	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
 	)
-	savefig("J^2_surface.png")
+	#savefig("J^2_surface.png")
 end
 
 begin
@@ -802,7 +802,7 @@ heatmap(ϕ[1:49],
 	#aspectratio=:equal,
 	size=(700, 700),
 	title="Squared Transfer Integrals" )
-	savefig("J^2_heatmap.png")
+	#savefig("J^2_heatmap.png")
 end
 
 begin
@@ -829,7 +829,7 @@ function construct_dimer(namefile, savefile, para, rot_ang_y, J)
 				mol2.X[ii] = rot_y(rot_ang_y) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
 				#mol2.X[ii] = rot_z(para[jj, 2])*rot_y(para[jj, 1]) * mol1.X[ii] + para[jj, 4:6] 		#Rotation + Translation
 			#println(mol2.X[ii])
-				set_data!(mol2, "energy", logJ[jj])
+				set_data!(mol2, "energy", J[jj])
 			end
 			push!(Set_Mol2, mol2) 	
 			#println(Set_Mol2)
@@ -840,7 +840,7 @@ function construct_dimer(namefile, savefile, para, rot_ang_y, J)
 end
 
 construct_dimer("naphthalene.extxyz",
-"dimer_naphthalene_log.extxyz", para, 2*pi/3, J);
+"dimer_naphthalene.extxyz", para, 2*pi/3, J);
 
 begin
 	function find_element(Molecule, Z)
@@ -911,11 +911,11 @@ function construct_all_bead(namefile1, namefile2, savefile, shared_C, num_C, ato
 end
 
 construct_all_bead("naphthalene.extxyz", 
-	"dimer_naphthalene_log.extxyz", 
-	"Large_bead_log.extxyz", 
+	"dimer_naphthalene.extxyz", 
+	"Large_bead.extxyz", 
 	shared_C, 
 	num_C,
-	14, 8
+	14, 14
 )
 
 
@@ -948,8 +948,8 @@ function construct_all_dimer(namefile1, namefile2, savefile)
 end
 
 construct_all_dimer("naphthalene.extxyz", 
-	"dimer_naphthalene_log.extxyz", 
-	"all_CH_dimers_log.extxyz"
+	"dimer_naphthalene.extxyz", 
+	"all_CH_dimers.extxyz"
 )
 
 function train_test(all_structure_file, num_train, train_file, test_file)
@@ -985,8 +985,8 @@ function train_test(all_structure_file, num_train, train_file, test_file)
 	
 end
 
-train_test("all_CH_dimers_log.extxyz", 2000, "train_all_log.extxyz", "test_all_log.extxyz")
-train_test("Large_bead_log.extxyz", 2000, "train_bead_log.extxyz", "test_bead_log.extxyz")
+train_test("all_CH_dimers.extxyz", 900, "train_all.extxyz", "test_all.extxyz")
+train_test("Large_bead.extxyz", 900, "train_bead.extxyz", "test_bead.extxyz")
 
 function construct_Carbon(oldfile, newfile, J)
 	Set_Mol2 =  read_extxyz(oldfile)	
@@ -1007,7 +1007,7 @@ function construct_Carbon(oldfile, newfile, J)
 end
 
 begin
-	Dimer_full = read_extxyz("dimer_naphthalene_log.extxyz")
+	Dimer_full = read_extxyz("dimer_naphthalene.extxyz")
 	    
 	mol = Dimer_full[1]
 	index = findall(x -> x == 6, mol.Z)
@@ -1046,7 +1046,7 @@ begin
 	push!(Large_data, dimer)
 	end
 end
-write_extxyz("Large_dimers_carbon_log.extxyz", Large_data)
+write_extxyz("Large_dimers_carbon.extxyz", Large_data)
 
 function construct_all_carbon(namefile1, namefile2, savefile)
 	mol1 = read_extxyz(namefile1)[1]
@@ -1086,9 +1086,9 @@ function construct_all_carbon(namefile1, namefile2, savefile)
 	write_extxyz(savefile, Set_dimer)
 end
 construct_all_carbon("naphthalene.extxyz", 
-		"Large_dimers_carbon_log.extxyz",
-		"dimers_carbon_log.extxyz"
+		"Large_dimers_carbon.extxyz",
+		"dimers_carbon.extxyz"
 		)
 
-train_test("dimers_carbon_log.extxyz", 2000, "train_carbon_log.extxyz", "test_carbon_log.extxyz")
+train_test("dimers_carbon.extxyz", 900, "train_carbon.extxyz", "test_carbon.extxyz")
 

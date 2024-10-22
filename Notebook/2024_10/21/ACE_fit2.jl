@@ -17,8 +17,8 @@ begin
 end
 
 begin
-	bead_tiny_dataset = read_extxyz("train_bead_log.extxyz")
-	bead_dataset = read_extxyz("test_bead_log.extxyz")
+	bead_tiny_dataset = read_extxyz("train_bead.extxyz")
+	bead_dataset = read_extxyz("test_bead.extxyz")
 end
 
 begin
@@ -119,14 +119,14 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-.60,0.0),
-             ylabel="Model Energy [eV/atom]", ylims=(-.40,0.0),
+             xlabel="Energy [eV/atom]", xlims=(-.15,0.15),
+             ylabel="Model Energy [eV/atom]", ylims=(-.1,0.1),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_1829.png") 
+savefig("fitting_Bead_1625.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

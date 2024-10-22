@@ -4,7 +4,7 @@ begin
 	using Pkg
 	Pkg.activate(".")
 	Pkg.add("LaTeXStrings")
-	Pkg.add("MultivariateStats")
+	Pkg.add("MultivariateStats") 
 	Pkg.add("Plots")
 	Pkg.add("Suppressor")
 	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
@@ -18,8 +18,8 @@ begin
 end
 
 begin
-	bead_tiny_dataset = read_extxyz("train_carbon.extxyz")
-	bead_dataset = read_extxyz("test_carbon.extxyz")
+	bead_tiny_dataset = read_extxyz("train_carbon_CSiO.extxyz")
+	bead_dataset = read_extxyz("test_carbon_CSiO.extxyz")
 end
 
 begin
@@ -49,7 +49,7 @@ end
 begin
 	p = 11
 	q = 30
-	model1 = acemodel(elements = [:C,],
+	model1 = acemodel(elements = [:C, :Si, :O],
 	        order = 4,
 	        totaldegree = 15, 
 			r0 = 12.0,
@@ -58,7 +58,7 @@ begin
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
 			#envelope = (:x, 2, 2),
-	        Eref = [:C => 0.0]
+	        Eref = [:C => 0.0, :Si => 0.0, :O => 0.0]
 	)
 	@show length(model1.basis);
 end
@@ -126,7 +126,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_1632.png") 
+	savefig("fitting_carbon_900_CSiO.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

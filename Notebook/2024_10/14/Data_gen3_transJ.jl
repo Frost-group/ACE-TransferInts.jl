@@ -1061,5 +1061,5 @@ construct_all_carbon("naphthalene.extxyz",
 		"dimers_carbon.extxyz"
 		)
 
-train_test("dimers_carbon.extxyz", 2000, "train_carbon.extxyz", "test_carbon.extxyz")
+train_test("dimers_carbon.extxyz", 900, "train_carbon.extxyz", "test_carbon.extxyz")
 
