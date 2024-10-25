@@ -130,3 +130,39 @@ savefig("fitting_Bead_SiO2.png")
 end;
 
 assess_model(model1, bead_tiny_dataset)
+
+function augment(old_dataset, old_model; num=5)
+
+    new_dataset = deepcopy(old_dataset)
+    new_model = deepcopy(old_model)
+
+    model_std = []
+    for atoms in bead_dataset
+        ene, co_ene = ACE1.co_energy(new_model.potential, atoms)
+        push!(model_std, std(co_ene/length(atoms)))
+    end
+	#Choosing training points 
+    for atoms in bead_dataset[sortperm(model_std; rev=true)[1:num]]
+        push!(new_dataset, atoms)
+    end
+    @suppress acefit!(new_model, new_dataset;
+            solver = ACEfit.BLR(committee_size=50, factorization=:svd),
+            energy_key = "energy", force_key = "",
+            verbose = false);
+
+    return new_dataset, new_model
+end;
+
+begin
+	new_dataset, new_model = augment(bead_tiny_dataset, model1; num=5);
+	assess_model(new_model, new_dataset)
+end
+
+
+for i in 1:4
+    global new_dataset, new_model # declare these are global variables
+    @show i
+    new_dataset, new_model = augment(new_dataset, new_model; num=5);
+end
+assess_model(new_model, new_dataset)
+
