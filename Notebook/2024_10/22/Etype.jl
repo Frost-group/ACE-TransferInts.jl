@@ -37,6 +37,8 @@ Z_Cdiff2 = [6, 6, 14, 14, 6, 6, 8, 8, 8, 8, 6, 6, 14, 14, 6, 6, 8, 8, 8, 8]
 
 Z_Cdiff3 = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 
+Z_Cdiff4 = [6, 6, 8, 8, 6, 6, 6, 6, 6, 6, 14, 14, 16, 16, 14, 14, 14, 14, 14, 14]
+
 function element_change(oldfile, newfile, Zatomic)
     olddimer = read_extxyz(oldfile)
     newdimer = Vector{Atoms{Float64}}([])	
@@ -70,3 +72,6 @@ element_change("test_carbon.extxyz", "test_carbon_CSiO.extxyz", Z_Cdiff2)
 
 element_change("train_carbon.extxyz", "train_carbon_CSi3.extxyz", Z_Cdiff3)
 element_change("test_carbon.extxyz", "test_carbon_CSi3.extxyz", Z_Cdiff3)
+
+element_change("train_carbon.extxyz", "train_carbon_COC_SiSSi.extxyz", Z_Cdiff4)
+element_change("test_carbon.extxyz", "test_carbon_COC_SiSSi.extxyz", Z_Cdiff4)
