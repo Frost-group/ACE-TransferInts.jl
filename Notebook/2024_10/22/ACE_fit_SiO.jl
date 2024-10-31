@@ -146,15 +146,16 @@ function augment(old_dataset, old_model; num=5)
         push!(new_dataset, atoms)
     end
     @suppress acefit!(new_model, new_dataset;
-            solver = ACEfit.BLR(committee_size=50, factorization=:svd),
-            energy_key = "energy", force_key = "",
-            verbose = false);
+            solver = solver,
+			data_keys1...,
+            #verbose = false
+			);
 
     return new_dataset, new_model
 end;
 
 begin
-	new_dataset, new_model = augment(bead_tiny_dataset, model1; num=5);
+	new_dataset, new_model = augment(bead_tiny_dataset, model1; num=100);
 	assess_model(new_model, new_dataset)
 end
 
@@ -162,7 +163,8 @@ end
 for i in 1:4
     global new_dataset, new_model # declare these are global variables
     @show i
-    new_dataset, new_model = augment(new_dataset, new_model; num=5);
+    new_dataset, new_model = augment(new_dataset, new_model; num=100);
 end
+
 assess_model(new_model, new_dataset)
 
