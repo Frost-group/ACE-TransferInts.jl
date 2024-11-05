@@ -34,4 +34,4 @@ function extract_dimer(oldfile, n)
     write_extxyz("dimer_"*string(n)*".xyz", newdimer)
 end
 
-extract_dimer("all_CH_dimers.extxyz", 1)
+extract_dimer("all_CH_dimers.extxyz", 400)
