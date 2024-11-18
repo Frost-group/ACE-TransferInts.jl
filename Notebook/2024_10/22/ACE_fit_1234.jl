@@ -22,9 +22,9 @@ begin
 end
 
 begin
-	r_cut = 20.0
-	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = stephist(rdf_tiny[(:C, :C)], 
+	r_cut = 5.0
+	rdf_tiny = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true)
+	plt_rdf_1 = stephist(rdf_tiny[(:C, :O)], 
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
@@ -33,7 +33,7 @@ begin
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
 	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
-	plt_rdf_2 = stephist(rdf[(:C, :C)],
+	plt_rdf_2 = stephist(rdf[(:C, :O)],
 		bins=150, label = "rdf",
 		title="Bead_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
@@ -48,7 +48,7 @@ end
 begin
 	p = 11
 	q = 30
-	model1 = acemodel(elements = [:H, :He, :Li, :Be],
+	model1 = acemodel(elements = [:C, :O, :Si, :S],
 	        order = 4,
 	        totaldegree = 10, 
 			r0 = 12.0,
@@ -57,7 +57,7 @@ begin
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
 			#envelope = (:x, 2, 2),
-	        Eref = [:H => 0.0, :He => 0.0, :Li => 0.0, :Be => 0.0]
+	        Eref = [:C => 0.0, :O => 0.0, :Si => 0.0, :S => 0.0]
 	)
 	@show length(model1.basis);
 end

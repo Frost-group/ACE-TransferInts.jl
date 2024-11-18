@@ -24,7 +24,7 @@ end
 begin
 	r_cut = 20.0
 	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = stephist(rdf_tiny[(:Si, :Si)], 
+	plt_rdf_1 = stephist(rdf_tiny[(:Si, :O)], 
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
@@ -33,7 +33,7 @@ begin
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
 	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
-	plt_rdf_2 = stephist(rdf[(:Si, :Si)],
+	plt_rdf_2 = stephist(rdf[(:Si, :O)],
 		bins=150, label = "rdf",
 		title="Bead_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",

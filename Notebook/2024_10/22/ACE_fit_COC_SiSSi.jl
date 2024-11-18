@@ -43,7 +43,7 @@ begin
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
 	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
-	savefig("RDF_bead.png") 
+	#savefig("RDF_bead.png") 
 end
 
 begin
