@@ -50,7 +50,7 @@ begin
 	p = 11
 	q = 30
 	model1 = acemodel(elements = [:C, :Si],
-	        order = 4,
+	        order = 6,
 	        totaldegree = 15, 
 			r0 = 12.0,
 	        rcut = 14.5,
