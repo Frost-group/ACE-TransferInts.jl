@@ -11,15 +11,15 @@ begin
 end;
 begin
 	Pkg.activate(".")
-	#Pkg.Registry.add("General")  # only needed when installing Julia for the first time
+	Pkg.Registry.add("General")  # only needed when installing Julia for the first time
 	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
 	Pkg.add("ACEpotentials")
 	using ACEpotentials
-end
+end;
 
 begin
-	bead_tiny_dataset = read_extxyz("train_carbon_CSi3.extxyz")
-	bead_dataset = read_extxyz("test_carbon_CSi3.extxyz")
+	bead_tiny_dataset = read_extxyz("Notebook/2024_11/19/train_carbon_CSi3.extxyz")
+	bead_dataset = read_extxyz("Notebook/2024_11/19/test_carbon_CSi3.extxyz")
 end
 
 begin
@@ -49,7 +49,7 @@ end
 begin
 	p = 11
 	q = 30
-	model1 = acemodel(elements = [:C, :Si],
+	model1 = ace1_model(elements = [:C, :Si],
 	        order = 4,
 	        totaldegree = 15, 
 			r0 = 12.0,

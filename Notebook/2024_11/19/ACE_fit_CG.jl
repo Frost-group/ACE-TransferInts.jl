@@ -17,8 +17,8 @@ begin
 end
 
 begin
-	bead_tiny_dataset = read_extxyz("train_bead_SiO2.extxyz")
-	bead_dataset = read_extxyz("test_bead_SiO2.extxyz")
+	bead_tiny_dataset = read_extxyz("Notebook/2024_11/19/train_bead_SiO2.extxyz")
+	bead_dataset = read_extxyz("Notebook/2024_11/19/test_bead_SiO2.extxyz")
 end
 
 begin
@@ -48,7 +48,7 @@ end
 begin
 	p = 11
 	q = 30
-	model1 = acemodel(elements = [:Si,:O,],
+	model1 = ace1_model(elements = [:Si,:O,],
 	        order = 4,
 	        totaldegree = 10, 
 			r0 = 12.0,
@@ -59,9 +59,8 @@ begin
 			#envelope = (:x, 2, 2),
 	        Eref = [:Si => 0.0, :O => 0.0]
 	)
-	@show length(model1.basis);
 end
-
+@show length(model1.basis);
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
 solver = ACEfit.BLR(committee_size=500, factorization=:svd)
