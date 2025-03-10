@@ -1,45 +1,47 @@
+using Pkg
+Pkg.activate(".")
+Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "PrettyTables", 
+         "Suppressor", "ExtXYZ", "Unitful", "Distributed", "AtomsCalculators",
+        "AtomsBuilder", "AtomsBase"
+         ])
+
+using LaTeXStrings, MultivariateStats, Plots, PrettyTables, Printf, 
+		 Statistics, Suppressor, ExtXYZ, Unitful, AtomsBuilder, AtomsBase
+
+
+Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
+Pkg.add("ACEpotentials")
+
+using ACEpotentials
+
+Pkg.status()
+Pkg.update()
+
 begin
-	# add and load general packages used in this notebook.
-	using Pkg
-	Pkg.activate(".")
-	Pkg.add("LaTeXStrings")
-	Pkg.add("MultivariateStats")
-	Pkg.add("Plots")
-	Pkg.add("Suppressor")
-	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
-end;
-begin
-	Pkg.activate(".")
-	#Pkg.Registry.add("General")  # only needed when installing Julia for the first time
-	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
-	Pkg.add("ACEpotentials")
-	using ACEpotentials
+	bead_tiny_dataset = ExtXYZ.load("Notebook/2024_11/19/train_bead_SiO2.extxyz")
+	bead_dataset = ExtXYZ.load("Notebook/2024_11/19/test_bead_SiO2.extxyz")
 end
 
 begin
-	Pkg.add("JuLIP")
-	using JuLIP
-end
-
-begin
-	Pkg.add("AtomsIO")
-	using AtomsIO
-end
-
-begin
-	bead_tiny_dataset = read_extxyz("Notebook/2024_11/19/train_bead_SiO2.extxyz")
-	bead_dataset = read_extxyz("Notebook/2024_11/19/test_bead_SiO2.extxyz")
+r_cut = 20.0 * u"Å"
+rdf = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
 end
 
 
+using ACEpotentials, Plots, LaTeXStrings, Unitful
+using AtomsBuilder: bulk, rattle!
+using AtomsBuilder.Chemistry: rnn    
+
+
+
 begin
-	r_cut = 20.0
+	r_cut = 20.0 * u"Å"
 	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
 	plt_rdf_1 = stephist(rdf_tiny[(:Si, :O)], 
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,25,50], xlims=(1.5,20), ylims=(0.0, 50),
+		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
 		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -48,7 +50,7 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
+		yticks = [0,200,400], xlims=(1.5,20), ylims=(0.0, 400),
 		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -71,12 +73,13 @@ begin
 	        Eref = [:Si => 0.0, :O => 0.0]
 	)
 end
-@show length(model1.basis);
+@show length_basis(model1);
 
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
 solver = ACEfit.BLR(committee_size=500, factorization=:svd)
-acefit!(model1, bead_tiny_dataset; solver=solver, data_keys1...);
+acefit!(bead_tiny_dataset, model1; 
+		solver=solver, data_keys1...);
 
 begin
 	@info("Training Errors")
@@ -87,24 +90,25 @@ begin
 end
 
 begin
-	function extract_energies(dataset)
-	    energies = []
-	    for atoms in dataset
-	        for key in keys(atoms.data)
-	            if lowercase(key) == "energy"
-	                push!(energies, atoms.data[key].data/length(atoms))
-	            end
-	        end
-	    end
-	    return energies
-	end;
+function extract_energies(dataset)
+    energies = []
+    for atoms in dataset
+        for key in keys(atoms)
+            if lowercase(String(key)) == "energy"
+                push!(energies, atoms[key] / length(atoms))
+            end
+        end
+    end
+    return energies
+end;
 
-	bead_tiny_energies = extract_energies(bead_tiny_dataset)
-	bead_energies = extract_energies(bead_dataset)
+bead_tiny_energies = extract_energies(bead_tiny_dataset)
+bead_energies = extract_energies(bead_dataset)
 	
 	GC.gc()
 end
 
+using AtomsCalculators: potential_energy
 
 function assess_model(model, train_dataset)
 
@@ -113,7 +117,8 @@ function assess_model(model, train_dataset)
     model_energies = []
     model_std = []
     for atoms in bead_dataset
-        ene, co_ene = ACE1.co_energy(model.potential, atoms)
+		ene, co_ene = @committee potential_energy(atoms, model)
+        #ene, co_ene = ACE1.co_energy(model.potential, atoms)
         push!(model_energies, ene/length(atoms))
         push!(model_std, std(co_ene/length(atoms)))
     end
@@ -142,40 +147,33 @@ end;
 
 assess_model(model1, bead_tiny_dataset)
 
-function augment(old_dataset, old_model; num=5)
 
-    new_dataset = deepcopy(old_dataset)
-    new_model = deepcopy(old_model)
+using AtomsCalculators: potential_energy
 
+function assess_model(model, train_dataset)
+
+    plot([-164,-157], [-164,-157]; lc=:black, label="")
+
+    model_energies = []
     model_std = []
-    for atoms in bead_dataset
-        ene, co_ene = ACE1.co_energy(new_model.potential, atoms)
-        push!(model_std, std(co_ene/length(atoms)))
+    for atoms in Si_dataset
+        ene, co_ene = @committee potential_energy(atoms, model)
+        push!(model_energies, ustrip(ene/length(atoms)))
+        push!(model_std, ustrip(std(co_ene/length(atoms))))
     end
-	#Choosing training points 
-    for atoms in bead_dataset[sortperm(model_std; rev=true)[1:num]]
-        push!(new_dataset, atoms)
-    end
-    @suppress acefit!(new_model, new_dataset;
-            solver = solver,
-			data_keys1...,
-            #verbose = false
-			);
+    rmse = sqrt(sum((model_energies-Si_dataset_energies).^2)/length(Si_dataset))
+    mae = sum(abs.(model_energies-Si_dataset_energies))/length(Si_dataset)
+    scatter!(Si_dataset_energies, model_energies;
+             label="full dataset",
+             title = @sprintf("Structures Used In Training:  %i out of %i\n", length(train_dataset), length(Si_dataset)) *
+                     @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
+             titlefontsize = 8,
+             yerror = model_std,
+             xlabel="Energy [eV/atom]", xlims=(-164,-157),
+             ylabel="Model Energy [eV/atom]", ylims=(-164,-157),
+             aspect_ratio = :equal, color=1)
 
-    return new_dataset, new_model
+    model_energies = [ustrip(potential_energy(atoms, model)/length(atoms)) for atoms in train_dataset]
+    scatter!(extract_energies(train_dataset), model_energies;
+             label="training set", color=2)
 end;
-
-begin
-	new_dataset, new_model = augment(bead_tiny_dataset, model1; num=100);
-	assess_model(new_model, new_dataset)
-end
-
-
-for i in 1:4
-    global new_dataset, new_model # declare these are global variables
-    @show i
-    new_dataset, new_model = augment(new_dataset, new_model; num=100);
-end
-
-assess_model(new_model, new_dataset)
-
