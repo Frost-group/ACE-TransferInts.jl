@@ -9,7 +9,7 @@ Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "PrettyTables",
          ])
 
 Pkg.add(["CSV", "DataFrames", "DelimitedFiles", "JuLIP", "Plots"
-,"LaTeXStrings"
+,"LaTeXStrings", "Unitful",  "StaticArrays", "LinearAlgebra"
          ])
 
 # ╔═╡ 4c6fc2f8-44f8-11ef-30b4-6118ceefb650
@@ -23,6 +23,7 @@ end
 begin
 	using JuLIP
 	using ACEpotentials
+    using Unitful,  StaticArrays, LinearAlgebra #ExtXYZ
 	#using ExtXYZ
 end
 
@@ -31,6 +32,15 @@ begin
 	using Plots
 	using LaTeXStrings
 end
+
+
+# First, remove and re-add NeighbourLists
+Pkg.rm("NeighbourLists")
+Pkg.add("NeighbourLists")
+
+# Then rebuild everything
+Pkg.build()
+Pkg.precompile()
 
 # ╔═╡ e7919cb0-09e4-4a5f-a0ce-4c5088ceb813
 #df_J = DataFrame(CSV.File("out.dat", delim=" "))
@@ -63,10 +73,10 @@ begin
 end
 
 # ╔═╡ f438448e-742a-4245-957d-a85c5710c335
-data_J = (CSV.File("out.dat", delim=" ")|> Tables.matrix)
+data_J = (CSV.File("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/out.dat", delim=" ")|> Tables.matrix)
 
 # ╔═╡ 6fec2a43-14fa-42be-bfb0-9530de667a83
-para, J, logJ = read_J("out.dat")
+para, J, logJ = read_J("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/out.dat")
 
 # ╔═╡ 16c5259b-eb37-4e9d-b925-b6d2a5ef5be5
 
@@ -102,10 +112,10 @@ rot_y(data_J[1,1])
 #write_frames("naphthalene.extxyz", C10, append=true)
 
 # ╔═╡ 8892ca90-4b2e-404c-810c-73397a88b3b1
-C₁₀H₈_1 = read_extxyz("naphthalene.extxyz")[1]
+C₁₀H₈_1 = read_extxyz("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/naphthalene.extxyz")[1]
 
 # ╔═╡ 945f1bb1-264a-4abf-968f-7e30cd21aee3
-C₁₀H₈_2 = read_extxyz("naphthalene.extxyz")[1]
+C₁₀H₈_2 = read_extxyz("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/naphthalene.extxyz")[1]
 
 # ╔═╡ 60d5513b-2a18-4110-b2f5-31f586556e45
 dimer = [C₁₀H₈_1 , C₁₀H₈_2]
@@ -129,10 +139,11 @@ size(para)
 
 # ╔═╡ 8378e320-63d0-4ad5-bc4b-31456d6df1fa
 begin
-	Set_Mol2 = Vector{Atoms{Float64}}([])
+	Set_Mol2 = Vector{typeof(C₁₀H₈_1)}([])
 	push!(Set_Mol2, C₁₀H₈_1)
 	push!(Set_Mol2, C₁₀H₈_2)
 end
+
 
 # ╔═╡ 4805340c-313d-4455-96fb-a157dae20f87
 typeof([C₁₀H₈_1, C₁₀H₈_2]) 
@@ -148,7 +159,7 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 	mol1 = read_extxyz(namefile)[1] 	#Read Molecular Structure from file.extxyz
 	ndata = size(para, 1) 				#Collect number of data from TranInt out.dat
 	natoms = size(mol1.M)[1] 			#Collect number of atoms in molecules
-	Set_Mol2 = Vector{Atoms{Float64}}([])						#Set of 2nd Molecules
+	Set_Mol2 = Vector{typeof(mol1)}([])						#Set of 2nd Molecules
 	for jj in 1:ndata
 		mol2 = read_extxyz(namefile)[1]
 		#println("Dimer: "*string(jj))
@@ -166,7 +177,9 @@ function construct_dimer(namefile, savefile, para, rot_ang_y)
 end
 
 # ╔═╡ a287cb82-e3cc-4c9b-9d1f-d98387076bd4
-construct_dimer("naphthalene.extxyz", "dimer_naphthalene.extxyz", para, 2*pi/3)
+construct_dimer("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/naphthalene.extxyz",
+ "/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_03/10/dimer_naphthalene.extxyz",
+  para, 2*pi/3)
 
 # ╔═╡ 9293d1a6-4055-4fa6-aa75-af997a6ddcee
 J

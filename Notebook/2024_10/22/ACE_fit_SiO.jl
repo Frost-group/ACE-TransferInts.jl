@@ -17,32 +17,8 @@ begin
 end
 
 begin
-	bead_tiny_dataset = read_extxyz("train_bead_SiO2.extxyz")
-	bead_dataset = read_extxyz("test_bead_SiO2.extxyz")
-end
-
-begin
-	r_cut = 20.0
-	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = stephist(rdf_tiny[(:Si, :O)], 
-		bins=150, label = "rdf",
-		title="Bead_tiny_dataset", titlefontsize=10,
-		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,25,50], xlims=(1.5,20), ylims=(0.0, 50),
-		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-	
-	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
-	plt_rdf_2 = stephist(rdf[(:Si, :O)],
-		bins=150, label = "rdf",
-		title="Bead_dataset", titlefontsize=10,
-		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,50,100], xlims=(1.5,20), ylims=(0.0, 100),
-		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-	
-	plot!(plt_rdf_1, plt_rdf_2, layout=(2,1), size=(600,400))
-	#savefig("RDF_bead.png") 
+	bead_tiny_dataset = read_extxyz("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2024_10/22/train_bead_SiO2.extxyz")
+	bead_dataset = read_extxyz("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2024_10/22/test_bead_SiO2.extxyz")
 end
 
 begin
@@ -61,6 +37,61 @@ begin
 	)
 	@show length(model1.basis);
 end
+
+function get_Pr(p, q, r0, rcut)
+    basis = ACE1x.ace_basis(; elements = [:Si,],
+	order = 4,
+	totaldegree = 10,
+	r0 = r0,
+	rcut = rcut, 
+    pair_transform = (:agnesi, p, q),
+    pair_envelope = (:x, 2, 2)
+	)
+    Pr = basis.BB[1].J[1,1]
+    env = Pr.envelope
+    rr = range(0.01, rcut, length=400)
+    vals = ACE1.evaluate.(Ref(Pr), rr)
+    vals2 = [ [vals[j][i] / ACE1.evaluate(Pr.envelope, rr[j]) for j = 1:length(vals) ] 
+              for i = 1:length(vals[1]) ]
+    return rr, vals2 
+end
+
+begin
+	r_cut = 20.0
+	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
+	plt_rdf_1 = stephist(rdf_tiny[(:Si, :O)], 
+		bins=150, label = "rdf",
+		title="Bead_tiny_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,25,50,75,100], xlims=(1.5,20), ylims=(0.0, 100),
+		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
+	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
+	
+	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
+	plt_rdf_2 = stephist(rdf[(:Si, :O)],
+		bins=150, label = "rdf",
+		title="Bead_dataset", titlefontsize=10,
+		xlabel = L"r[\AA]", ylabel = "RDF",
+		yticks = [0,100,200,300,400], xlims=(1.5,20), ylims=(0.0, 400),
+		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
+	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
+	
+	r0 = 12.0; rcut = 14.5
+	rr, Pr = get_Pr(11, 30, r0, rcut)
+	plt = plot()
+	for n = 1:length(Pr) 
+	    plot!(plt, rr, Pr[n], lw=2, label = "P_$n", 
+			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(1.5,20))
+	end
+	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
+	plt
+	
+	plot!(plt_rdf_1, plt_rdf_2, plt, layout=(3,1), size=(900,600))
+	savefig("_RDF_RBF_bead.png") 
+	#savefig("RDF_bead.png") 
+end
+
+
 
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
@@ -126,7 +157,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_SiO2.png") 
+#savefig("fitting_Bead_SiO2.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

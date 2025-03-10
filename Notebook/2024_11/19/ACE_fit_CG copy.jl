@@ -2,13 +2,13 @@ using Pkg
 Pkg.activate(".")
 Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "PrettyTables", 
          "Suppressor", "ExtXYZ", "Unitful", "Distributed", "AtomsCalculators",
-        "AtomsBuilder", "AtomsBase"
+        "AtomsBuilder", "AtomsBase", "NeighbourLists"
          ])
 
 using LaTeXStrings, MultivariateStats, Plots, PrettyTables, Printf, 
 		 Statistics, Suppressor, ExtXYZ, Unitful, AtomsBuilder, AtomsBase
 
-
+using NeighbourLists: bounding_box
 Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
 Pkg.add("ACEpotentials")
 
