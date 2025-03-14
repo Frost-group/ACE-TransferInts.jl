@@ -1,10 +1,16 @@
 ### A Pluto.jl notebook ###
 # v0.19.45
 
-using Markdown
-using InteractiveUtils
+using Pkg
+Pkg.activate(".")
+Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "PrettyTables", 
+         "Suppressor", "ExtXYZ", "Unitful", "Distributed", "AtomsCalculators",
+        "AtomsBuilder", "AtomsBase"
+         ])
 
-# ╔═╡ 76eed7ce-6f75-11ef-0c23-49c9fa3ae8e3
+Pkg.add(["CSV", "DataFrames", "DelimitedFiles", "JuLIP", "Plots"
+,"LaTeXStrings", "Unitful",  "StaticArrays", "LinearAlgebra"
+         ])
 begin
 	using CSV
 	using DataFrames
