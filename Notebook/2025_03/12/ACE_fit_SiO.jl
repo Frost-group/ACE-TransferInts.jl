@@ -25,7 +25,7 @@ begin
 	p = 11
 	q = 30
 	model1 = acemodel(elements = [:Si,:O,],
-	        order = 4,
+	        order = 5,
 	        totaldegree = 10, 
 			r0 = 12.0,
 	        rcut = 14.5,
@@ -199,7 +199,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_SiO2.png") 
+savefig("fitting_Bead_SiO_order5.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
