@@ -25,7 +25,7 @@ begin
 	p = 11
 	q = 30
 	model1 = acemodel(elements = [:Si,:O,],
-	        order = 5,
+	        order = 4,
 	        totaldegree = 10, 
 			r0 = 12.0,
 	        rcut = 14.5,
@@ -36,102 +36,6 @@ begin
 	        Eref = [:Si => 0.0, :O => 0.0]
 	)
 	@show length(model1.basis);
-end
-
-begin
-	p = 16
-	q = 20
-	model2 = acemodel(elements = [:Si,:O,],
-	        order = 3,
-	        totaldegree = [25, 20, 15], #{2,3,4}-body 
-			r0 = 12.0,
-	        rcut = 16.0,
-			#transform = (:agnesi, p, q),
-			pair_transform = (:agnesi, p, q),
-			pair_envelope = (:x, 2, 2),
-			#envelope = (:x, 2, 2),
-	        Eref = [:Si => 0.0, :O => 0.0]
-	)
-	@show length(model2.basis);
-end
-
-function get_Pr(p, q, r0, rcut)
-    basis = ACE1x.ace_basis(; elements = [:Si,:O,],
-	order = 4,
-	totaldegree = 10,
-	r0 = r0,
-	rcut = rcut, 
-    pair_transform = (:agnesi, p, q),
-    pair_envelope = (:x, 2, 2)
-	)
-    Pr = basis.BB[1].J[1,1]
-    env = Pr.envelope
-    rr = range(0.01, rcut, length=400)
-    vals = ACE1.evaluate.(Ref(Pr), rr)
-    vals2 = [ [vals[j][i] / ACE1.evaluate(Pr.envelope, rr[j]) for j = 1:length(vals) ] 
-              for i = 1:length(vals[1]) ]
-    return rr, vals2 
-end
-function get_Pr2(p, q, r0, rcut)
-    basis = ACE1x.ace_basis(; elements = [:Si,:O,],
-	order = 3,
-	totaldegree = [25, 20, 15],
-	r0 = r0,
-	rcut = rcut, 
-    pair_transform = (:agnesi, p, q),
-    pair_envelope = (:x, 2, 2)
-	)
-    Pr = basis.BB[1].J[1,1]
-    env = Pr.envelope
-    rr = range(0.01, rcut, length=400)
-    vals = ACE1.evaluate.(Ref(Pr), rr)
-    vals2 = [ [vals[j][i] / ACE1.evaluate(Pr.envelope, rr[j]) for j = 1:length(vals) ] 
-              for i = 1:length(vals[1]) ]
-    return rr, vals2 
-end
-
-begin
-	r_cut = 20.0
-	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
-	plt_rdf_1 = stephist(rdf_tiny[(:Si, :O)], 
-		bins=150, label = "rdf",
-		title="Bead_tiny_dataset", titlefontsize=10,
-		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,25,50,75,100], xlims=(1.5,20), ylims=(0.0, 100),
-		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-	
-	rdf = ACEpotentials.get_rdf(bead_dataset, r_cut; rescale = true);
-	plt_rdf_2 = stephist(rdf[(:Si, :O)],
-		bins=150, label = "rdf",
-		title="Bead_dataset", titlefontsize=10,
-		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,100,200,300,400], xlims=(1.5,20), ylims=(0.0, 400),
-		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
-	
-	r0 = 12.0; rcut = 14.5
-	rr, Pr = get_Pr(11, 30, r0, rcut)
-	plt = plot()
-	for n = 1:length(Pr) 
-	    plot!(plt, rr, Pr[n], lw=2, label = "P_$n", 
-			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(1.5,20))
-	end
-	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
-
-	r0 = 12.0; rcut = 16.0
-	rr, Pr = get_Pr2(16, 20, r0, rcut)
-	plt1 = plot()
-	for n = 1:length(Pr) 
-	    plot!(plt1, rr, Pr[n], lw=2, label = "P_$n", 
-			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(1.5,20))
-	end
-	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
-	
-	
-	plot!(plt_rdf_1, plt_rdf_2, plt, plt1, layout=(4,1), size=(1200,600))
-	savefig("_RDF_RBF_bead.png") 
-	#savefig("RDF_bead.png") 
 end
 
 
