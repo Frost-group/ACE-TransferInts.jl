@@ -40,6 +40,11 @@ function get_Pr(p, q, r0, rcut)
 end
 
 begin
+	bead_tiny_dataset = read_extxyz("train_bead_SiO2.extxyz")
+	bead_dataset = read_extxyz("test_bead_SiO2.extxyz")
+end
+
+begin
 	r_cut = 20.0
 	rdf_tiny = ACEpotentials.get_rdf(bead_tiny_dataset, r_cut; rescale = true)
 	plt_rdf_1 = stephist(rdf_tiny[(:Si, :C)], 
@@ -118,7 +123,7 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_tiny_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,25,50,75,100], xlims=(5,18), ylims=(0.0, 100),
+		yticks = [0,25,50,75,100], xlims=(8,16), ylims=(0.0, 100),
 		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -127,7 +132,7 @@ begin
 		bins=150, label = "rdf",
 		title="Bead_dataset", titlefontsize=10,
 		xlabel = L"r[\AA]", ylabel = "RDF",
-		yticks = [0,100,200,300,400], xlims=(5,18), ylims=(0.0, 400),
+		yticks = [0,100,200,300,400], xlims=(8,16), ylims=(0.0, 400),
 		size=(400,200), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*[1.0, 4.65, 5.55], label = "r1, r2, ...", lw=2, color = "black")
 	
@@ -136,7 +141,7 @@ begin
 	plt = plot()
 	for n = 1:length(Pr) 
 	    plot!(plt, rr, Pr[n], lw=2, label = "P_$n", 
-			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(5,18))
+			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(8,16))
 	end
 	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
 
@@ -145,12 +150,20 @@ begin
 	plt1 = plot()
 	for n = 1:length(Pr) 
 	    plot!(plt1, rr, Pr[n], lw=2, label = "P_$n", 
-			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(5,18))
+			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(8,16))
 	end
 	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
 	
+	r0 = 12.0; rcut = 13.3
+	rr, Pr = get_Pr(26, 45, r0, rcut)
+	plt2 = plot()
+	for n = 1:length(Pr) 
+	    plot!(plt2, rr, Pr[n], lw=2, label = "P_$n", 
+			xlabel = L"r[\AA]", ylabel = "RBF", legend=false, xlims=(8,16))
+	end
+	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
 	
-	plot!(plt_rdf_1, plt_rdf_2, plt, plt1, layout=(4,1), size=(1200,600))
-	savefig("_RDF_RBF_bead.png") 
+	plot!(plt_rdf_1, plt_rdf_2, plt, plt1, plt2, layout=(5,1), size=(1500,900))
+	savefig("_RDF_RBF_bead1.png") 
 	#savefig("RDF_bead.png") 
 end
