@@ -154,8 +154,8 @@ begin
 	end
 	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
 	
-	r0 = 12.0; rcut = 13.3
-	rr, Pr = get_Pr(26, 45, r0, rcut)
+	r0 = 12.0; rcut = 13.
+	rr, Pr = get_Pr(31, 50, r0, rcut)
 	plt2 = plot()
 	for n = 1:length(Pr) 
 	    plot!(plt2, rr, Pr[n], lw=2, label = "P_$n", 
@@ -164,6 +164,6 @@ begin
 	vline!([r0,], lw=2, ls = :dash, c= :black, label = "r0")
 	
 	plot!(plt_rdf_1, plt_rdf_2, plt, plt1, plt2, layout=(5,1), size=(1500,900))
-	savefig("_RDF_RBF_bead1.png") 
+	savefig("_RDF_RBF_bead2.png") 
 	#savefig("RDF_bead.png") 
 end

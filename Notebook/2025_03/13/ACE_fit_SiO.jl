@@ -22,13 +22,13 @@ begin
 end
 
 begin
-	p = 21
-	q = 40
+	p = 31
+	q = 50
 	model1 = acemodel(elements = [:Si,:O,],
-	        order = 5,
+	        order = 2,
 	        totaldegree = 10, 
 			r0 = 12.0,
-	        rcut = 13.5,
+	        rcut = 13.,
 			#transform = (:agnesi, p, q),
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
@@ -38,9 +38,10 @@ begin
 	@show length(model1.basis);
 end
 
-
+#P = smoothness_prior(model1; p = 4) 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
-solver = ACEfit.BLR(committee_size=500, factorization=:svd)
+solver = ACEfit.BLR(committee_size=100, factorization=:svd)
+#solver = ACEfit.LSQR(damp = 1e-2, atol = 1e-9);
 acefit!(model1, bead_tiny_dataset; solver=solver, data_keys1...);
 
 begin
@@ -103,7 +104,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_SiO_order5_p21_q40_rcut13.png") 
+savefig("fitting_Bead_SiO_order2_p26_q45_rcut133_r.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
