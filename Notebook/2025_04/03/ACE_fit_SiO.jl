@@ -1,5 +1,7 @@
 using Pkg
-cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
+#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
+
 Pkg.activate(".")
 Base.active_project()
 Pkg.instantiate()
@@ -10,6 +12,7 @@ begin# add and load general packages used in this notebook.
 end;
 begin
 	#Pkg.Registry.add("General")  # only needed when installing Julia for the first time
+	cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
 	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
 	Pkg.add(PackageSpec(name="ACEpotentials", version="0.6.7"))
 end
@@ -18,17 +21,19 @@ using LaTeXStrings, MultivariateStats, Plots, Printf,
 	Statistics, Suppressor, ACEpotentials
 
 begin
-	cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
+	#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
 	bead_tiny_dataset = read_extxyz("train_bead_SiO2.extxyz")
 	bead_dataset = read_extxyz("test_bead_SiO2.extxyz")
 end
 
+
+
 begin
 	p = 19
-	q = 37
+	q = 43
 	model1 = acemodel(elements = [:Si,:O,],
-	        order = 2,
-	        totaldegree = 10, 
+	        order = 3,
+	        totaldegree = [40, 40, 30], 
 			r0 = 12.0,
 	        rcut = 13.6,
 			#transform = (:agnesi, p, q),
@@ -105,8 +110,7 @@ println(model_energies)
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
              label="training set", color="#064635")
-savefig("fitting_Bead_SiO_order2_td10_p19_q37_rcut136.png") 
+savefig("fitting_Bead_SiO_orderMIX2_td35_p19_q45_rcut136.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
-

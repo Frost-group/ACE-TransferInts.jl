@@ -1,6 +1,9 @@
 begin
 using Pkg
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2024_10/14/")
 Pkg.activate(".")
+Base.active_project()
+Pkg.instantiate()
 Pkg.add("CSV")
 Pkg.add("DataFrames")
 Pkg.add("DelimitedFiles")
@@ -728,15 +731,51 @@ end
 gif(anim5, "anim5.gif", fps = 30)
 
 begin
-plot(θ, ϕ,
-	J_mat,
+gr(dpi=1200) 	
+plot(θ.+ pi, ϕ , J_mat,
 	st=:surface,
-	xlabel= L"$\phi$", ylabel=L"$\theta$", zlabel=L"J",
+	size=(700, 700),
+    xlabel= L"$\phi$",
+	ylabel=L"$\theta$",
+	zlabel=L"J",
 	yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
-	xticks=([0, -π, π, -π/2, π/2], ["0", L"-\pi", L"\pi", L"-\pi/2",L"\pi/2"]),
-	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"])
+	xticks=([0, π, π/2, 2π, 3π/2], ["0", L"\pi", L"\pi/2", L"2\pi",L"3\pi/2"]),
+	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+	title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
 	)
-savefig("J_surface.png")
+savefig("naphthalene_J_surface.png")
+end
+
+begin
+	gr(dpi=1200) 	
+	plot(θ.+ pi, ϕ , log.(J²_mat),
+		st=:surface,
+		size=(700, 700),
+		xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		zlabel=L"\log(J)",
+		yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+		xticks=([0, π, π/2, 2π, 3π/2], ["0", L"\pi", L"\pi/2", L"2\pi",L"3\pi/2"]),
+		c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+		title = "Surface Plot of " * L"\log(\mathbf{J}^{2})"
+		)
+	savefig("naphthalene_logJ^2_surface.png")
+end
+
+begin
+	gr(dpi=1200) 	
+	plot(θ.+ pi, ϕ , J²_mat,
+		st=:surface,
+		size=(700, 700),
+		xlabel= L"$\phi$",
+		ylabel=L"$\theta$",
+		zlabel=L"J",
+		yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
+		xticks=([0, π, π/2, 2π, 3π/2], ["0", L"\pi", L"\pi/2", L"2\pi",L"3\pi/2"]),
+		c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
+		title = "Surface Plot of " * L"\mathbf{J}^{2}~(\theta, \phi)"
+		)
+	savefig("naphthalene_J^2_surface.png")
 end
 
 begin
@@ -750,7 +789,7 @@ heatmap(ϕ[1:49],
 	#aspectratio=:equal,
 	size=(700, 700),
 	title="Transfer Integrals" )
-	savefig("J_heatmap.png")
+	#savefig("J_heatmap.png")
 end
 
 begin
