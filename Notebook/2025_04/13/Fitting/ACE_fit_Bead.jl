@@ -1,26 +1,7 @@
-using Pkg
+
 #cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
 cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/13/Fitting/")
 
-Pkg.activate(".")
-Base.active_project()
-Pkg.instantiate()
-begin# add and load general packages used in this notebook.
-	Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "Suppressor"
-         ])
-	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
-end;
-begin
-	#Pkg.Registry.add("General")  # only needed when installing Julia for the first time
-	cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/13/Fitting/")
-	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
-	Pkg.add(PackageSpec(name="ACEpotentials", version="0.6.7"))
-end
-
-using LaTeXStrings, MultivariateStats, Plots, Printf,
-	Statistics, Suppressor, ACEpotentials
-
-println(pwd())
  
 begin
 	# --- Load all frames ---
@@ -45,14 +26,15 @@ end
 
 begin
 	p = 19
-	q = 43
+	q = 37
 	od = 2
 	td = 10
+	rc = 13.6
 	model1 = acemodel(elements = [:Si,:C,],
 	        order = od,
 	        totaldegree =td, 
 			r0 = 12.0,
-	        rcut = 13.6,
+	        rcut = rc,
 			#transform = (:agnesi, p, q),
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
@@ -61,6 +43,7 @@ begin
 	)
 	@show length(model1.basis);
 end
+rC = Int(rc*10)
 
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
@@ -129,7 +112,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_Bead_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136.png")
+savefig("fitting_Bead_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut$rC"*".png")
 end
 
 assess_model(model1, bead_tiny_dataset)

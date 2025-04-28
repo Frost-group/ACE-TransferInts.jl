@@ -753,11 +753,11 @@ begin
 		size=(700, 700),
 		xlabel= L"$\phi$",
 		ylabel=L"$\theta$",
-		zlabel=L"\log(J)",
+		zlabel=L"\log(\mathbf{J}^2)",
 		yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
 		xticks=([0, π, π/2, 2π, 3π/2], ["0", L"\pi", L"\pi/2", L"2\pi",L"3\pi/2"]),
 		c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
-		title = "Surface Plot of " * L"\log(\mathbf{J}^{2})"
+		title = "Surface Plot of " * L"\log(\mathbf{J}^2)~(\theta, \phi)"
 		)
 	savefig("naphthalene_logJ^2_surface.png")
 end
@@ -769,7 +769,7 @@ begin
 		size=(700, 700),
 		xlabel= L"$\phi$",
 		ylabel=L"$\theta$",
-		zlabel=L"J",
+		zlabel=L"J^2",
 		yticks=([0, π, π/2], [L"0", L"\pi", L"\pi/2"]),
 		xticks=([0, π, π/2, 2π, 3π/2], ["0", L"\pi", L"\pi/2", L"2\pi",L"3\pi/2"]),
 		c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),

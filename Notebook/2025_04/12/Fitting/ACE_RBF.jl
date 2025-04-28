@@ -192,7 +192,7 @@ plot!(od,
 		[RMSE_NH_od_1 MAE_NH_od_1 RMSE_NH_od_2 MAE_NH_od_2], 
 		color = ["#F0BB62" "#F0BB62" "#6E9A50" "#6E9A50" ],
 			linestyle = [:solid :dashdot :solid  :dashdot],
-			labels = ["RMSE"*L"_{\mathbf{NH-C}}" "MAE"*L"_{\mathbf{NH-C}}" "RMSE"*L"_{\mathbf{NH-CS}}" "MAE"*L"_{\mathbf{NH-CS}}"],
+			labels = ["RMSE"*L"_{\mathbf{HA-C}}" "MAE"*L"_{\mathbf{HA-C}}" "RMSE"*L"_{\mathbf{HA-CS}}" "MAE"*L"_{\mathbf{HA-CS}}"],
 			label="Line with Markers",
 			marker=[:circle :utriangle :circle :utriangle],
 			linewidth=[3.5 3.5 3.5 3.5],
@@ -207,7 +207,6 @@ plot!(od,
 )
 savefig("od_error.png") 
 end
-
 begin
 	gr(dpi=1200)
 	plot(layout=(1,1))
@@ -216,7 +215,7 @@ begin
 			[RMSE_NH_td_1 MAE_NH_td_1 RMSE_NH_td_2 MAE_NH_td_2], 
 			color = ["#F0BB62" "#F0BB62" "#6E9A50" "#6E9A50" ],
 			linestyle = [:solid :dashdot :solid  :dashdot],
-			labels = ["RMSE"*L"_{\mathbf{NH-C}}" "MAE"*L"_{\mathbf{NH-C}}" "RMSE"*L"_{\mathbf{NH-CS}}" "MAE"*L"_{\mathbf{NH-CS}}"],
+			labels = ["RMSE"*L"_{\mathbf{HA-C}}" "MAE"*L"_{\mathbf{HA-C}}" "RMSE"*L"_{\mathbf{HA-CS}}" "MAE"*L"_{\mathbf{HA-CS}}"],
 			label="Line with Markers",
 			marker=[:circle :utriangle :circle :utriangle],
 			linewidth=[3.5 3.5 3.5 3.5],

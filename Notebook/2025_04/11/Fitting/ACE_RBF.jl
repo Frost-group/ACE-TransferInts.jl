@@ -87,7 +87,7 @@ begin
 		size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 	
-	b = 8
+	b = 6
 	stephist!(rdf_tiny[(:Si,:C)],
 		bins=50, label = "Inter-RDF",
 		title="Ethylene Training Set", titlefontsize=10,

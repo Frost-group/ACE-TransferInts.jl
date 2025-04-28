@@ -28,7 +28,7 @@ for i in range(1,size(θ_list,1))
 end    
 gr(dpi=1200) 
 plot(
-    φ_list, θ_list, (J_eff*192.8),
+    φ_list, θ_list, (J_eff),
     st = :surface,
     size=(700, 700),
     xlabel= L"$\phi$",
@@ -44,7 +44,7 @@ plot(
 savefig("thiophene_J_surface.png")
 
 plot(
-    φ_list, θ_list, log.((J_eff*192.8).^2),
+    φ_list, θ_list, log.((J_eff).^2),
     st = :surface,
     size=(700, 700),
     xlabel= L"$\phi$",
@@ -53,9 +53,9 @@ plot(
             ["0", L"$\pi/2$", L"$\pi$"]),
 	xticks=([0,pi/2,pi,3pi/2,2pi],
             ["0", L"$\pi/2$", L"$\pi$", L"$3\pi/2$", L"$2\pi$"]),
-	zlabel=L"J",
+    zlabel=L"\log(\mathbf{J}^2)",
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
-    title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
+    title = "Surface Plot of " * L"\log(\mathbf{J}^2)~(\theta, \phi)"
 )
 savefig("thiophene_logJ^2_surface.png")
 
@@ -69,9 +69,9 @@ plot(
             ["0", L"$\pi/2$", L"$\pi$"]),
 	xticks=([0,pi/2,pi,3pi/2,2pi],
             ["0", L"$\pi/2$", L"$\pi$", L"$3\pi/2$", L"$2\pi$"]),
-	zlabel=L"J",
+    zlabel=L"J^2",
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
-    title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
+    title = "Surface Plot of " * L"\mathbf{J}^2~(\theta, \phi)"
 )
 savefig("thiophene_J^2_surface.png")
 
