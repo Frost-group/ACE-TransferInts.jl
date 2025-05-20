@@ -12,7 +12,7 @@ using Plots
 using LaTeXStrings
 using FFTW
 
-dimer_set = read_extxyz("output.extxyz")
+dimer_set = read_extxyz("output900.extxyz")
 
 θ_list = range(0.01, stop=π, length=49);
 φ_list = range(0.01, stop=2π, length=98);
@@ -44,7 +44,7 @@ plot(
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
 )
-savefig("DFethylene_J_surface.png")
+savefig("DFethylene_J_surface600.png")
 
 plot(
     φ_list, θ_list, ((J_eff)).^2,

@@ -33,7 +33,7 @@ function change_Si_to_C(frames)
 end
 
 # --- Load the file ---
-frames = read_extxyz("all_C_dimers.extxyz")
+frames = read_extxyz("all_C_dimers700.extxyz")
 
 # --- Perform the Si -> C substitution ---
 frames_modified = change_Si_to_C(frames)
@@ -41,4 +41,4 @@ frames_modified = change_Si_to_C(frames)
 
 
 # --- Save the modified frames --Cwrite_extxyz("all_bead_modified.extxyz", frames_modified)
-write_extxyz("all_C_modified.extxyz", frames_modified)
+write_extxyz("all_C_modified700.extxyz", frames_modified)

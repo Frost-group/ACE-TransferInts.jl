@@ -32,15 +32,13 @@ function remove_hydrogen(frames)
 end
 
 # --- Load your file ---
-frames = read_extxyz("output.extxyz")
+frames = read_extxyz("output700.extxyz")
 
 # --- Remove Hydrogens ---
 frames_noH = remove_hydrogen(frames)
 
-frames_noH[1]["energy"] * 198.2
+frames_noH[1]["energy"]
 
 # --- Save the new file ---
-write_extxyz("all_C_dimers.extxyz", frames_noH)
-
-
+write_extxyz("all_C_dimers700.extxyz", frames_noH)
 

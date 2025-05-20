@@ -2,12 +2,12 @@ cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fi
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified.extxyz")
+	frames = read_extxyz("all_CSi_modified_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 900
+	n_train = 3600
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -76,8 +76,8 @@ ACEpotentials.get_rdf(train_data, r_cut; rescale = true)
 
 begin
 	gr(dpi=1200)
-	endg = 8.
-	r_cut = 7.6; a = 0.2
+	endg = 9.0
+	r_cut = 8.5; a = 0.2
 	rdf_tiny = ACEpotentials.get_rdf(train_data_1, r_cut; rescale = true)
 	plt_rdf_1 = plot()
 	stephist!(rdf_tiny[(:C,:C)], 
@@ -122,7 +122,7 @@ begin
 			legend=(0.3, 0.9),size=(300,200))
 	
 	td = 10
-	r0 = 6.0; rcut = 15.0
+	r0 = 6.625; rcut = 15.0
 	rr, Pr = get_Pr(1, 4, r0, rcut, td)
 
 	plt = plot()
@@ -138,8 +138,8 @@ begin
 		color = "#F0BB62", ls = :dash, legend=(0.3, 0.9),
 		yticks = [0,25,50,75,100], xlims=(1,endg))	 
 
-	r0 = 6.0; rcut = 7.2
-	rr2, Pr2 = get_Pr2(11, 19, r0, rcut, td)	 
+	r0 = 6.625; rcut = 8.2
+	rr2, Pr2 = get_Pr2(19, 43, r0, rcut, td)	 
 	plt1 = plot()
 	for n = 1:length(Pr)
 		plot!(plt1, rr2, Pr2[n], lw=2, label = "", 
@@ -160,7 +160,7 @@ begin
 	#plt, 
 	plt1, layout=(3,1), size=(900,600))
 	#savefig("_RDF_RBF_Si.png") 
-	savefig("RDF_NH.png")
+	savefig("RDF_NH_2.png")
 end
 
 

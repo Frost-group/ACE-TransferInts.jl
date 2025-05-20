@@ -11,7 +11,7 @@ using LinearAlgebra
 using Plots
 using LaTeXStrings
 
-dimer_set = read_extxyz("output.extxyz")
+dimer_set = read_extxyz("output675.extxyz")
 
 θ_list = range(0.01, stop=π, length=49);
 φ_list = range(0.01, stop=2π, length=98);
@@ -42,7 +42,7 @@ plot(
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
 )
-savefig("ethylene_J_surface.png")
+savefig("ethylene_J_surface675.png")
 
 
 plot(
@@ -59,7 +59,7 @@ plot(
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Surface Plot of " * L"\mathbf{J}^2~(\theta, \phi)"
 )
-savefig("ethylene_J^2_surface.png")
+savefig("ethylene_J^2_surface70.png")
 
 plot(
     φ_list, θ_list, log.((J_eff).^2),
@@ -75,12 +75,12 @@ plot(
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Surface Plot of " * L"\log(\mathbf{J}^2)~(\theta, \phi)"
 )
-savefig("ethylene_logJ^2_surface.png")
+savefig("ethylene_logJ^2_surface70.png")
 
 
 
 heatmap(
-    φ_list, θ_list, log.((J_eff).^2),
+    φ_list, θ_list, J_eff,
     size=(700, 700),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",

@@ -25,7 +25,7 @@ cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fi
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified.extxyz")
+	frames = read_extxyz("all_CSi_modified_all.extxyz")
 
 	# Total number of frames
 	n_total = length(frames)
@@ -46,13 +46,13 @@ end
 begin
 	p = 19
 	q = 43
-	od = 2
+	od = 4
 	td = 10
 	model1 = acemodel(elements = [:Si,:C,],
 	        order = od,
 	        totaldegree =td, 
-			r0 = 6.0,
-	        rcut = 7.2,
+			r0 = 6.625,
+	        rcut = 8.2,
 			#transform = (:agnesi, p, q),
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
@@ -120,8 +120,8 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-0.05,0.1),
-             ylabel="Model Energy [eV/atom]", ylims=(-0.05,0.1),
+             xlabel="Energy [eV/atom]", xlims=(-1e-2, 5e-3),
+             ylabel="Model Energy [eV/atom]", ylims=(-1e-2, 5e-3),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
@@ -129,7 +129,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136.png") 
+savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

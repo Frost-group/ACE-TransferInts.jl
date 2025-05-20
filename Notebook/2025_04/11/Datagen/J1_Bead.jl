@@ -43,10 +43,10 @@ function coarse_grain_centroid(frames)
 end
 
 # --- Load your file ---
-frames = read_extxyz("output.extxyz")
+frames = read_extxyz("output650.extxyz")
 
 # --- Apply coarse-graining ---
 cg_frames = coarse_grain_centroid(frames)
 
 # --- Save the new coarse-grained frames ---
-write_extxyz("output_coarse_grained.extxyz", cg_frames)
+write_extxyz("output_coarse_grained650.extxyz", cg_frames)

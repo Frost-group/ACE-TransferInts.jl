@@ -44,7 +44,7 @@ all_dimers = Vector{Atoms{Float64}}([])
 for θ in θ_list, φ in φ_list
     # Shift direction
     direction = spherical_to_cartesian(θ, φ)
-    shift_vector = 6.0 * direction  # 6 Å along rotated unit vector
+    shift_vector = 8.5 * direction  # 6 Å along rotated unit vector
     # Create second molecule
     mol2 = JuLIP.Atoms(mol1.Z, [pos + shift_vector for pos in mol1.X])
     
@@ -62,10 +62,10 @@ for θ in θ_list, φ in φ_list
     push!(all_dimers, dimer)
 end
 
-write_extxyz("dimer_Difluoroethylene.extxyz", all_dimers)
+write_extxyz("dimer_Difluoroethylene850.extxyz", all_dimers)
 
 
-frames = read_extxyz("dimer_Difluoroethylene.extxyz")
+frames = read_extxyz("dimer_Difluoroethylene850.extxyz")
 function process_xyz_all(filename, frames)
     open(filename, "w") do io
         for atoms in frames
@@ -87,7 +87,7 @@ function process_xyz_all(filename, frames)
 end
 
 # --- Save all 36 frames into a single file ---
-process_xyz_all("dimer_Difluoroethylene.xyz", frames)
+process_xyz_all("dimer_Difluoroethylene850.xyz", frames)
 
 frames[1].X == frames[2].X
 #get_data(frames[1], "theta")
