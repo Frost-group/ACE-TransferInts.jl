@@ -1,37 +1,15 @@
-using Pkg
-#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/03")
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
-
-Pkg.activate(".")
-Base.active_project()
-Pkg.instantiate()
-begin# add and load general packages used in this notebook.
-	Pkg.add(["LaTeXStrings", "MultivariateStats", "Plots", "Suppressor"
-         ])
-	using LaTeXStrings, MultivariateStats, Plots, Printf, Statistics, Suppressor
-end;
-begin
-	#Pkg.Registry.add("General")  # only needed when installing Julia for the first time
-	cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
-	Pkg.Registry.add(RegistrySpec(url="https://github.com/ACEsuit/ACEregistry"))
-	Pkg.add(PackageSpec(name="ACEpotentials", version="0.6.7"))
-end
-
-using LaTeXStrings, MultivariateStats, Plots, Printf,
-	Statistics, Suppressor, ACEpotentials
-
-println(pwd())
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
+cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
+#cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified_all.extxyz")
+	frames = read_extxyz("all_CH_modified_all.extxyz")
 
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 900
+	n_train = 3600
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -44,15 +22,15 @@ end
 
 
 begin
-	p = 19
-	q = 43
-	od = 4
+	p = 11
+	q = 19
+	od = 2
 	td = 10
 	model1 = acemodel(elements = [:Si,:C,],
 	        order = od,
 	        totaldegree =td, 
 			r0 = 6.625,
-	        rcut = 8.2,
+	        rcut = 9.5,
 			#transform = (:agnesi, p, q),
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
@@ -120,8 +98,8 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-1e-2, 5e-3),
-             ylabel="Model Energy [eV/atom]", ylims=(-1e-2, 5e-3),
+             xlabel="Energy [eV/atom]", xlims=(-5e-5, 2.5e-5),
+             ylabel="Model Energy [eV/atom]", ylims=(-5e-5, 2.5e-5),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
@@ -129,7 +107,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

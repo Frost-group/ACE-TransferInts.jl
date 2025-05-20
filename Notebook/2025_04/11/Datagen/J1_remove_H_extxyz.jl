@@ -25,14 +25,14 @@ function remove_hydrogen(frames)
         new_atoms = JuLIP.Atoms(new_Z, new_X)
         
         set_cell!(new_atoms, 20.0 * I(3)) 
-        new_atoms["energy"] = atoms["energy_eff"] * 198.2
+        new_atoms["energy"] = atoms["energy_eff"]
         push!(new_frames, new_atoms)
     end
     return new_frames
 end
-
+num = 675
 # --- Load your file ---
-frames = read_extxyz("output700.extxyz")
+frames = read_extxyz("output"*string(num)*".extxyz")
 
 # --- Remove Hydrogens ---
 frames_noH = remove_hydrogen(frames)
@@ -40,5 +40,5 @@ frames_noH = remove_hydrogen(frames)
 frames_noH[1]["energy"]
 
 # --- Save the new file ---
-write_extxyz("all_C_dimers700.extxyz", frames_noH)
+write_extxyz("all_C_dimers"*string(num)*".extxyz", frames_noH)
 

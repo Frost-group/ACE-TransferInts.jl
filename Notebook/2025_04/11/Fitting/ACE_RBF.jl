@@ -1,13 +1,13 @@
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
-
+#cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
+cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified_all.extxyz")
+	frames = read_extxyz("all_CH_modified_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 3600
+	n_train = 900
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -18,7 +18,7 @@ begin
 end
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi.extxyz")
+	frames = read_extxyz("all_CSi_modified_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
@@ -76,8 +76,8 @@ ACEpotentials.get_rdf(train_data, r_cut; rescale = true)
 
 begin
 	gr(dpi=1200)
-	endg = 9.0
-	r_cut = 8.5; a = 0.2
+	endg = 12.0
+	r_cut = 10.0; a = 0.2
 	rdf_tiny = ACEpotentials.get_rdf(train_data_1, r_cut; rescale = true)
 	plt_rdf_1 = plot()
 	stephist!(rdf_tiny[(:C,:C)], 
@@ -87,7 +87,7 @@ begin
 		size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 	
-	b = 6
+	b = 10
 	stephist!(rdf_tiny[(:Si,:C)],
 		bins=50, label = "Inter-RDF",
 		title="Ethylene Training Set", titlefontsize=10,
@@ -97,7 +97,7 @@ begin
 		size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
 	vline!(6.0*[1.0,], label = "Centre of Mass Separation", lw=1,
 		color = "black", ls = :dash, top_margin = 4Plots.mm,
-		legend=(0.3, 0.9),size=(300,200),)
+		legend=(0.9, 0.9),size=(300,200),)
 
 
 	rdf_tiny = ACEpotentials.get_rdf(train_data_2, r_cut; rescale = true)
@@ -109,7 +109,7 @@ begin
 			size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 		#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 		
-	b = 8
+	b = 4
 	stephist!(rdf_tiny[(:Si,:C)],
 			bins=50, label = "Inter-RDF",
 			title="1,1 Difluoroethylene Training Set", titlefontsize=10,
@@ -117,9 +117,9 @@ begin
 			ylabel = "RDF",
 			yticks = [0*b, 25*b, 50*b, 75*b, 100*b], xlims=(1,endg), ylims=(0.0, 100*b),
 			size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
-	vline!(6.0*[1.0,], label = "Centre of Mass Separation", lw=1,
+	vline!(6.625*[1.0,], label = "Centre of Mass Separation", lw=1,
 			color = "black", ls = :dash, top_margin = 4Plots.mm,
-			legend=(0.3, 0.9),size=(300,200))
+			legend=(0.9, 0.9),size=(300,200))
 	
 	td = 10
 	r0 = 6.625; rcut = 15.0
@@ -139,7 +139,7 @@ begin
 		yticks = [0,25,50,75,100], xlims=(1,endg))	 
 
 	r0 = 6.625; rcut = 8.2
-	rr2, Pr2 = get_Pr2(19, 43, r0, rcut, td)	 
+	rr2, Pr2 = get_Pr2(11, 19, r0, rcut, td)	 
 	plt1 = plot()
 	for n = 1:length(Pr)
 		plot!(plt1, rr2, Pr2[n], lw=2, label = "", 
