@@ -1,9 +1,9 @@
-cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Fitting/")
-#cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
+#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Fitting/")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Fitting/")
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified625.extxyz")
+	frames = read_extxyz("all_CSi_modified625_all.extxyz")
 
 	# Total number of frames
 	n_total = length(frames)
@@ -15,7 +15,7 @@ begin
 	#train_indices = round.(Int, range(1, stop=n_total, length=n_train))
 
 	# Randomly selected indices for training (without replacement)
-	train_indices = sort(sample(1:n_total, n_train; replace=false))  
+	train_indices = sort(sample(562:n_total, n_train; replace=false))  
 	
 	# Create training and testing sets
 	bead_tiny_dataset = frames[train_indices]
@@ -101,8 +101,8 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-5e-5, 2.5e-5),
-             ylabel="Model Energy [eV/atom]", ylims=(-5e-5, 2.5e-5),
+             xlabel="Energy [eV/atom]", xlims=(-5e-5, 5e-5),
+             ylabel="Model Energy [eV/atom]", ylims=(-5e-5, 5e-5),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
@@ -110,7 +110,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all3060_125.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

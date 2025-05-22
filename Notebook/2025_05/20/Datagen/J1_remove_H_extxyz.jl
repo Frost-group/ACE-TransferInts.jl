@@ -1,4 +1,4 @@
-
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
 # --- Function to remove H atoms from all frames ---
 function remove_hydrogen(frames)
     new_frames = Vector{Atoms{Float64}}([])
@@ -20,7 +20,7 @@ function remove_hydrogen(frames)
     return new_frames
 end
 num = 625
-rot = 60
+rot = 30
 # --- Load your file ---
 frames = read_extxyz("output"*string(num)*"_rot"*string(rot)*".extxyz")
 
