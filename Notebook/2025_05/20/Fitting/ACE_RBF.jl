@@ -2,35 +2,31 @@
 cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CH_modified_all.extxyz")
+	frames1 = read_extxyz("all_CSi_modified625_rot0.extxyz")
+	frames2 = read_extxyz("all_CSi_modified625_rot30.extxyz")
+	frames3 = read_extxyz("all_CSi_modified625_rot60.extxyz")
 	# Total number of frames
-	n_total = length(frames)
+	n_total = length(frames1)
 
 	# Number of frames to select for training
-	n_train = 900
+	n_train = 300
 
 	# Uniformly spaced indices
-	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
+	#train_indices = round.(Int, range(1, stop=n_total, length=n_train))
+
+	# Randomly selected indices for training (without replacement)
+	train_indices = sort(sample(1:n_total, n_train; replace=false))
 
 	# Create training and testing sets
-	train_data_1 = frames[train_indices]
-	test_data_1 = [frames[i] for i in 1:n_total if i ∉ train_indices]
-end
-begin
-	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified_all.extxyz")
-	# Total number of frames
-	n_total = length(frames)
+	train_data_1 = frames1[train_indices]
+	test_data_1 = [frames1[i] for i in 1:n_total if i ∉ train_indices]
 
-	# Number of frames to select for training
-	n_train = 900
+	train_data_2 = frames2[train_indices]
+	test_data_2 = [frames2[i] for i in 1:n_total if i ∉ train_indices]
 
-	# Uniformly spaced indices
-	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
+	train_data_3 = frames3[train_indices]
+	test_data_3 = [frames3[i] for i in 1:n_total if i ∉ train_indices]
 
-	# Create training and testing sets
-	train_data_2 = frames[train_indices]
-	test_data_2 = [frames[i] for i in 1:n_total if i ∉ train_indices]
 end
 
 function get_Pr(p, q, r0, rcut, td)
@@ -76,7 +72,7 @@ ACEpotentials.get_rdf(train_data, r_cut; rescale = true)
 
 begin
 	gr(dpi=1200)
-	endg = 12.0
+	endg = 8.0
 	r_cut = 10.0; a = 0.2
 	rdf_tiny = ACEpotentials.get_rdf(train_data_1, r_cut; rescale = true)
 	plt_rdf_1 = plot()
@@ -87,18 +83,19 @@ begin
 		size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 	
-	b = 10
+	b = 1.
 	stephist!(rdf_tiny[(:Si,:C)],
 		bins=50, label = "Inter-RDF",
-		title="Ethylene Training Set", titlefontsize=10,
+		title="Ethylene Training Set (Rz = 0 degrees)", titlefontsize=10,
 		xlabel = L"r[\AA]",
 		ylabel = "RDF",
 		yticks = [0*b, 25*b, 50*b, 75*b, 100*b], xlims=(1,endg), ylims=(0.0, 100*b),
 		size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
-	vline!(6.0*[1.0,], label = "Centre of Mass Separation", lw=1,
+	vline!(6.25*[1.0,], label = "Centre of Mass Separation", lw=1,
 		color = "black", ls = :dash, top_margin = 4Plots.mm,
-		legend=(0.9, 0.9),size=(300,200),)
+		legend=(0.3, 0.9),size=(300,200),)
 
+###########################################	
 
 	rdf_tiny = ACEpotentials.get_rdf(train_data_2, r_cut; rescale = true)
 	plt_rdf_2 = plot()
@@ -109,20 +106,42 @@ begin
 			size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 		#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 		
-	b = 4
+	b = 1.
 	stephist!(rdf_tiny[(:Si,:C)],
 			bins=50, label = "Inter-RDF",
-			title="1,1 Difluoroethylene Training Set", titlefontsize=10,
+			title="Ethylene Training Set (Rz = 30 degrees)", titlefontsize=10,
 			xlabel = L"r[\AA]",
 			ylabel = "RDF",
 			yticks = [0*b, 25*b, 50*b, 75*b, 100*b], xlims=(1,endg), ylims=(0.0, 100*b),
 			size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
-	vline!(6.625*[1.0,], label = "Centre of Mass Separation", lw=1,
+	vline!(6.25*[1.0,], label = "Centre of Mass Separation", lw=1,
 			color = "black", ls = :dash, top_margin = 4Plots.mm,
-			legend=(0.9, 0.9),size=(300,200))
+			legend=(0.3, 0.9),size=(300,200))
+
+###########################################	
+	rdf_tiny = ACEpotentials.get_rdf(train_data_3, r_cut; rescale = true)
+	plt_rdf_3 = plot()
+	stephist!(rdf_tiny[(:C,:C)], 
+			bins=150, label = "Intra-RDF" ,
+			title="d-Si_trainset", titlefontsize=10,
+			yticks = [0,25,50,75,100], xlims=(1,endg), ylims=(0.0, 100),
+			size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
+		#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
+
+	b = 1.
+	stephist!(rdf_tiny[(:Si,:C)],
+			bins=50, label = "Inter-RDF",
+			title="Ethylene Training Set (Rz = 60 degrees)", titlefontsize=10,
+			xlabel = L"r[\AA]",
+			ylabel = "RDF",
+			yticks = [0*b, 25*b, 50*b, 75*b, 100*b], xlims=(1,endg), ylims=(0.0, 100*b),
+			size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
+	vline!(6.25*[1.0,], label = "Centre of Mass Separation", lw=1,
+			color = "black", ls = :dash, top_margin = 4Plots.mm,
+			legend=(0.3, 0.9),size=(300,200))		
 	
 	td = 10
-	r0 = 6.625; rcut = 15.0
+	r0 = 6.25; rcut = 7.5
 	rr, Pr = get_Pr(1, 4, r0, rcut, td)
 
 	plt = plot()
@@ -138,7 +157,7 @@ begin
 		color = "#F0BB62", ls = :dash, legend=(0.3, 0.9),
 		yticks = [0,25,50,75,100], xlims=(1,endg))	 
 
-	r0 = 6.625; rcut = 8.2
+	r0 = 6.25; rcut = 7.5
 	rr2, Pr2 = get_Pr2(11, 19, r0, rcut, td)	 
 	plt1 = plot()
 	for n = 1:length(Pr)
@@ -155,12 +174,12 @@ begin
 		 )
 
 	#vline!([r0*s2,], lw=2, ls = :dash, c= "#F0BB62", label = L"r_{1}", legend=true)
-	plot!(plt_rdf_1, plt_rdf_2,
+	plot!(plt_rdf_1, plt_rdf_2,  plt_rdf_3,
 	#plt_rdf_2,
 	#plt, 
-	plt1, layout=(3,1), size=(900,600))
+	plt1, layout=(4,1), size=(1200,900))
 	#savefig("_RDF_RBF_Si.png") 
-	savefig("RDF_NH_2.png")
+	savefig("RDF_NH.png")
 end
 
 

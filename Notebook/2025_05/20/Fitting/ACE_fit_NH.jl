@@ -3,19 +3,19 @@ cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Fi
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified625_all.extxyz")
+	frames = read_extxyz("all_CSi_modified625_rot60.extxyz")
 
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 125
+	n_train = 250
 
 	# Uniformly spaced indices
 	#train_indices = round.(Int, range(1, stop=n_total, length=n_train))
 
 	# Randomly selected indices for training (without replacement)
-	train_indices = sort(sample(562:n_total, n_train; replace=false))  
+	train_indices = sort(sample(1:n_total, n_train; replace=false))  
 	
 	# Create training and testing sets
 	bead_tiny_dataset = frames[train_indices]
@@ -110,7 +110,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all3060_125.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all3060_250.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
