@@ -3,7 +3,7 @@ cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Fi
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified625_rot60.extxyz")
+	frames = read_extxyz("all_CSi_modified625_rot1.extxyz")
 
 	# Total number of frames
 	n_total = length(frames)
@@ -110,7 +110,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_all3060_250.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut136_1.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

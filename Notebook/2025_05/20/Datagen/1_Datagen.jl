@@ -1,9 +1,8 @@
-#cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
-cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
+cd("C:/Users/Keerati/OneDrive - Imperial College London/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
+#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
 
 # --- Load molecule ---
 mol = read_extxyz("ethylene.extxyz")[1]
-
 
 # --- Geometric center function ---
 function centroid(positions)
@@ -23,7 +22,7 @@ function spherical_to_cartesian(θ, φ)
     return SVector(z, y, x)
 end
 # Define rotation matrix for 60 degrees about z-axis
-rot = 60
+rot = 1
 θ_rot = deg2rad(rot)
 Rz = [cos(θ_rot) -sin(θ_rot) 0.0;
       sin(θ_rot)  cos(θ_rot) 0.0;

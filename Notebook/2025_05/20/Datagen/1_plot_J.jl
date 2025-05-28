@@ -1,5 +1,5 @@
 
-dimer_set = read_extxyz("output625_rot30.extxyz")
+dimer_set = read_extxyz("output625_rot1.extxyz")
 
 θ_list = range(0.01, stop=π, length=17);
 φ_list = range(0.01, stop=2π, length=33);
@@ -30,7 +30,7 @@ plot(
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Surface Plot of " * L"\mathbf{J}~(\theta, \phi)"
 )
-savefig("ethylene_J_surface625_rot30.png")
+savefig("ethylene_J_surface625_rot1.png")
 
 
 plot(

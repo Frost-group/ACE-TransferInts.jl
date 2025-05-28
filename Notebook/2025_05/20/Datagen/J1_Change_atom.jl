@@ -43,7 +43,7 @@ function change_H_to_C_Si(frames)
 end
 
 num = 625
-rot = 30
+rot = 1
 # --- Load the file ---
 frames = read_extxyz("all_C_dimers"*string(num)*"_rot"*string(rot)*".extxyz")
 

@@ -20,7 +20,7 @@ function remove_hydrogen(frames)
     return new_frames
 end
 num = 625
-rot = 30
+rot = 1
 # --- Load your file ---
 frames = read_extxyz("output"*string(num)*"_rot"*string(rot)*".extxyz")
 
