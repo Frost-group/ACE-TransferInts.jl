@@ -18,7 +18,7 @@ begin
 end
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified_rand1000_Num3000.extxyz")
+	frames = read_extxyz("all_CH_modified_rand1000_Num50000_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
@@ -109,7 +109,7 @@ begin
 			size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 		#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 		
-	b = 4
+	b = 6
 	stephist!(rdf_tiny[(:Si,:C)],
 			bins=50, label = "Inter-RDF",
 			title="1,1 Difluoroethylene Training Set", titlefontsize=10,
@@ -138,8 +138,8 @@ begin
 		color = "#F0BB62", ls = :dash, legend=(0.3, 0.9),
 		yticks = [0,25,50,75,100], xlims=(1,endg))	 
 
-	r0 = 6.625; rcut = 7.5
-	rr2, Pr2 = get_Pr2(19, 43, r0, rcut, td)	 
+	r0 = 6.625; rcut = 8.5
+	rr2, Pr2 = get_Pr2(11,14, r0, rcut, td)	 
 	plt1 = plot()
 	for n = 1:length(Pr)
 		plot!(plt1, rr2, Pr2[n], lw=2, label = "", 
@@ -156,11 +156,11 @@ begin
 
 	#vline!([r0*s2,], lw=2, ls = :dash, c= "#F0BB62", label = L"r_{1}", legend=true)
 	plot!(plt_rdf_1,
-	#plt_rdf_2,
+	plt_rdf_2,
 	#plt, 
-	plt1, layout=(2,1), size=(900,400))
+	plt1, layout=(3,1), size=(900,600))
 	#savefig("_RDF_RBF_Si.png") 
-	savefig("RDF_NH_2.png")
+	savefig("RDF_NH.png")
 end
 
 

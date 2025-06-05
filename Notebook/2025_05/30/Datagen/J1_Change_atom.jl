@@ -1,5 +1,5 @@
 using Pkg
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Datagen")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/30/Datagen")
 Pkg.activate(".")
 Base.active_project()
 Pkg.instantiate()
@@ -69,21 +69,21 @@ write_extxyz("all_CSi_modified_rand"*string(seed)*"_Num"*string(N)*".extxyz", fr
 
 
 # --- Load the file ---
-frames = read_extxyz("output"*string(num)*".extxyz")
+frames = read_extxyz("output_rand"*string(seed)*"_Num"*string(N)*".extxyz")
 
 # --- Perform the Si -> C substitution ---
 frames_modified = change_Si_to_C(frames)
 
 
 # --- Save the modified frames --Cwrite_extxyz("all_bead_modified.extxyz", frames_modified)
-write_extxyz("all_CH_modified"*string(num)*".extxyz", frames_modified)
+write_extxyz("all_CH_modified_rand"*string(seed)*"_Num"*string(N)*".extxyz", frames_modified)
 
 
-frames = read_extxyz("all_CH_modified"*string(num)*".extxyz")
+frames = read_extxyz("all_CH_modified_rand"*string(seed)*"_Num"*string(N)*".extxyz")
 
 # --- Perform the Si -> C substitution ---
 frames_modified = change_H_to_C_Si(frames)
 
 
 # --- Save the modified frames --Cwrite_extxyz("all_bead_modified.extxyz", frames_modified)
-write_extxyz("all_CH_modified"*string(num)*"_all.extxyz", frames_modified)
+write_extxyz("all_CH_modified_rand"*string(seed)*"_Num"*string(N)*"_all.extxyz", frames_modified)

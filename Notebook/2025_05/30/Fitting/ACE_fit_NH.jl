@@ -4,7 +4,7 @@ cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fittin
 begin
 	# --- Load all frames ---
 	frames = read_extxyz("all_CSi_modified_rand1000_Num50000.extxyz")
-
+	frames = read_extxyz("all_CH_modified_rand1000_Num50000_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
@@ -22,8 +22,8 @@ end
 
 
 begin
-	p = 19
-	q = 45
+	p = 19 #19
+	q = 45 #45
 	od = 2
 	td = 10
 	model1 = acemodel(elements = [:Si,:C,],
@@ -41,7 +41,7 @@ begin
 end
 
 
-data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
+data_keys1 = (energy_key = "energy_eff", force_key = "", virial_key = "")
 solver = ACEfit.BLR(committee_size=500, factorization=:svd)
 acefit!(model1, bead_tiny_dataset; solver=solver, data_keys1...);
 
@@ -59,7 +59,7 @@ begin
 	    energies = []
 	    for atoms in dataset
 	        for key in keys(atoms.data)
-	            if lowercase(key) == "energy"
+	            if lowercase(key) == "energy_eff"
 	                push!(energies, atoms.data[key].data/length(atoms))
 	            end
 	        end
@@ -98,8 +98,8 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-5e-5, 5e-5),
-             ylabel="Model Energy [eV/atom]", ylims=(-5e-5, 5e-5),
+             xlabel="Energy [eV/atom]", xlims=(-2e-5, 2e-5),
+             ylabel="Model Energy [eV/atom]", ylims=(-2e-5, 2e-5),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
@@ -107,7 +107,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N3000.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N900.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)
