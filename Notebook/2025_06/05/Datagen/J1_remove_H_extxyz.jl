@@ -1,0 +1,45 @@
+using Pkg
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Datagen")
+Pkg.activate(".")
+Base.active_project()
+Pkg.instantiate()
+Pkg.add(["JuLIP", "StaticArrays", "LinearAlgebra", "Plots","LaTeXStrings"])
+
+using JuLIP
+using StaticArrays
+using LinearAlgebra
+using Plots
+using LaTeXStrings
+# --- Function to remove H atoms from all frames ---
+function remove_hydrogen(frames)
+    new_frames = Vector{Atoms{Float64}}([])
+    for atoms in frames
+        # Identify non-Hydrogen atoms (atomic number Z != 1)
+        keep = findall(z -> z != 1, atoms.Z)
+        
+        # Filter species and positions
+        new_Z = atoms.Z[keep]
+        new_X = atoms.X[keep]
+        
+        # Create new Atoms object
+        new_atoms = JuLIP.Atoms(new_Z, new_X)
+        
+        set_cell!(new_atoms, 20.0 * I(3)) 
+        new_atoms["energy"] = atoms["energy_eff"]
+        push!(new_frames, new_atoms)
+    end
+    return new_frames
+end
+
+Nr, Ntheta, Nphi, Nx, Ny, Nz = 8, 8, 8, 5, 5, 5 
+# --- Load your file ---
+fname = @sprintf "output_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
+frames = read_extxyz(fname)
+# --- Remove Hydrogens ---
+frames_noH = remove_hydrogen(frames)
+
+frames_noH[1]["energy"]
+
+# --- Save the new file ---
+fname2 = @sprintf "all_C_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
+write_extxyz(fname2, frames_noH)

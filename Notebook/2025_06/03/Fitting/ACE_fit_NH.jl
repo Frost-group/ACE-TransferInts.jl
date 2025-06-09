@@ -4,13 +4,13 @@ cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/03/Fittin
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_dimers_r8_t8_p8_rx5_ry5_rz5.extxyz")
+	frames = read_extxyz("all_CSi_dimers_r8_t8_p8_rx5_ry5_rz5_2.extxyz")
 	#frames = read_extxyz("all_CH_modified_rand1000_Num50000_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 10000
+	n_train = 900
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -18,20 +18,20 @@ begin
 	# Create training and testing sets
 	bead_tiny_dataset = frames[train_indices]
 	bead_dataset = [frames[i] for i in 1:n_total if i ∉ train_indices]
-
 end
 
 
 begin
 	p = 19 #19
 	q = 45 #45
-	od = 2
-	td = 10
+	od = 3
+	td = [40,30,20]
 	model1 = acemodel(elements = [:Si,:C,],
 	        order = od,
 	        totaldegree =td, 
 			r0 = 6.625,
 	        rcut = 7.5,
+			wL = 1.0,
 			#transform = (:agnesi, p, q),
 			pair_transform = (:agnesi, p, q),
 			pair_envelope = (:x, 2, 2),
@@ -108,7 +108,7 @@ println(model_energies)
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
 			)
-savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N10000.png") 
+savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N900_wL5_2.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

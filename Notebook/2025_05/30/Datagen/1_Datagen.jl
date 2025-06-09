@@ -42,11 +42,14 @@ all_dimers = Vector{Atoms{Float64}}([])
 for i in 1:N
     # Random translation vector
     shift_vec = random_vector_in_shell(rmin, rmax)
-
+    x, y, z = shift_vec
+    r = norm(shift_vec)
+    θ = acos(z / r)
+    φ = atan(y, x)
     # Random Euler angles in radians
-    θx = 2π * rand()
-    θy = 2π * rand()
-    θz = 2π * rand()
+    θx = 2π #* rand()
+    θy = 2π #* rand()
+    θz = π/6 #+ rand() * (5π/6 - π/6)
 
     # Rotate and translate mol2
     mol2 = rotate_atoms(mol1, θx, θy, θz)
@@ -59,6 +62,9 @@ for i in 1:N
 
     # Set box and metadata
     set_cell!(dimer, 20.0 * I(3))
+    dimer[:r] = r
+    dimer[:theta] = θ
+    dimer[:phi] = φ
     dimer[:θx] = θx
     dimer[:θy] = θy
     dimer[:θz] = θz

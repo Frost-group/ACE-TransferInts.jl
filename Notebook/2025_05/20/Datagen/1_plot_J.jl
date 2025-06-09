@@ -81,4 +81,9 @@ heatmap(
     title = "Surface Plot of " * L"\mathbf{J}_{eff}(\theta, \phi)"
 )
 
-J_eff*1928
+# Load the structures
+atoms_list = read_extxyz("output_r8_t8_p8_rx5_ry5_rz5.extxyz")
+# Prepare arrays to store (r, θ, energy_eff) data
+rs = Float64[]
+thetas = Float64[]
+energies = Float64[]

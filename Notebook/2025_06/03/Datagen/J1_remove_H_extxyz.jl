@@ -1,5 +1,5 @@
 using Pkg
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Datagen")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/05/Datagen")
 Pkg.activate(".")
 Base.active_project()
 Pkg.instantiate()
@@ -31,9 +31,9 @@ function remove_hydrogen(frames)
     return new_frames
 end
 
-Nr, Ntheta, Nphi, Nx, Ny, Nz = 8, 8, 8, 5, 5, 5 
+Nr, Ntheta, Nphi, Nx, Ny, Nz = 20, 20, 20, 1, 1, 1 
 # --- Load your file ---
-fname = @sprintf "output_r%d_t%d_p%d_rx%d_ry%d_rz%d.extxyz" Nr Ntheta Nphi Nx Ny Nz
+fname = @sprintf "output_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
 frames = read_extxyz(fname)
 # --- Remove Hydrogens ---
 frames_noH = remove_hydrogen(frames)
@@ -41,6 +41,20 @@ frames_noH = remove_hydrogen(frames)
 frames_noH[1]["energy"]
 
 # --- Save the new file ---
-fname2 = @sprintf "all_C_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d.extxyz" Nr Ntheta Nphi Nx Ny Nz
+fname2 = @sprintf "all_C_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
 write_extxyz(fname2, frames_noH)
+
+
+seed = 1000
+N = 8000 
+# --- Load your file ---
+frames = read_extxyz("output_rand"*string(seed)*"_Num"*string(N)*".extxyz")
+
+# --- Remove Hydrogens ---
+frames_noH = remove_hydrogen(frames)
+
+frames_noH[1]["energy"]
+
+# --- Save the new file ---
+write_extxyz("all_C_dimers_rand"*string(seed)*"_Num"*string(N)*".extxyz", frames_noH)
 

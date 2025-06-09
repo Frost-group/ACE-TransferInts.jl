@@ -55,19 +55,33 @@ function change_H_to_C_Si(frames)
     return new_frames
 end
 
-Nr, Ntheta, Nphi, Nx, Ny, Nz = 8, 8, 8, 5, 5, 5 
+Nr, Ntheta, Nphi, Nx, Ny, Nz = 20, 20, 20, 1, 1, 1 
 
-fname = @sprintf "all_C_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d.extxyz" Nr Ntheta Nphi Nx Ny Nz
+fname = @sprintf "all_C_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
 # --- Load the file ---
 frames = read_extxyz(fname)
 
 # --- Perform the Si -> C substitution ---
 frames_modified = change_Si_to_C(frames)
 
-fname2 = @sprintf "all_CSi_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d.extxyz" Nr Ntheta Nphi Nx Ny Nz
+fname2 = @sprintf "all_CSi_dimers_r%d_t%d_p%d_rx%d_ry%d_rz%d_2.extxyz" Nr Ntheta Nphi Nx Ny Nz
 # --- Save the modified frames --Cwrite_extxyz("all_bead_modified.extxyz", frames_modified)
 write_extxyz(fname2, frames_modified)
 
+######################################
+seed = 1000
+N = 8000
+# --- Load the file ---
+frames = read_extxyz("all_C_dimers_rand"*string(seed)*"_Num"*string(N)*".extxyz")
+
+# --- Perform the Si -> C substitution ---
+frames_modified = change_Si_to_C(frames)
+
+
+# --- Save the modified frames --Cwrite_extxyz("all_bead_modified.extxyz", frames_modified)
+write_extxyz("all_CSi_modified_rand"*string(seed)*"_Num"*string(N)*".extxyz", frames_modified)
+
+#######################################
 
 # --- Load the file ---
 frames = read_extxyz("output"*string(num)*".extxyz")
