@@ -4,14 +4,14 @@ cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/03/Fittin
 
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_dimers_r20_t20_p20_rx1_ry1_rz1_2.extxyz")
+	#frames = read_extxyz("all_CSi_dimers_r20_t20_p20_rx1_ry1_rz1_2.extxyz")
 	frames = read_extxyz("all_CSi_modified_rand1000_Num8000.extxyz")
 	#frames = read_extxyz("all_CH_modified_rand1000_Num50000_all.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train =500
+	n_train =1500
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -97,20 +97,24 @@ println(model_energies)
     scatter!(bead_energies, model_energies;
              label="full dataset",
              title = @sprintf("Structures Used In Training:  %i out of %i\n", length(train_dataset), length(bead_dataset)+length(train_dataset)) *
-                     @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom", 1000*rmse, 1000*mae),
+                     @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) μeV/atom", 1e+6*rmse, 1e+6*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-5e-5, 5e-5),
-             ylabel="Model Energy [eV/atom]", ylims=(-5e-5, 5e-5),
+             xlabel="Energy [μeV/atom]", xlims=(-4e-5, 3e-5),
+             ylabel="Model Energy [μeV/atom]", ylims=(-4e-5, 3e-5),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
-            label="training set", color="#064635",
-			size=(500,500), fontsize=12,
+            label = "training set", color="#064635",
+			size = (500,500), fontsize=12,
+			xticks = ([-4e-5, -3e-5, -2e-5, -1e-5, 0, 1e-5, 2e-5, 3e-5],
+            		["-40", "-30", "-20", "-10", "0", "10", "20", "30"]),
+			yticks = ([-4e-5, -3e-5, -2e-5, -1e-5, 0, 1e-5, 2e-5, 3e-5],
+            		["-40", "-30", "-20", "-10", "0", "10", "20", "30"]),
 			)
 #savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N3000_2.png") 
-savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N500_rand.png") 
+savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N1500_rand.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

@@ -16,22 +16,6 @@ begin
 	train_data_1 = frames[train_indices]
 	test_data_1 = [frames[i] for i in 1:n_total if i ∉ train_indices]
 end
-begin
-	# --- Load all frames ---
-	frames = read_extxyz("all_CH_modified_rand1000_Num50000_all.extxyz")
-	# Total number of frames
-	n_total = length(frames)
-
-	# Number of frames to select for training
-	n_train = 900
-
-	# Uniformly spaced indices
-	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
-
-	# Create training and testing sets
-	train_data_2 = frames[train_indices]
-	test_data_2 = [frames[i] for i in 1:n_total if i ∉ train_indices]
-end
 
 function get_Pr(p, q, r0, rcut, td)
     basis = ACE1x.ace_basis(;elements = [:Si,:C,],
@@ -99,28 +83,6 @@ begin
 		color = "black", ls = :dash, top_margin = 4Plots.mm,
 		legend=(0.3, 0.9),size=(300,200),)
 
-
-	rdf_tiny = ACEpotentials.get_rdf(train_data_2, r_cut; rescale = true)
-	plt_rdf_2 = plot()
-	stephist!(rdf_tiny[(:C,:C)], 
-			bins=150, label = "Intra-RDF" ,
-			title="d-Si_trainset", titlefontsize=10,
-			yticks = [0,25,50,75,100], xlims=(1,endg), ylims=(0.0, 100),
-			size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
-		#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
-		
-	b = 6
-	stephist!(rdf_tiny[(:Si,:C)],
-			bins=50, label = "Inter-RDF",
-			title="1,1 Difluoroethylene Training Set", titlefontsize=10,
-			xlabel = L"r[\AA]",
-			ylabel = "RDF",
-			yticks = [0*b, 25*b, 50*b, 75*b, 100*b], xlims=(1,endg), ylims=(0.0, 100*b),
-			size=(300,200), left_margin = 4Plots.mm, fill=true, fillalpha=0.5, color= "#C64756")
-	vline!(6.625*[1.0,], label = "Centre of Mass Separation", lw=1,
-			color = "black", ls = :dash, top_margin = 4Plots.mm,
-			legend=(0.9, 0.9),size=(300,200))
-	
 	td = 10
 	r0 = 6.625; rcut = 15.0
 	rr, Pr = get_Pr(1, 4, r0, rcut, td)
@@ -156,9 +118,9 @@ begin
 
 	#vline!([r0*s2,], lw=2, ls = :dash, c= "#F0BB62", label = L"r_{1}", legend=true)
 	plot!(plt_rdf_1,
-	plt_rdf_2,
+	#plt_rdf_2,
 	#plt, 
-	plt1, layout=(3,1), size=(900,600))
+	plt1, layout=(2,1), size=(900,400))
 	#savefig("_RDF_RBF_Si.png") 
 	savefig("RDF_NH.png")
 end

@@ -9,7 +9,7 @@ seed = 1000
 Random.seed!(seed)
 
 # === Load and center molecule ===
-mol = read_extxyz("ethylene.extxyz")[1]
+mol = read_extxyz("naphthalene.extxyz")[1]
 
 function centroid(positions)
     sum(positions) / length(positions)
