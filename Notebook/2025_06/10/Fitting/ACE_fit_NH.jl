@@ -10,7 +10,7 @@ begin
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train =2000
+	n_train =500
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -99,17 +99,21 @@ println(model_energies)
                      @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) μeV/atom", 1e+6*rmse, 1e+6*mae),
              titlefontsize = 8,
              yerror = model_std,
-             xlabel="Energy [eV/atom]", xlims=(-2.5e-5, 3e-5),
-             ylabel="Model Energy [eV/atom]", ylims=(-2.5e-5, 3e-5),
+           	 xlabel="Energy [μeV/atom]", xlims=(-2e-5, 3.e-5),
+             ylabel="Model Energy [μeV/atom]", ylims=(-2e-5, 3.e-5),
              aspect_ratio = :equal, color="#F0BB62")
 
     model_energies = [energy(model.potential,atoms)/length(atoms) for atoms in train_dataset]
     scatter!(extract_energies(train_dataset), model_energies;
             label="training set", color="#064635",
 			size=(500,500), fontsize=12,
+			xticks = ([ -1e-5, 0, 1e-5, 2e-5],
+            		["-10", "0", "10", "20"]),
+			yticks = ([-1e-5, 0, 1e-5, 2e-5],
+            		["-10", "0", "10", "20"]),
 			)
 #savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N3000_2.png") 
-savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N2000_rand.png") 
+savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N500_rand.png") 
 end;
 
 assess_model(model1, bead_tiny_dataset)

@@ -2,7 +2,7 @@
 cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Fitting/")
 begin
 	# --- Load all frames ---
-	frames = read_extxyz("all_CSi_modified_rand1000_Num3000.extxyz")
+	frames = read_extxyz("all_CSi_modified_rand1000_Num8000.extxyz")
 	# Total number of frames
 	n_total = length(frames)
 
@@ -71,7 +71,7 @@ begin
 		size=(450,150), left_margin = 2Plots.mm, fill=true, fillalpha=0.5, color= "#F0BB62")
 	#vline!(rnn(:Si)*Si_scale, label = L"r_{1}, r_{2}, ..., r_{5}", lw=1, color = "black", ls = :dash)
 	
-	b = 1.6
+	b = 2
 	stephist!(rdf_tiny[(:Si,:C)],
 		bins=50, label = "Inter-RDF",
 		title="Ethylene Training Set", titlefontsize=10,
@@ -100,8 +100,8 @@ begin
 		color = "#F0BB62", ls = :dash, legend=(0.3, 0.9),
 		yticks = [0,25,50,75,100], xlims=(1,endg))	 
 
-	r0 = 6.625; rcut = 8.5
-	rr2, Pr2 = get_Pr2(11,14, r0, rcut, td)	 
+	r0 = 6.625; rcut = 8
+	rr2, Pr2 = get_Pr2(11,30, r0, rcut, td)	 
 	plt1 = plot()
 	for n = 1:length(Pr)
 		plot!(plt1, rr2, Pr2[n], lw=2, label = "", 

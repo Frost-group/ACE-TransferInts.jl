@@ -11,7 +11,7 @@ begin
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train =1500
+	n_train =300
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
