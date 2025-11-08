@@ -1,8 +1,10 @@
 [deps]
 ACEpotentials = "3b96b61c-0fcc-4693-95ed-1ef9f35fcc53"
 ASE = "51974c44-a7ed-5088-b8be-3e78c8ba416c"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 JuLIP = "945c410c-986d-556a-acb1-167a618e0462"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

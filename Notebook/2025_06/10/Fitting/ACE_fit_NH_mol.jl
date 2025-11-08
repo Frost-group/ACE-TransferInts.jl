@@ -10,7 +10,7 @@ begin
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train =1500
+	n_train =2000
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -21,7 +21,7 @@ begin
 end
 
 
-begin
+@time begin
 	p = 19 #19
 	q = 45 #45
 	od = 2
@@ -120,4 +120,3 @@ println(model_energies)
 end;
 
 assess_model(model1, bead_tiny_dataset)
- 

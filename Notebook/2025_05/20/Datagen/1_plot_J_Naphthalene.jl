@@ -1,4 +1,4 @@
-
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/20/Datagen")
 Pkg.add("CSV")
 Pkg.add("DataFrames")
 Pkg.add("DelimitedFiles")
@@ -671,7 +671,7 @@ gr(dpi=1200)
 heatmap(
     φ_list, θ_list, ((J_eff)),
     
-    size=(900, 960),
+    size=(1200, 1200),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
 
@@ -680,16 +680,16 @@ heatmap(
 	xticks=([-pi, -pi/2, 0, pi/2, pi],
             ["0", L"$\pi/2$", L"$\pi$", L"$3\pi/2$", L"$2\pi$"]),
 
-	zlabel=L"J"*" (meV)",
+	zlabel=L"J"*" (eV)",
 
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 
-    colorbar = false, st = :surface,
+    #colorbar = false, st = :surface,
 
-    title = "Naphthalene Transfer Integrals "*L"J"*" (meV)",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
-    tickfont  = 14,
+    title = "Naphthalene Transfer Integrals "*L"J"*" (eV)",
+    titlefont = 24,
+    guidefont = 20,  # axes labels
+    tickfont  = 16,
 )
 savefig("new_Naphthalene_J_surface.png")
 savefig("new_Naphthalene_J_heatmap.png")
@@ -697,7 +697,7 @@ savefig("new_Naphthalene_J_heatmap.png")
 heatmap(
     φ_list, θ_list, ((J_eff)).^2,
     #st = :surface,
-    size=(900, 900),
+    size=(1200, 1200),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
 
@@ -710,11 +710,11 @@ heatmap(
 
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     
-    colorbar = false, st = :surface,
+    #colorbar = false, st = :surface,
 
     title = "Squared Naphthalene Transfer Integrals "*L"J^2"*" (meV)"*L"^2",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
+    titlefont = 24,
+    guidefont = 20,  # axes labels
     tickfont  = 14,
 )
 savefig("new_Naphthalene_J^2_surface.png")
@@ -723,7 +723,7 @@ savefig("new_Naphthalene_J^2_heatmap.png")
 heatmap(
     φ_list, θ_list, log.((J_eff).^2),
     #st = :surface,
-    size=(900, 900),
+    size=(1200, 1200),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
 
@@ -737,11 +737,11 @@ heatmap(
 
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 
-    colorbar = false, st = :surface,
+    #colorbar = false, st = :surface,
 
     title = "Log Squared Naphthalene Transfer Integrals "*L"\log(\mathbf{J}^2)",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
+    titlefont = 24,
+    guidefont = 20,  # axes labels
     tickfont  = 14,
 )
 savefig("new_Naphthalene_logJ^2_surface.png")

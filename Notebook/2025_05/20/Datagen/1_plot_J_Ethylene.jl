@@ -18,7 +18,7 @@ gr(dpi=1200)
 heatmap(
     φ_list, θ_list, ((J_eff*10e+3)),
     
-    size=(900, 900),
+    size=(1200, 1200),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
 
@@ -31,12 +31,12 @@ heatmap(
 
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
 
-    #colorbar = false, st = :surface,
+    colorbar = false, st = :surface,
 
     title = "Ethylene Transfer Integrals "*L"J"*" (meV)",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
-    tickfont  = 14,
+    titlefont = 24,
+    guidefont = 20,  # axes labels
+    tickfont  = 16,
 )
 savefig("new_ethylene_J_surface.png")
 savefig("new_ethylene_J_heatmap.png")
@@ -44,7 +44,7 @@ savefig("new_ethylene_J_heatmap.png")
 heatmap(
     φ_list, θ_list, ((J_eff*10e+3)).^2,
     #st = :surface,
-    size=(900, 900),
+    size=(1200, 1200),
     xlabel= L"$\phi$",
 	ylabel=L"$\theta$",
 
@@ -60,9 +60,9 @@ heatmap(
     colorbar = false, st = :surface,
 
     title = "Squared Ethylene Transfer Integrals "*L"J^2"*" (meV)"*L"^2",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
-    tickfont  = 14,
+    titlefont = 24,
+    guidefont = 20,  # axes labels
+    tickfont  = 16,
 )
 savefig("new_ethylene_J^2_surface.png")
 savefig("new_ethylene_J^2_heatmap.png")
@@ -87,9 +87,9 @@ heatmap(
     #colorbar = false, st = :surface,
 
     title = "Log Squared Ethylene Transfer Integrals "*L"\log(\mathbf{J}^2)",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
-    tickfont  = 14,
+    titlefont = 24,
+    guidefont = 20,  # axes labels
+    tickfont  = 16,
 )
 savefig("new_ethylene_logJ^2_surface.png")
 savefig("new_ethylene_logJ^2_heatmap.png")
@@ -109,9 +109,9 @@ heatmap(
 	zlabel=L"J",
 	c=cgrad(["#064635","#519259", "#96BB7C", "#F0BB62", "#FAD586","#F4EEA9"]),
     title = "Ethylene Transfer Integrals "*L"\mathbf{J}"*" (meV)",
-    titlefont = 20,
-    guidefont = 18,  # axes labels
-    tickfont  = 14,
+    titlefont = 24,
+    guidefont = 20,  # axes labels
+    tickfont  = 16,
     #legendtitle = L"J"
     #colorbar = false,
     #colorbar_width = 0.4     # relative height scaling (default 1.0)

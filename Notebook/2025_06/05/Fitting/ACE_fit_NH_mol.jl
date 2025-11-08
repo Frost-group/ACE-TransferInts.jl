@@ -11,7 +11,7 @@ begin
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train =1500
+	n_train =2000
 
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
@@ -116,7 +116,9 @@ println(model_energies)
 			)
 #savefig("fitting_NH_CH_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N3000_2.png") 
 #savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut75_N1500_rand.png")
-savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut$rcut"*"_N$n_train"*"_rand_mol.png") 
+savefig("fitting_NH_CSi_od$od"*"_td$td"*"_p$p"*"_q$q"*"_rcut$rcut"*"_N$n_train"*"_rand_mol.png")
+println(1e+6*rmse*2)
+println(1e+6*mae*2)
 end;
 
 assess_model(model1, bead_tiny_dataset)

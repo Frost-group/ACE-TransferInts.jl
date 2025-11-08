@@ -48,7 +48,7 @@ rC = Int(rc*10)
 
 data_keys1 = (energy_key = "energy", force_key = "", virial_key = "")
 solver = ACEfit.BLR(committee_size=500, factorization=:svd)
-acefit!(model1, bead_tiny_dataset; solver=solver, data_keys1...);
+@time acefit!(model1, bead_tiny_dataset; solver=solver, data_keys1...);
 
 begin
 	@info("Training Errors")
