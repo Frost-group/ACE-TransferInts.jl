@@ -1,4 +1,4 @@
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/13/Fitting/")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/13/Fitting/")
 
 begin
 	# --- Load all frames ---
@@ -8,7 +8,7 @@ begin
 	n_total = length(frames)
 
 	# Number of frames to select for training
-	n_train = 1350
+	n_train = 900
 	# Uniformly spaced indices
 	train_indices = round.(Int, range(1, stop=n_total, length=n_train))
 
@@ -133,7 +133,7 @@ println(model_energies)
     scatter!(bead_energies*10, model_energies*10;
              label="full dataset",
              title = @sprintf("Structures Used In Training:  %i out of %i\n", length(train_dataset), length(bead_dataset)+length(train_dataset)) *
-                     @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/atom\n", 1000*rmse*10, 1000*mae*10) *
+                     @sprintf("RMSE (MAE) For Entire Dataset:  %.0f (%.0f) meV/molecule\n", 1000*rmse*10, 1000*mae*10) *
                      @sprintf("Sign Accuracy: %.1f %%", sign_acc),
              titlefontsize = 8,
              yerror = model_std,
