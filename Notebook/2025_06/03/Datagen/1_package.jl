@@ -1,6 +1,6 @@
 using Pkg
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/03/Datagen")
-#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Datagen")
+cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/03/Datagen") # Window
+#cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_04/11/Datagen") # MacOS
 Pkg.activate(".")
 Base.active_project()
 Pkg.instantiate()
