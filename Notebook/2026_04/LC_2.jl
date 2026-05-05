@@ -97,6 +97,11 @@ plot!(p1, thi2_n, thi2_mae;
 plot!(p1, [NaN], [NaN]; label="RMSE (solid)", color=:black, lw=2, linestyle=:solid)
 plot!(p1, [NaN], [NaN]; label="MAE (dashed)", color=:black, lw=2, linestyle=:dash)
 
+# Vertical reference line at n=2000 (training size reported in paper)
+vline!(p1, [2000];
+       label="n = 2000",
+       color=:gray40, lw=1.5, linestyle=:dot)
+
 savefig(p1, "LC_Ethylene_Thiophene.png")
 println("Plot 1 saved: LC_Ethylene_Thiophene.png")
 
@@ -140,13 +145,18 @@ plot!(p2, bead_n, bead_mae;
       label="", color=c_bead, lw=2, linestyle=:dash, marker=:diamond, markersize=4)
 
 # Mark the n=100 bead outlier explicitly
-scatter!(p2, [bead_n[1]], [bead_rmse[1]];
-         label="Bead n=100 outlier",
-         color=c_bead, marker=:star5, markersize=8)
+#scatter!(p2, [bead_n[1]], [bead_rmse[1]];
+#         label="Bead n=100 outlier",
+#         color=c_bead, marker=:star5, markersize=8)
 
 # Legend proxies for line styles
 plot!(p2, [NaN], [NaN]; label="RMSE (solid)", color=:black, lw=2, linestyle=:solid)
 plot!(p2, [NaN], [NaN]; label="MAE (dashed)", color=:black, lw=2, linestyle=:dash)
+
+# Vertical reference line at n=1350 (training size reported in paper)
+vline!(p2, [1350];
+       label="n = 1350",
+       color=:gray40, lw=1.5, linestyle=:dot)
 
 savefig(p2, "LC_Naphthalene.png")
 println("Plot 2 saved: LC_Naphthalene.png")
