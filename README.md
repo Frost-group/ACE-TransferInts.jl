@@ -7,79 +7,118 @@
 
 A Julia research package for predicting **intermolecular transfer integrals** in organic molecular dimers using **Atomic Cluster Expansion (ACE)** machine-learning potentials.
 
-Transfer integrals (electronic coupling matrix elements) are key quantities for charge- and exciton-transport in organic semiconductors. Direct quantum-chemistry calculations are expensive; this project trains ACE-based models on a library of dimer geometries so that transfer integrals can be predicted from atomic positions alone.
+Transfer integrals (electronic coupling matrix elements) determine charge- and exciton-transport rates in organic semiconductors. This project replaces expensive quantum-chemistry calculations with fast ACE surrogate models trained on dimer geometry libraries.
+
+---
+
+## Repository layout
+
+```
+ACE-TransferInts.jl/
+│
+├── src/                          # Julia library — importable functions
+│   ├── ACE-TransferInts.jl       # Module entry point (ACETransferInts)
+│   ├── dimer.jl                  # rot_x/y/z, centroid, construct_dimer
+│   ├── fitting.jl                # extract_energies, rmse, mae, sign_accuracy
+│   └── io.jl                     # read_J, write_xyz, read_lc_csv
+│
+├── experiments/                  # One folder per molecule
+│   ├── ethylene/
+│   │   ├── datagen/              # Scripts that generate training structures
+│   │   ├── fitting/              # ACE fit scripts and hyperparameter sweeps
+│   │   └── results/              # CSV learning curves, plots
+│   ├── thiophene/
+│   │   ├── datagen/
+│   │   ├── fitting/
+│   │   └── results/
+│   └── naphthalene/
+│       ├── datagen/
+│       ├── fitting/
+│       ├── results/
+│       ├── heavy_atom/           # All-heavy-atom representation
+│       │   ├── datagen/
+│       │   ├── fitting/
+│       │   └── results/
+│       └── bead/                 # Coarse-grained bead representation
+│           ├── datagen/
+│           ├── fitting/
+│           └── results/
+│
+├── notebooks/                    # Exploratory and publication notebooks
+│   ├── learning_curves.jl        # Interactive learning-curve exploration
+│   ├── learning_curves_paper.jl  # Final paper figures (multi-molecule)
+│   └── ACE_Package.jl            # Environment setup helper
+│
+├── data/
+│   ├── reference/                # Si_dataset.xyz and other reference data
+│   ├── raw/                      # Original extxyz from quantum chemistry
+│   │   ├── ethylene/
+│   │   ├── thiophene/
+│   │   └── naphthalene/
+│   └── processed/                # Train/test splits, modified structures
+│
+├── archive/
+│   └── Notebook_2024-2025/       # Chronological research notebooks (read-only)
+│
+├── test/
+│   └── runtests.jl
+├── docs/
+│   ├── make.jl
+│   └── src/index.md
+│
+├── Project.toml
+├── Manifest.toml
+└── LICENSE
+```
 
 ---
 
 ## Background
 
-The **Atomic Cluster Expansion** (ACE) is a systematically improvable, many-body descriptor for atomic environments. It expands the potential-energy surface (or, here, an electronic property) in a complete basis of body-ordered, rotationally invariant polynomials of interatomic distances and angles.
-
-By fitting an ACE model to reference transfer-integral data (obtained, e.g., from DFT or tight-binding calculations), one obtains a fast surrogate that:
+**Atomic Cluster Expansion (ACE)** builds a systematically improvable, many-body descriptor for atomic environments from rotationally invariant polynomials of interatomic distances and angles. Fitting an ACE model to reference transfer-integral data gives a fast surrogate that:
 
 - is **invariant** to translation, rotation, and permutation of equivalent atoms;
-- is **systematically improvable** by raising the polynomial degree or body order;
-- requires only atomic positions as input at inference time.
+- scales with **body order** (ν) and **polynomial degree** (td) so accuracy is controllable;
+- requires only atomic positions at inference time.
 
 ---
 
-## Molecules Studied
+## Molecules studied
 
-| Molecule | Atoms in model | Notes |
+| Molecule | Atom types in model | Notes |
 |---|---|---|
-| Ethylene (C₂H₄) | C, (pseudo-)Si | Smallest π-conjugated testcase |
+| Ethylene (C₂H₄) | C + pseudo-Si | Smallest π-conjugated test case |
 | Thiophene (C₄H₄S) | C, Si or C, Si, S, O | Sulphur-containing heterocycle |
-| Naphthalene (C₁₀H₈) | Heavy atoms or bead model | Fused-ring aromatic |
+| Naphthalene (C₁₀H₈) | Heavy atoms or beads | Fused-ring aromatic; two representations |
 
-Hydrogen atoms are often replaced by pseudo-silicon atoms (heavier ghost atoms) so that the ACE radial basis covers the relevant interatomic distances without ambiguity. A coarse-grained **bead** representation of naphthalene is also explored.
-
----
-
-## Repository Layout
-
-```
-ACE-TransferInts.jl/
-├── src/
-│   ├── ACE-TransferInts.jl      # Package module entry point
-│   ├── ProcessFiles.jl          # Convert JuLIP Atoms → XYZ files
-│   └── process_dimer.jl         # Centroid / centre-of-mass utilities
-│
-├── Notebook/                    # Research notebooks (chronological)
-│   ├── 2024_07/ … 2026_04/      # Julia scripts and Pluto notebooks
-│   └── …
-│
-├── test/
-│   └── runtests.jl              # Test suite (placeholder)
-├── docs/
-│   ├── make.jl
-│   └── src/index.md
-│
-├── Project.toml                 # Julia package dependencies
-├── Manifest.toml                # Locked dependency versions
-└── LICENSE                      # MIT
-```
-
-The main research workflow lives in `Notebook/`, organised by date. Key subdirectories:
-
-| Path | Content |
-|---|---|
-| `Notebook/2024_07–08/` | Initial dimer construction, extxyz reading, spherical harmonics visualisation |
-| `Notebook/2024_09–11/` | First ACE fits, radial basis analysis, hyperparameter scans |
-| `Notebook/2025_03–04/` | Large-scale fitting, model comparisons, cutoff / degree sweeps |
-| `Notebook/2025_05–06/` | Transfer integral prediction and validation |
-| `Notebook/2026_04/` | Learning curves (RMSE, MAE, sign accuracy) for the paper |
+H atoms are replaced by heavier pseudo-Si atoms so the ACE radial basis covers the relevant interatomic distances cleanly. A coarse-grained **bead** model of naphthalene is also studied as a more compact representation.
 
 ---
 
-## Key Workflows
+## Library (`src/`)
 
-### 1. Dimer Construction
+```julia
+using ACETransferInts
 
-Molecular dimers are built programmatically by applying rotation matrices and translations to a monomer geometry. Rotation functions `rot_x`, `rot_y`, `rot_z` generate all required orientations. The centroid (centre of mass) of each fragment is computed with the utility in `src/process_dimer.jl`.
+# Dimer geometry
+R = rot_y(π/3)                          # 3×3 rotation matrix
+c = centroid(atoms.X)                   # centre of geometry
+construct_dimer("mol.extxyz", "dimer.extxyz", params, π/3, J)
 
-### 2. ACE Basis Setup
+# Metrics
+rmse(predicted, reference)
+mae(predicted, reference)
+sign_accuracy(predicted, reference)     # fraction with correct sign
 
-The ACE1 basis is configured with:
+# I/O
+params, J, logJ = read_J("out.dat")
+write_xyz("mol.xyz", atoms)
+n, rmse_v, mae_v, sign_acc = read_lc_csv("LC_Ethylene.csv")
+```
+
+---
+
+## ACE basis parameters
 
 | Parameter | Meaning | Typical range |
 |---|---|---|
@@ -88,53 +127,39 @@ The ACE1 basis is configured with:
 | `rcut` | Cutoff radius (Å) | 7 – 15 |
 | `p`, `q` | Agnesi transform shape | tuned per molecule |
 
-The radial distribution function (RDF) of the training set is analysed first to inform the choice of cutoff and transform parameters.
+Fitting scripts and hyperparameter sweep results live in `experiments/<molecule>/fitting/`.
 
-### 3. Model Fitting
+---
 
-ACE models are fitted by linear regression against reference transfer-integral values stored in extended-XYZ files. Performance is measured with:
+## Learning curves
 
-- **RMSE** and **MAE** (in μeV)
-- **Sign accuracy** — fraction of dimers whose coupling sign is correctly predicted (important for coherent transport)
-
-### 4. Learning Curves
-
-Learning-curve scripts in `Notebook/2026_04/` train models on subsets of increasing size and record RMSE, MAE, and sign accuracy versus number of training structures. Results are saved as CSV files and plotted on a log–log scale to reveal the convergence rate.
-
-Example CSV format:
+Learning-curve data are stored as row-keyed CSV files:
 
 ```
-n_train, 10, 50, 100, 200, 500, 1000
-rmse,    ...
-mae,     ...
-sign_acc,...
+n_train,  10, 50, 100, 200, 500, 1000
+rmse,     ...
+mae,      ...
+sign_acc, ...
 ```
+
+Final paper plots (RMSE, MAE, and sign accuracy on log–log axes for all molecules) are in `notebooks/learning_curves_paper.jl` and the per-molecule PNGs in `experiments/*/results/`.
 
 ---
 
 ## Installation
 
 ```julia
-# From the Julia REPL
 import Pkg
 Pkg.develop(path="path/to/ACE-TransferInts.jl")
 ```
 
-Dependencies are listed in `Project.toml`. The main external requirement is [ACEpotentials.jl](https://github.com/ACEsuit/ACEpotentials.jl) together with JuLIP and ASE (accessed via a Python bridge).
+The main external dependency is [ACEpotentials.jl](https://github.com/ACEsuit/ACEpotentials.jl) (requires the ACEsuit registry). All other dependencies are in `Project.toml`.
 
 ---
 
-## Dependencies
+## Archive
 
-| Package | Role |
-|---|---|
-| `ACEpotentials` | ACE basis construction and fitting |
-| `JuLIP` | Atomic structure representation |
-| `ASE` | Python ASE bridge for reading/writing structures |
-| `Rotations`, `StaticArrays` | Geometry manipulation |
-| `MultivariateStats` | Dimensionality reduction utilities |
-| `Plots`, `LaTeXStrings` | Visualisation |
-| `CSV`, `DataFrames`, `XLSX` | Data I/O |
+`archive/Notebook_2024-2025/` preserves the original chronological research notebooks (July 2024 – April 2026) exactly as written. These are the historical record; new work should go in `experiments/` or `notebooks/`.
 
 ---
 

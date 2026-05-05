@@ -3,3 +3,17 @@
 *.jl.mem
 /docs/Manifest.toml
 /docs/build/
+
+# Julia environment artefacts inside notebooks/experiments
+.CondaPkg/
+pixi.lock
+pixi.toml
+
+# Large data files — use Git LFS or store externally
+*.extxyz
+*.xyz
+data/
+
+# Generated outputs
+*.png
+*.dat
