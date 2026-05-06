@@ -2,7 +2,7 @@ using Pkg
 
 #cd("/Users/kk419/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_05/30/Fitting/")
 #cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/13/Fitting/")
-cd("/Users/paintokk/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/13/Fitting")
+cd("/Users/paintokk/Documents/GitHub/ACE-TransferInts.jl/archive/Notebook_2024-2025/2025_06/13/Fitting")
 
 Pkg.activate(".")
 Base.active_project()

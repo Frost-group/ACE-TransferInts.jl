@@ -1,5 +1,4 @@
-cd("C:/Users/Keerati/Documents/GitHub/ACE-TransferInts.jl/Notebook/2025_06/13/Fitting/")
-
+cd("/Users/paintokk/Documents/GitHub/ACE-TransferInts.jl/archive/Notebook_2024-2025/2025_06/13/Fitting")
 begin
 	# --- Load all frames ---
 	frames = read_extxyz("all_CSi_modified_N.extxyz")
