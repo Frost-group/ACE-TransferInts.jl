@@ -85,13 +85,14 @@ ACE-TransferInts.jl/
 
 ## Molecules studied
 
-| Molecule | Atom types in model | Notes |
-|---|---|---|
-| Ethylene (C₂H₄) | C + pseudo-Si | Smallest π-conjugated test case |
-| Thiophene (C₄H₄S) | C, Si or C, Si, S, O | Sulphur-containing heterocycle |
-| Naphthalene (C₁₀H₈) | Heavy atoms or beads | Fused-ring aromatic; two representations |
+| Molecule | Atom types in model | rcut (Å) | RMSE at convergence | Sign accuracy |
+|---|---|---|---|---|
+| Ethylene (C₂H₄) | Si, C | 7.5 | ~2.85 μeV/mol | ~86% |
+| Thiophene (C₄H₄S) | Si, C, S, O | 9.0 | ~1.95 μeV/mol | ~86% |
+| Naphthalene (C₁₀H₈) | Si, C (heavy atom) | 13.6 | ~12 meV/atom | ~97% |
+| Naphthalene (bead) | Si, C (4-bead CG) | 13.6 | ~18 meV/bead | ~97% |
 
-H atoms are replaced by heavier pseudo-Si atoms so the ACE radial basis covers the relevant interatomic distances cleanly. A coarse-grained **bead** model of naphthalene is also studied as a more compact representation.
+H atoms are replaced by heavier pseudo-Si atoms so the ACE radial basis covers the relevant interatomic distances cleanly. A coarse-grained **bead** model of naphthalene is also studied as a more compact representation. All models use ν=2, td=10 with 8,000 randomly sampled training structures; convergence is reached at ~1,500–2,000 structures.
 
 ---
 
@@ -120,14 +121,16 @@ n, rmse_v, mae_v, sign_acc = read_lc_csv("LC_Ethylene.csv")
 
 ## ACE basis parameters
 
-| Parameter | Meaning | Typical range |
-|---|---|---|
-| `ν` (order) | Body order (2 = pair, 3 = 3-body, …) | 2 – 5 |
-| `td` (total degree) | Maximum polynomial degree | 5 – 40 |
-| `rcut` | Cutoff radius (Å) | 7 – 15 |
-| `p`, `q` | Agnesi transform shape | tuned per molecule |
+| Parameter | Meaning | Small molecules | Large molecules |
+|---|---|---|---|
+| `ν` (order) | Body order (2 = pair, 3 = 3-body, …) | 2 | 2 |
+| `td` (total degree) | Maximum polynomial degree | 10 | 10 |
+| `rcut` | Cutoff radius (Å) | 7.5 – 9.0 | 13.6 |
+| `r₀` | Reference radius (Å) | 6.625 | 12.0 |
+| `p` | Agnesi transform (numerator) | 19 | 19 |
+| `q` | Agnesi transform (denominator) | 45 | 43 |
 
-Fitting scripts and hyperparameter sweep results live in `experiments/<molecule>/fitting/`.
+The canonical values above were fixed through systematic sweeps in April 2025 (rcut, p, q, td each varied independently) and validated across all three molecules. Fitting scripts and per-molecule sweep results live in `experiments/<molecule>/fitting/`.
 
 ---
 
@@ -143,6 +146,28 @@ sign_acc, ...
 ```
 
 Final paper plots (RMSE, MAE, and sign accuracy on log–log axes for all molecules) are in `notebooks/learning_curves_paper.jl` and the per-molecule PNGs in `experiments/*/results/`.
+
+---
+
+## QM backend
+
+Training labels are effective transfer integrals computed with [xTB](https://github.com/grimme-lab/xtb) via the `--dipro` flag (GFN1-xTB level). Raw DIPRO output gives J and the overlap integral S; the effective coupling is:
+
+```
+J_eff = (J × 1928 − S × E_avg) / (1 − S²)
+```
+
+where E_avg is the average site energy (meV). The Python script `script.py` in each `datagen/` directory batch-processes dimer XYZ files and attaches `energy_eff` to each extxyz frame.
+
+---
+
+## Key findings
+
+- **Convergence is fast.** All systems reach diminishing returns by ~1,500–2,000 training structures; 5,000 structures yield only marginal improvement.
+- **Sign accuracy is the practical target.** Models achieve 80–97% correct sign prediction depending on system, which is sufficient to rank dimer orientations for transport calculations.
+- **Including real heteroatoms helps.** For thiophene, using Si, C, S, O (4-element model) reduces RMSE by ~35% compared to a 2-element Si, C proxy at large training set sizes.
+- **Larger molecules need larger cutoffs but are easier to learn.** Naphthalene's sign accuracy (~97%) exceeds ethylene's (~86%) because its π–π stacking geometry is more regular and predictable.
+- **The bead model is fragile at small N.** The 4-bead coarse-grained naphthalene representation needs >900 training structures to stabilise; below that, RMSE diverges.
 
 ---
 
