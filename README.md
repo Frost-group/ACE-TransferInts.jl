@@ -149,6 +149,22 @@ Final paper plots (RMSE, MAE, and sign accuracy on log–log axes for all molecu
 
 ---
 
+## Uncertainty quantification
+
+Models are fitted with a **Bayesian Linear Regression (BLR) committee** via `ACEfit.BLR(committee_size=500)`. Each committee member is drawn from the posterior over the linear coefficients, and the predictive uncertainty for a configuration is the committee standard deviation
+
+```
+σ(x) = std{ J⁽ᵐ⁾(x) },   m = 1 … M      (M = 500)
+```
+
+evaluated with `ACE1.co_energy`. These σ values appear as error bars on the per-configuration parity plots in the results figures.
+
+### Basis stability under high molecular overlap
+
+The element-dependent radial envelope `f_env = (y − 1)²(y − y_cut)²` drives the radial basis smoothly to zero as `r_ij → 0`, so predictions stay bounded even when monomers strongly overlap. Driving a **cofacial dimer inward past the sampled separation band** keeps the committee-mean J finite and smooth, while σ grows by several orders of magnitude — demonstrating both basis stability and honest extrapolation flagging. The demonstration sweep (ethylene; J ± σ vs intermolecular distance) is in `archive/Notebook_2024-2025/2025_06/05/basis_test/basis_stability_sweep.jl`; a parallel heteroatom (thiophene) sweep script is under `2025_06/10/basis_test/`.
+
+---
+
 ## QM backend
 
 Training labels are effective transfer integrals computed with [xTB](https://github.com/grimme-lab/xtb) via the `--dipro` flag (GFN1-xTB level). Raw DIPRO output gives J and the overlap integral S; the effective coupling is:
@@ -168,6 +184,8 @@ where E_avg is the average site energy (meV). The Python script `script.py` in e
 - **Including real heteroatoms helps.** For thiophene, using Si, C, S, O (4-element model) reduces RMSE by ~35% compared to a 2-element Si, C proxy at large training set sizes.
 - **Larger molecules need larger cutoffs but are easier to learn.** Naphthalene's sign accuracy (~97%) exceeds ethylene's (~86%) because its π–π stacking geometry is more regular and predictable.
 - **The bead model is fragile at small N.** The 4-bead coarse-grained naphthalene representation needs >900 training structures to stabilise; below that, RMSE diverges.
+- **Predictive uncertainty is available.** A 500-member BLR committee gives per-configuration error bars; the committee spread grows sharply outside the training domain, flagging extrapolation.
+- **The ACE basis is stable at high overlap.** Pushing a cofacial dimer inward past the sampled separation range keeps J finite and smooth while σ inflates — no divergence, by construction of the radial envelope.
 
 ---
 
