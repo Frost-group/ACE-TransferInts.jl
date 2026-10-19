@@ -1,194 +1,128 @@
 # ACE-TransferInts.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Frost-group.github.io/ACE-TransferInts.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://Frost-group.github.io/ACE-TransferInts.jl/dev/)
-[![Build Status](https://github.com/Frost-group/ACE-TransferInts.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Frost-group/ACE-TransferInts.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/Frost-group/ACE-TransferInts.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/Frost-group/ACE-TransferInts.jl)
+[![CI](https://github.com/Frost-group/ACE-TransferInts.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/Frost-group/ACE-TransferInts.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![arXiv](https://img.shields.io/badge/arXiv-2511.06551-b31b1b.svg)](https://arxiv.org/abs/2511.06551)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A Julia research package for predicting **intermolecular transfer integrals** in organic molecular dimers using **Atomic Cluster Expansion (ACE)** machine-learning potentials.
+**Machine-learning the electronic coupling between molecules from a few thousand examples.**
+Charge moves through an organic semiconductor by hopping between neighbouring molecules. The hopping rate is set by
+the *transfer integral* $J_{ab}$, which depends on all six degrees of freedom of the dimer's relative position and
+orientation, and normally costs a quantum-chemistry calculation for every pair.
+This package extends the **Atomic Cluster Expansion (ACE)** so it respects the symmetries of transfer integrals.
+The result is a fast, data-efficient surrogate model for $J_{ab}$.
 
-Transfer integrals (electronic coupling matrix elements) determine charge- and exciton-transport rates in organic semiconductors. This project replaces expensive quantum-chemistry calculations with fast ACE surrogate models trained on dimer geometry libraries.
+<p align="center">
+  <img src="docs/figures/transfer_integral.png" width="680" alt="Transfer integral J_ab between two naphthalene molecules as a function of their relative displacement and rotation.">
+</p>
 
----
+## Highlights
 
-## Repository layout
+From [*Machine learning intermolecular transfer integrals with compact atomic cluster representations*](https://arxiv.org/abs/2511.06551)
+(K. Keeratikarn, C. Ortner, J. M. Frost):
 
+- **Data-efficient.** For naphthalene, an MAE of **9.8 meV/molecule** from **1,350** training dimers. That is close to
+  published neural networks (≈ 6.5 meV) trained on **120,000**. Kernel ridge regression reaches 2.0 meV, but needs
+  15,000–40,000 samples.
+- **Sign-aware.** The model predicts the *signed* transfer integral and gets the phase right for **96.8 %** of naphthalene dimers.
+- **Physically built in.** ACE is invariant to rotation, translation and permutation, and $E_{\rm ref}=0$ forces
+  $J \to 0$ for isolated molecules.
+- **Compact representations.** A heavy-atom representation, and a coarse-grained *bead* model that is a candidate for
+  larger chromophores.
+
+<p align="center">
+  <img src="docs/figures/representations.png" width="620" alt="Naphthalene dimer reduced to a coarse-grained bead representation (left) or a heavy-atom representation (right).">
+</p>
+<p align="center"><sub>Two compact representations of a naphthalene dimer: coarse-grained beads (one per ring) and heavy atoms only.</sub></p>
+
+## Results
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/figures/learning_curves_naphthalene.png" alt="Learning curves for naphthalene, heavy-atom and bead representations."></td>
+    <td width="50%"><img src="docs/figures/parity_naphthalene.png" alt="Parity plot of predicted versus reference transfer integrals for naphthalene, 1350 training structures."></td>
+  </tr>
+  <tr>
+    <td><sub>Naphthalene learning curves (RMSE solid, MAE dashed). The heavy-atom model is accurate from about 450 structures, while the bead model needs about 900.</sub></td>
+    <td><sub>Predicted against reference transfer integrals for naphthalene, with the heavy-atom model trained on 1,350 of 4,753 dimers.</sub></td>
+  </tr>
+</table>
+
+| Molecule | Representation | Dataset | Training set | RMSE | MAE |
+|---|---|---|---|---|---|
+| Ethylene | heavy atom (C) | 8,000 | 2,000 | 3.2 μeV/mol | 2.3 μeV/mol |
+| Thiophene | heavy atom (C) | 8,000 | 2,000 | 3.10 μeV/mol | 2.03 μeV/mol |
+| Thiophene | heavy atom (C + S) | 8,000 | 2,000 | 2.65 μeV/mol | 1.40 μeV/mol |
+| Naphthalene | two-bead coarse-grained | 4,753 | 1,350 | 23.9 meV/mol | 16.9 meV/mol |
+| Naphthalene | heavy atom (C) | 4,753 | 1,350 | 13.6 meV/mol | 9.8 meV/mol |
+
+Adding a separate sulphur channel for thiophene cuts the RMSE by ≈ 15 % and the MAE by ≈ 40 %, at the cost of
+15 → 20 min training time. Learning curves for ethylene and thiophene are in
+[`docs/figures/learning_curves_ethylene_thiophene.png`](docs/figures/learning_curves_ethylene_thiophene.png).
+
+## How it works
+
+1. **Data.** Dimers are generated by rotating and translating a monomer through $(x, y, z, \theta_x, \theta_y, \theta_z)$.
+   Signed transfer integrals come from [xtb-dipro](https://github.com/grimme-lab/xtb), modified to output the phase of $J$.
+2. **Representation.** Hydrogens are dropped, leaving heavy atoms, or rings are collapsed to beads. Each molecule's sites are
+   labelled as a separate pseudo-element, so ACE can tell the two molecules apart.
+3. **Basis.** ACE basis with body order $N = 2$ and total degree $D_{\rm tot} = 10$. The cutoff $r_{\rm cut}$ (7.5, 9.0 and 13.6 Å) is
+   chosen from the dimer radial distribution functions. The Agnesi transform uses high $p, q$ (19, 43–45), which concentrates the radial
+   basis on the intermolecular range.
+4. **Fit.** Bayesian linear regression with [ACEpotentials.jl](https://github.com/ACEsuit/ACEpotentials.jl). A BLR committee
+   gives a per-configuration uncertainty $\sigma(\mathbf{x}) = \mathrm{std}_m\, J^{(m)}(\mathbf{x})$, which grows sharply outside the
+   sampled range and so flags extrapolation.
+
+## Quick start
+
+ACEpotentials.jl lives in the ACEsuit registry, so add that first:
+
+```julia
+using Pkg
+Pkg.Registry.add(RegistrySpec(url = "https://github.com/ACEsuit/ACEregistry"))
+Pkg.add(url = "https://github.com/Frost-group/ACE-TransferInts.jl")
 ```
-ACE-TransferInts.jl/
-│
-├── src/                          # Julia library — importable functions
-│   ├── ACE-TransferInts.jl       # Module entry point (ACETransferInts)
-│   ├── dimer.jl                  # rot_x/y/z, centroid, construct_dimer
-│   ├── fitting.jl                # extract_energies, rmse, mae, sign_accuracy
-│   └── io.jl                     # read_J, write_xyz, read_lc_csv
-│
-├── experiments/                  # One folder per molecule
-│   ├── ethylene/
-│   │   ├── datagen/              # Scripts that generate training structures
-│   │   ├── fitting/              # ACE fit scripts and hyperparameter sweeps
-│   │   └── results/              # CSV learning curves, plots
-│   ├── thiophene/
-│   │   ├── datagen/
-│   │   ├── fitting/
-│   │   └── results/
-│   └── naphthalene/
-│       ├── datagen/
-│       ├── fitting/
-│       ├── results/
-│       ├── heavy_atom/           # All-heavy-atom representation
-│       │   ├── datagen/
-│       │   ├── fitting/
-│       │   └── results/
-│       └── bead/                 # Coarse-grained bead representation
-│           ├── datagen/
-│           ├── fitting/
-│           └── results/
-│
-├── notebooks/                    # Exploratory and publication notebooks
-│   ├── learning_curves.jl        # Interactive learning-curve exploration
-│   ├── learning_curves_paper.jl  # Final paper figures (multi-molecule)
-│   └── ACE_Package.jl            # Environment setup helper
-│
-├── data/
-│   ├── reference/                # Si_dataset.xyz and other reference data
-│   ├── raw/                      # Original extxyz from quantum chemistry
-│   │   ├── ethylene/
-│   │   ├── thiophene/
-│   │   └── naphthalene/
-│   └── processed/                # Train/test splits, modified structures
-│
-├── archive/
-│   └── Notebook_2024-2025/       # Chronological research notebooks (read-only)
-│
-├── test/
-│   └── runtests.jl
-├── docs/
-│   ├── make.jl
-│   └── src/index.md
-│
-├── Project.toml
-├── Manifest.toml
-└── LICENSE
-```
-
----
-
-## Background
-
-**Atomic Cluster Expansion (ACE)** builds a systematically improvable, many-body descriptor for atomic environments from rotationally invariant polynomials of interatomic distances and angles. Fitting an ACE model to reference transfer-integral data gives a fast surrogate that:
-
-- is **invariant** to translation, rotation, and permutation of equivalent atoms;
-- scales with **body order** (ν) and **polynomial degree** (td) so accuracy is controllable;
-- requires only atomic positions at inference time.
-
----
-
-## Molecules studied
-
-| Molecule | Atom types in model | rcut (Å) | RMSE at convergence | Sign accuracy |
-|---|---|---|---|---|
-| Ethylene (C₂H₄) | Si, C | 7.5 | ~2.85 μeV/mol | ~86% |
-| Thiophene (C₄H₄S) | Si, C, S, O | 9.0 | ~1.95 μeV/mol | ~86% |
-| Naphthalene (C₁₀H₈) | Si, C (heavy atom) | 13.6 | ~12 meV/atom | ~97% |
-| Naphthalene (bead) | Si, C (4-bead CG) | 13.6 | ~18 meV/bead | ~97% |
-
-H atoms are replaced by heavier pseudo-Si atoms so the ACE radial basis covers the relevant interatomic distances cleanly. A coarse-grained **bead** model of naphthalene is also studied as a more compact representation. All models use ν=2, td=10 with 8,000 randomly sampled training structures; convergence is reached at ~1,500–2,000 structures.
-
----
-
-## Library (`src/`)
 
 ```julia
 using ACETransferInts
 
-# Dimer geometry
-R = rot_y(π/3)                          # 3×3 rotation matrix
-c = centroid(atoms.X)                   # centre of geometry
-construct_dimer("mol.extxyz", "dimer.extxyz", params, π/3, J)
+params, J, logJ = read_J("out.dat")                 # dimer parameters and transfer integrals
+construct_dimer("monomer.extxyz", "dimers.extxyz", params, π/3, J)
 
-# Metrics
-rmse(predicted, reference)
-mae(predicted, reference)
-sign_accuracy(predicted, reference)     # fraction with correct sign
-
-# I/O
-params, J, logJ = read_J("out.dat")
-write_xyz("mol.xyz", atoms)
-n, rmse_v, mae_v, sign_acc = read_lc_csv("LC_Ethylene.csv")
+rmse(J_pred, J_ref), mae(J_pred, J_ref)
+sign_accuracy(J_pred, J_ref)                        # fraction with the correct phase
+n, rmse_v, mae_v, sign_acc = read_lc_csv("experiments/ethylene/results/LC_Ethylene_CSi_od2_td10_p19_q45_rcut75.csv")
 ```
 
----
+The ACE fitting scripts for each molecule are in `experiments/`.
 
-## ACE basis parameters
+## Repository layout
 
-| Parameter | Meaning | Small molecules | Large molecules |
-|---|---|---|---|
-| `ν` (order) | Body order (2 = pair, 3 = 3-body, …) | 2 | 2 |
-| `td` (total degree) | Maximum polynomial degree | 10 | 10 |
-| `rcut` | Cutoff radius (Å) | 7.5 – 9.0 | 13.6 |
-| `r₀` | Reference radius (Å) | 6.625 | 12.0 |
-| `p` | Agnesi transform (numerator) | 19 | 19 |
-| `q` | Agnesi transform (denominator) | 45 | 43 |
+| Path | Contents |
+|---|---|
+| `src/` | Library: dimer geometry (`dimer.jl`), metrics (`fitting.jl`), I/O (`io.jl`) |
+| `test/` | Tests for rotations, metrics and learning-curve I/O |
+| `experiments/naphthalene/` | Data generation and ACE fits for the heavy-atom and bead models |
+| `experiments/{ethylene,thiophene}/results/` | Learning-curve data |
+| `notebooks/` | Learning-curve analysis and the paper figures |
+| `archive/Notebook_2024-2025/` | Chronological research notebooks, kept as the historical record, including the basis-stability sweeps in `2025_06/` |
+| `docs/` | Documenter.jl site and README figures |
 
-The canonical values above were fixed through systematic sweeps in April 2025 (rcut, p, q, td each varied independently) and validated across all three molecules. Fitting scripts and per-molecule sweep results live in `experiments/<molecule>/fitting/`.
+## Citation
 
----
-
-## Learning curves
-
-Learning-curve data are stored as row-keyed CSV files:
-
-```
-n_train,  10, 50, 100, 200, 500, 1000
-rmse,     ...
-mae,      ...
-sign_acc, ...
-```
-
-Final paper plots (RMSE, MAE, and sign accuracy on log–log axes for all molecules) are in `notebooks/learning_curves_paper.jl` and the per-molecule PNGs in `experiments/*/results/`.
-
----
-
-## QM backend
-
-Training labels are effective transfer integrals computed with [xTB](https://github.com/grimme-lab/xtb) via the `--dipro` flag (GFN1-xTB level). Raw DIPRO output gives J and the overlap integral S; the effective coupling is:
-
-```
-J_eff = (J × 1928 − S × E_avg) / (1 − S²)
+```bibtex
+@misc{keeratikarn2025transfer,
+  title         = {Machine learning intermolecular transfer integrals with compact atomic cluster representations},
+  author        = {Keeratikarn, Keerati and Ortner, Christoph and Frost, Jarvist Moore},
+  year          = {2025},
+  eprint        = {2511.06551},
+  archivePrefix = {arXiv},
+  primaryClass  = {cond-mat.dis-nn},
+  url           = {https://arxiv.org/abs/2511.06551}
+}
 ```
 
-where E_avg is the average site energy (meV). The Python script `script.py` in each `datagen/` directory batch-processes dimer XYZ files and attaches `energy_eff` to each extxyz frame.
+## Authors
 
----
-
-## Key findings
-
-- **Convergence is fast.** All systems reach diminishing returns by ~1,500–2,000 training structures; 5,000 structures yield only marginal improvement.
-- **Sign accuracy is the practical target.** Models achieve 80–97% correct sign prediction depending on system, which is sufficient to rank dimer orientations for transport calculations.
-- **Including real heteroatoms helps.** For thiophene, using Si, C, S, O (4-element model) reduces RMSE by ~35% compared to a 2-element Si, C proxy at large training set sizes.
-- **Larger molecules need larger cutoffs but are easier to learn.** Naphthalene's sign accuracy (~97%) exceeds ethylene's (~86%) because its π–π stacking geometry is more regular and predictable.
-- **The bead model is fragile at small N.** The 4-bead coarse-grained naphthalene representation needs >900 training structures to stabilise; below that, RMSE diverges.
-
----
-
-## Installation
-
-```julia
-import Pkg
-Pkg.develop(path="path/to/ACE-TransferInts.jl")
-```
-
-The main external dependency is [ACEpotentials.jl](https://github.com/ACEsuit/ACEpotentials.jl) (requires the ACEsuit registry). All other dependencies are in `Project.toml`.
-
----
-
-## Archive
-
-`archive/Notebook_2024-2025/` preserves the original chronological research notebooks (July 2024 – April 2026) exactly as written. These are the historical record; new work should go in `experiments/` or `notebooks/`.
-
----
-
-## License
-
-MIT — see [LICENSE](LICENSE).  
-Copyright © Jarvist Moore Frost and contributors.
+Developed by **[Keerati Keeratikarn](https://github.com/PKKeerati)** (Imperial College London), with
+[Christoph Ortner](https://github.com/cortner) (UBC) and [Jarvist Moore Frost](https://github.com/jarvist)
+([Frost group](https://github.com/Frost-group)). MIT licence.

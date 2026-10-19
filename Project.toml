@@ -1,3 +1,8 @@
+name = "ACETransferInts"
+uuid = "0cb6e433-94bd-4e06-81c4-5e245636b76f"
+authors = ["Keerati Keeratikarn", "Jarvist Moore Frost"]
+version = "0.1.0"
+
 [deps]
 ACEpotentials = "3b96b61c-0fcc-4693-95ed-1ef9f35fcc53"
 ASE = "51974c44-a7ed-5088-b8be-3e78c8ba416c"
@@ -14,5 +19,18 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
+
+[compat]
+ACEpotentials = "0.6"
+JuLIP = "0.14"
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

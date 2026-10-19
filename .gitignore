@@ -17,3 +17,8 @@ data/
 # Generated outputs
 *.png
 *.dat
+
+# OS and editor files
+.DS_Store
+.vscode/
+!docs/figures/*.png
