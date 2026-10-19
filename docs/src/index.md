@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = ACE-TransferInts
+CurrentModule = ACETransferInts
 ```
 
 # ACE-TransferInts
@@ -10,5 +10,5 @@ Documentation for [ACE-TransferInts](https://github.com/Frost-group/ACE-Transfer
 ```
 
 ```@autodocs
-Modules = [ACE-TransferInts]
+Modules = [ACETransferInts]
 ```

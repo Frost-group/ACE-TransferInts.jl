@@ -1,11 +1,11 @@
-using ACE-TransferInts
+using ACETransferInts
 using Documenter
 
-DocMeta.setdocmeta!(ACE-TransferInts, :DocTestSetup, :(using ACE-TransferInts); recursive=true)
+DocMeta.setdocmeta!(ACETransferInts, :DocTestSetup, :(using ACETransferInts); recursive=true)
 
 makedocs(;
-    modules=[ACE-TransferInts],
-    authors="Jarvist Moore Frost",
+    modules=[ACETransferInts],
+    authors="Keerati Keeratikarn, Jarvist Moore Frost",
     repo="https://github.com/Frost-group/ACE-TransferInts.jl/blob/{commit}{path}#{line}",
     sitename="ACE-TransferInts.jl",
     format=Documenter.HTML(;

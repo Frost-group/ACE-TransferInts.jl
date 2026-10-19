@@ -34,28 +34,21 @@ The package is a thin library layer (`src/`) over the ACEpotentials.jl/JuLIP.jl 
 
 ### `src/` — Library
 
-- **ACE-TransferInts.jl** — module entry point, re-exports everything
+- **ACETransferInts.jl** — module entry point (`module ACETransferInts`), re-exports everything
 - **dimer.jl** — `rot_x/y/z(θ)` rotation matrices; `centroid(atoms)`; `construct_dimer(monomer, params)` where `params = [θx, θy, θz, dx, dy, dz]` (angles + displacement)
 - **fitting.jl** — `extract_energies(dataset)`, `rmse`, `mae`, `sign_accuracy` (fraction of structures where predicted/true sign agree)
 - **io.jl** — `read_J(file)` for transfer-integral output files (columns: 6 params, J, logJ); `write_xyz(atoms)`; `read_lc_csv(file)` for row-keyed learning-curve CSVs
 
 ### `experiments/` — Active Research
 
-Three molecules, each with the same layout:
-```
-experiments/<molecule>/
-  datagen/   # scripts to generate training structures
-  fitting/   # ACE fit scripts, hyperparameter sweeps
-  results/   # learning-curve CSVs and plots
-```
+Naphthalene has `datagen/`, `fitting/`, `bead/` and `heavy_atom/`; ethylene and thiophene currently hold only
+`results/` (learning-curve CSVs) — their data generation and fits live in `archive/`.
 
-Molecules: **ethylene** (C2H4, simplest), **thiophene** (C4H4S, heterocycle), **naphthalene** (C10H8, fused-ring; includes heavy-atom and bead-model variants).
+Molecules: **ethylene** (C2H4, simplest), **thiophene** (C4H4S, heterocycle), **naphthalene** (C10H8, fused-ring; includes heavy-atom and two-bead variants). Hydrogens are dropped; the two molecules' sites are labelled as different pseudo-elements (C vs Si) so ACE can tell them apart.
 
 ### `data/`
 
-- `raw/` — original extxyz files from QM calculations (git-ignored by `*.extxyz`)
-- `processed/` — train/test splits
-- `reference/` — Si_dataset.xyz and reference benchmarks
+- `reference/` — Si_dataset.xyz (the only tracked data file; `data/` is git-ignored)
 
 ### `archive/`
 

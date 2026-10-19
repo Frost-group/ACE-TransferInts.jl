@@ -1,3 +1,3 @@
 [deps]
-ACE-TransferInts = "0cb6e433-94bd-4e06-81c4-5e245636b76f"
+ACETransferInts = "0cb6e433-94bd-4e06-81c4-5e245636b76f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
